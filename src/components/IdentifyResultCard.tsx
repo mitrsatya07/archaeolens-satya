@@ -32,7 +32,7 @@ function CategoryBadge({ category }: { category: IdentifyResult["category"] }) {
 function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence"] }) {
   const map = {
     high: "bg-leaf/15 text-leaf border-leaf/30",
-    medium: "bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-400",
+    medium: "bg-warn/20 text-warn-foreground border-warn/40",
     low: "bg-destructive/10 text-destructive border-destructive/30",
   };
   return (
@@ -137,7 +137,7 @@ export function IdentifyResultCard({
           </div>
 
           {(result.confidence === "low" || result.notes) && (
-            <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
+            <div className="flex items-start gap-2 rounded-lg border border-warn/40 bg-warn/15 p-3 text-xs text-warn-foreground">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <p>
                 {result.notes ??
