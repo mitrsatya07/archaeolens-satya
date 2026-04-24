@@ -1,0 +1,233 @@
+import { createServerFn } from "@tanstack/react-start";
+
+export type Category = "plant" | "animal" | "mineral" | "unknown";
+export type Confidence = "high" | "medium" | "low";
+
+export interface LocalNames {
+  hi?: string;
+  ta?: string;
+  te?: string;
+  bn?: string;
+  mr?: string;
+  kn?: string;
+  ml?: string;
+  gu?: string;
+}
+
+export interface IdentifyResult {
+  category: Category;
+  scientificName: string;
+  englishName: string;
+  family?: string;
+  localNames: LocalNames;
+  summary: string;
+  confidence: Confidence;
+  alternatives: string[];
+  sources: { label: string; url: string }[];
+  notes?: string;
+}
+
+function buildSources(category: Category, scientific: string): { label: string; url: string }[] {
+  const q = encodeURIComponent(scientific);
+  const wiki = `https://en.wikipedia.org/wiki/Special:Search?search=${q}`;
+  const sources: { label: string; url: string }[] = [{ label: "Wikipedia", url: wiki }];
+
+  if (category === "plant") {
+    sources.push({ label: "GBIF", url: `https://www.gbif.org/species/search?q=${q}` });
+    sources.push({ label: "POWO (Kew)", url: `https://powo.science.kew.org/?q=${q}` });
+  } else if (category === "animal") {
+    sources.push({ label: "GBIF", url: `https://www.gbif.org/species/search?q=${q}` });
+    sources.push({ label: "iNaturalist", url: `https://www.inaturalist.org/search?q=${q}` });
+    sources.push({ label: "IUCN Red List", url: `https://www.iucnredlist.org/search?query=${q}` });
+  } else if (category === "mineral") {
+    sources.push({ label: "Mindat", url: `https://www.mindat.org/search.php?search=${q}` });
+    sources.push({
+      label: "Geological Survey of India",
+      url: `https://www.google.com/search?q=site:gsi.gov.in+${q}`,
+    });
+  }
+  return sources;
+}
+
+export const identifyImage = createServerFn({ method: "POST" })
+  .inputValidator((data: { imageBase64: string }) => {
+    if (!data?.imageBase64 || typeof data.imageBase64 !== "string") {
+      throw new Error("imageBase64 is required");
+    }
+    if (data.imageBase64.length > 8_000_000) {
+      throw new Error("Image too large");
+    }
+    return data;
+  })
+  .handler(async ({ data }) => {
+    const apiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey) {
+      return {
+        ok: false as const,
+        error: "AI is not configured. LOVABLE_API_KEY missing on server.",
+      };
+    }
+
+    const dataUrl = data.imageBase64.startsWith("data:")
+      ? data.imageBase64
+      : `data:image/jpeg;base64,${data.imageBase64}`;
+
+    const systemPrompt = `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
+
+    const tool = {
+      type: "function" as const,
+      function: {
+        name: "report_identification",
+        description: "Return the identification of the subject in the image.",
+        parameters: {
+          type: "object",
+          properties: {
+            category: {
+              type: "string",
+              enum: ["plant", "animal", "mineral", "unknown"],
+              description: "What kind of subject is in the image.",
+            },
+            scientificName: {
+              type: "string",
+              description: "Binomial scientific name (Latin) or mineral species name. Empty if unknown.",
+            },
+            englishName: {
+              type: "string",
+              description: "Common English name. Empty if unknown.",
+            },
+            family: {
+              type: "string",
+              description: "Taxonomic family or mineral group, if relevant.",
+            },
+            localNames: {
+              type: "object",
+              description: "Common name in major Indian languages, by ISO code.",
+              properties: {
+                hi: { type: "string", description: "Hindi" },
+                ta: { type: "string", description: "Tamil" },
+                te: { type: "string", description: "Telugu" },
+                bn: { type: "string", description: "Bengali" },
+                mr: { type: "string", description: "Marathi" },
+                kn: { type: "string", description: "Kannada" },
+                ml: { type: "string", description: "Malayalam" },
+                gu: { type: "string", description: "Gujarati" },
+              },
+              additionalProperties: false,
+            },
+            summary: {
+              type: "string",
+              description: "3-5 sentence factual description.",
+            },
+            confidence: {
+              type: "string",
+              enum: ["high", "medium", "low"],
+            },
+            alternatives: {
+              type: "array",
+              items: { type: "string" },
+              description: "Up to 3 alternative scientific names if uncertain.",
+            },
+            notes: {
+              type: "string",
+              description: "Optional caveat for the user (e.g., poor lighting, partial view).",
+            },
+          },
+          required: [
+            "category",
+            "scientificName",
+            "englishName",
+            "localNames",
+            "summary",
+            "confidence",
+            "alternatives",
+          ],
+          additionalProperties: false,
+        },
+      },
+    };
+
+    let response: Response;
+    try {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: systemPrompt },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Identify the main subject in this photo. Respond by calling the report_identification tool.",
+                },
+                { type: "image_url", image_url: { url: dataUrl } },
+              ],
+            },
+          ],
+          tools: [tool],
+          tool_choice: { type: "function", function: { name: "report_identification" } },
+        }),
+      });
+    } catch (e) {
+      console.error("AI gateway network error", e);
+      return { ok: false as const, error: "Could not reach the AI service. Check your connection." };
+    }
+
+    if (response.status === 429) {
+      return { ok: false as const, error: "Too many requests right now. Please wait a moment and try again." };
+    }
+    if (response.status === 402) {
+      return { ok: false as const, error: "AI credits exhausted. Add credits in Settings → Workspace → Usage." };
+    }
+    if (!response.ok) {
+      const t = await response.text();
+      console.error("AI gateway error", response.status, t);
+      return { ok: false as const, error: `Identification failed (${response.status}).` };
+    }
+
+    let payload: any;
+    try {
+      payload = await response.json();
+    } catch (e) {
+      console.error("Bad JSON from gateway", e);
+      return { ok: false as const, error: "Got an unreadable response from AI." };
+    }
+
+    const toolCall = payload?.choices?.[0]?.message?.tool_calls?.[0];
+    const argsStr = toolCall?.function?.arguments;
+    if (!argsStr) {
+      console.error("No tool call returned", JSON.stringify(payload).slice(0, 500));
+      return { ok: false as const, error: "AI did not return a structured identification. Try a clearer photo." };
+    }
+
+    let parsed: any;
+    try {
+      parsed = typeof argsStr === "string" ? JSON.parse(argsStr) : argsStr;
+    } catch (e) {
+      console.error("Failed to parse tool args", e, argsStr);
+      return { ok: false as const, error: "Could not parse the AI's identification." };
+    }
+
+    const result: IdentifyResult = {
+      category: (parsed.category as Category) ?? "unknown",
+      scientificName: parsed.scientificName ?? "",
+      englishName: parsed.englishName ?? "",
+      family: parsed.family || undefined,
+      localNames: parsed.localNames ?? {},
+      summary: parsed.summary ?? "",
+      confidence: (parsed.confidence as Confidence) ?? "low",
+      alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
+      notes: parsed.notes || undefined,
+      sources: buildSources(
+        (parsed.category as Category) ?? "unknown",
+        parsed.scientificName || parsed.englishName || "",
+      ),
+    };
+
+    return { ok: true as const, result };
+  });

@@ -59,6 +59,12 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-leaf: var(--leaf);
+  --color-fauna: var(--fauna);
+  --color-mineral: var(--mineral);
+  --color-warn: var(--warn);
+  --color-warn-foreground: var(--warn-foreground);
+  --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
 }
 
 :root {
@@ -95,6 +101,11 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --leaf: oklch(0.55 0.14 145);
+  --fauna: oklch(0.5 0.13 50);
+  --mineral: oklch(0.45 0.06 260);
+  --warn: oklch(0.78 0.16 80);
+  --warn-foreground: oklch(0.32 0.1 70);
 }
 
 .dark {
@@ -130,6 +141,11 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --leaf: oklch(0.7 0.14 145);
+  --fauna: oklch(0.72 0.13 60);
+  --mineral: oklch(0.7 0.06 260);
+  --warn: oklch(0.78 0.16 80);
+  --warn-foreground: oklch(0.92 0.08 80);
 }
 
 @layer base {
