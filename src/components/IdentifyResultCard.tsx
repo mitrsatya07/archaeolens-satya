@@ -15,14 +15,14 @@ const LANG_LABELS: Record<string, string> = {
 
 function CategoryBadge({ category }: { category: IdentifyResult["category"] }) {
   const map = {
-    plant: { icon: Leaf, label: "Plant", cls: "bg-leaf/15 text-leaf border-leaf/30" },
-    animal: { icon: PawPrint, label: "Animal", cls: "bg-fauna/15 text-fauna border-fauna/30" },
-    mineral: { icon: Gem, label: "Mineral", cls: "bg-mineral/15 text-mineral border-mineral/30" },
-    unknown: { icon: HelpCircle, label: "Unknown", cls: "bg-muted text-muted-foreground border-border" },
+    plant: { icon: Leaf, label: "PLANT", cls: "bg-leaf/15 text-leaf border-leaf/40" },
+    animal: { icon: PawPrint, label: "ANIMAL", cls: "bg-fauna/15 text-fauna border-fauna/40" },
+    mineral: { icon: Gem, label: "MINERAL", cls: "bg-mineral/15 text-mineral border-mineral/40" },
+    unknown: { icon: HelpCircle, label: "UNKNOWN", cls: "bg-muted text-muted-foreground border-border" },
   } as const;
   const { icon: Icon, label, cls } = map[category];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${cls}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] ${cls}`}>
       <Icon className="h-3.5 w-3.5" />
       {label}
     </span>
@@ -36,9 +36,9 @@ function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence
     low: "bg-destructive/10 text-destructive border-destructive/30",
   };
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${map[confidence]}`}>
+    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${map[confidence]}`}>
       <Sparkles className="h-3 w-3" />
-      {confidence} confidence
+      {confidence} signal
     </span>
   );
 }
@@ -55,37 +55,40 @@ export function IdentifyResultCard({
   const localEntries = Object.entries(result.localNames).filter(([, v]) => !!v);
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-4">
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+    <div className="mx-auto w-full max-w-xl space-y-4 animate-fade-in">
+      <div className="overflow-hidden rounded-2xl border border-cyber/25 bg-card/80 shadow-sm backdrop-blur cyber-glow">
         <div className="relative aspect-square w-full bg-muted sm:aspect-[4/3]">
           <img src={imageUrl} alt="Captured subject" className="h-full w-full object-cover" />
+          <div className="pointer-events-none absolute inset-0 cyber-grid opacity-30" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/65 via-transparent to-background/25" />
           <div className="absolute left-3 top-3 flex flex-wrap gap-2">
             <CategoryBadge category={result.category} />
             <ConfidenceChip confidence={result.confidence} />
           </div>
         </div>
 
-        <div className="space-y-4 p-5">
+        <div className="space-y-5 p-5">
           <div>
-            <h2 className="font-serif text-2xl italic leading-tight text-foreground">
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-cyber-muted">Identification lock</p>
+            <h2 className="font-mono text-2xl font-bold uppercase leading-tight tracking-tight text-cyber cyber-text-glow">
               {result.scientificName || "Unknown species"}
             </h2>
             {result.englishName && (
-              <p className="mt-0.5 text-base font-medium text-foreground">{result.englishName}</p>
+              <p className="mt-1 text-base font-medium text-foreground">{result.englishName}</p>
             )}
             {result.family && (
-              <p className="mt-0.5 text-xs text-muted-foreground">Family: {result.family}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Classification: {result.family}</p>
             )}
           </div>
 
           {result.summary && (
-            <p className="text-sm leading-relaxed text-foreground/90">{result.summary}</p>
+            <div className="rounded-xl border border-cyber/15 bg-background/45 p-4"><p className="text-sm leading-relaxed text-foreground/90">{result.summary}</p></div>
           )}
 
           {localEntries.length > 0 && (
-            <div className="rounded-xl bg-muted/60 p-3">
+            <div className="rounded-xl border border-cyber/15 bg-background/45 p-3">
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Local names
+                Local aliases
               </h3>
               <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                 {localEntries.map(([code, name]) => (
@@ -101,13 +104,13 @@ export function IdentifyResultCard({
           {result.alternatives.length > 0 && (
             <div>
               <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Could also be
+                Alternate signatures
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {result.alternatives.map((alt) => (
                   <span
                     key={alt}
-                    className="rounded-full border border-border bg-background px-2 py-0.5 text-xs italic text-foreground/80"
+                    className="rounded-md border border-cyber/20 bg-background/60 px-2 py-0.5 font-mono text-xs italic text-foreground/80"
                   >
                     {alt}
                   </span>
@@ -118,7 +121,7 @@ export function IdentifyResultCard({
 
           <div>
             <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Verify with authoritative sources
+              Verify sources
             </h3>
             <div className="flex flex-wrap gap-2">
               {result.sources.map((s) => (
@@ -127,7 +130,7 @@ export function IdentifyResultCard({
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-cyber/25 bg-background/55 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-cyber transition-colors hover:bg-cyber/10"
                 >
                   {s.label}
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -153,8 +156,8 @@ export function IdentifyResultCard({
         </div>
       </div>
 
-      <Button onClick={onAgain} className="w-full" size="lg">
-        Identify another
+      <Button onClick={onAgain} className="w-full border border-cyber bg-cyber font-mono uppercase tracking-[0.16em] text-cyber-foreground hover:bg-cyber/90" size="lg">
+        Start new scan
       </Button>
     </div>
   );
