@@ -93,12 +93,12 @@ function NatureCategoryBadge({ category }: { category: NatureResult["category"] 
 }
 
 function ArchaeologyBadge({ category }: { category: ArchaeologyResult["archaeologyCategory"] }) {
-  return <Badge icon={<Landmark className="h-3.5 w-3.5" />} label={category.replace("_", " ")} cls="bg-cyber/15 text-cyber border-cyber/40" />;
+  return <Badge icon={<Landmark className="h-3.5 w-3.5" />} label={category.replace("_", " ")} cls="bg-primary/10 text-primary border-primary/30" />;
 }
 
 function Badge({ icon, label, cls }: { icon: React.ReactNode; label: string; cls: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] ${cls}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${cls}`}>
       {icon}
       {label}
     </span>
@@ -274,8 +274,8 @@ function InfoGrid({ result }: { result: ArchaeologyResult }) {
   return (
     <div className="grid grid-cols-2 gap-2">
       {rows.map(([label, value]) => (
-        <div key={label} className="rounded-xl border border-cyber/15 bg-background/45 p-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyber-muted">{label}</p>
+        <div key={label} className="rounded-lg border border-border bg-background/55 p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
           <p className="mt-1 text-sm font-medium text-foreground">{value}</p>
         </div>
       ))}
@@ -285,10 +285,10 @@ function InfoGrid({ result }: { result: ArchaeologyResult }) {
 
 function Panel({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-cyber/15 bg-background/45 p-4">
+    <div className="rounded-lg border border-border bg-background/55 p-4">
       <div className="mb-2 flex items-center gap-2">
         {icon}
-        <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-cyber-muted">{title}</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
       </div>
       {children}
     </div>
@@ -299,7 +299,7 @@ function BulletList({ items }: { items: string[] }) {
   if (!items.length) return <p className="text-sm text-muted-foreground">No reliable details visible.</p>;
   return (
     <ul className="space-y-1.5 text-sm text-foreground/90">
-      {items.map((item) => <li key={item} className="flex gap-2"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-cyber" />{item}</li>)}
+      {items.map((item) => <li key={item} className="flex gap-2"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />{item}</li>)}
     </ul>
   );
 }
@@ -310,7 +310,7 @@ function Alternatives({ alternatives, title }: { alternatives: string[]; title: 
     <div>
       <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
       <div className="flex flex-wrap gap-1.5">
-        {alternatives.map((alt) => <span key={alt} className="rounded-md border border-cyber/20 bg-background/60 px-2 py-0.5 font-mono text-xs italic text-foreground/80">{alt}</span>)}
+        {alternatives.map((alt) => <span key={alt} className="rounded-md border border-border bg-background/70 px-2 py-0.5 text-xs italic text-foreground/80">{alt}</span>)}
       </div>
     </div>
   );
@@ -327,7 +327,7 @@ function Caution({ confidence, notes, archaeology }: { confidence: Confidence; n
       )}
       <p className="text-[11px] leading-relaxed text-muted-foreground">
         {archaeology
-          ? "AI-assisted field support. Not authentication, dating proof, legal advice, or final expert classification."
+          ? "AI-assisted archaeological observation. Not authentication, dating proof, legal advice, valuation, provenance, or final expert classification."
           : "AI-assisted identification. Not a substitute for expert advice. No information here is medicinal, edibility, or safety guidance."}
       </p>
     </>
