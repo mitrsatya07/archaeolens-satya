@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
-import { identifyImage, type IdentifyResult } from "@/server/identify.functions";
+import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,12 +29,13 @@ function IndexPage() {
   const [busy, setBusy] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
+  const [mode, setMode] = useState<ScanMode>("nature");
 
   const handleCapture = async (dataUrl: string) => {
     setBusy(true);
     setImageUrl(dataUrl);
     try {
-      const res = await identifyImage({ data: { imageBase64: dataUrl } });
+      const res = await identifyImage({ data: { imageBase64: dataUrl, mode } });
       if (!res.ok) {
         toast.error(res.error);
         setImageUrl(null);
@@ -65,7 +66,7 @@ function IndexPage() {
 
   return (
     <main className="dark relative h-[100dvh] w-screen overflow-hidden cyber-shell text-foreground">
-      <CameraCapture busy={busy} onCapture={handleCapture} />
+      <CameraCapture busy={busy} mode={mode} onModeChange={setMode} onCapture={handleCapture} />
       {busy && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6 text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-md border border-cyber/35 bg-background/75 px-4 py-2 font-mono text-xs uppercase tracking-[0.18em] text-cyber backdrop-blur-md cyber-glow">

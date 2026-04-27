@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   busy: boolean;
+  mode: "nature" | "archaeology";
+  onModeChange: (mode: "nature" | "archaeology") => void;
   onCapture: (dataUrl: string) => void;
 }
 
@@ -22,7 +24,7 @@ function downscaleToJpeg(source: HTMLImageElement | HTMLVideoElement, sw: number
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
-export function CameraCapture({ busy, onCapture }: Props) {
+export function CameraCapture({ busy, mode, onModeChange, onCapture }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -115,7 +117,7 @@ export function CameraCapture({ busy, onCapture }: Props) {
             <Terminal className="h-4 w-4 text-cyber" />
             <h1 className="font-mono text-sm font-bold uppercase tracking-[0.24em] text-cyber cyber-text-glow">LensID</h1>
           </div>
-          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-cyber-muted">bio · fauna · geo scan</p>
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-cyber-muted">{mode === "archaeology" ? "artifact · context · field note" : "bio · fauna · geo scan"}</p>
         </div>
         <a
           href="/about"
@@ -123,6 +125,28 @@ export function CameraCapture({ busy, onCapture }: Props) {
         >
           intel
         </a>
+      </div>
+      <div className="absolute left-4 right-4 top-28 z-20 grid grid-cols-2 gap-2 rounded-xl border border-cyber/20 bg-background/55 p-1 backdrop-blur-md cyber-glow">
+        <button
+          type="button"
+          onClick={() => onModeChange("nature")}
+          disabled={busy}
+          className={`rounded-lg px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
+            mode === "nature" ? "bg-cyber text-cyber-foreground" : "text-cyber-muted hover:bg-cyber/10"
+          }`}
+        >
+          Nature scan
+        </button>
+        <button
+          type="button"
+          onClick={() => onModeChange("archaeology")}
+          disabled={busy}
+          className={`rounded-lg px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
+            mode === "archaeology" ? "bg-cyber text-cyber-foreground" : "text-cyber-muted hover:bg-cyber/10"
+          }`}
+        >
+          Archaeology
+        </button>
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
@@ -160,12 +184,12 @@ export function CameraCapture({ busy, onCapture }: Props) {
           {busy ? (
             <Loader2 className="h-7 w-7 animate-spin text-cyber-foreground" />
           ) : (
-            <Camera className="h-7 w-7 text-foreground" />
+            <ScanLine className="h-7 w-7 text-cyber-foreground" />
           )}
         </button>
 
         <div className="flex h-12 w-12 items-center justify-center rounded-md border border-cyber/10 bg-background/30 font-mono text-[10px] uppercase tracking-widest text-cyber-muted">
-          armed
+          {mode === "archaeology" ? "record" : "armed"}
         </div>
       </div>
 
