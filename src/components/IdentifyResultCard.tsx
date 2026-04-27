@@ -13,7 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ArchaeologyResult, IdentifyResult, NatureResult } from "@/server/identify.functions";
+import type { ArchaeologyResult, Confidence, IdentifyResult, NatureResult } from "@/server/identify.functions";
 
 const LANG_LABELS: Record<string, string> = {
   hi: "हिन्दी (Hindi)",
