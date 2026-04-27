@@ -1,6 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
 
+export type ScanMode = "nature" | "archaeology";
 export type Category = "plant" | "animal" | "mineral" | "unknown";
+export type ArchaeologyCategory =
+  | "pottery"
+  | "lithic"
+  | "coin"
+  | "inscription"
+  | "rock_art"
+  | "bone"
+  | "metal"
+  | "terracotta"
+  | "brick"
+  | "sculpture"
+  | "artifact"
+  | "unknown";
 export type Confidence = "high" | "medium" | "low";
 
 export interface LocalNames {
@@ -14,7 +28,8 @@ export interface LocalNames {
   gu?: string;
 }
 
-export interface IdentifyResult {
+export interface NatureResult {
+  mode: "nature";
   category: Category;
   scientificName: string;
   englishName: string;
@@ -27,7 +42,27 @@ export interface IdentifyResult {
   notes?: string;
 }
 
-function buildSources(category: Category, scientific: string): { label: string; url: string }[] {
+export interface ArchaeologyResult {
+  mode: "archaeology";
+  archaeologyCategory: ArchaeologyCategory;
+  objectType: string;
+  material: string;
+  possiblePeriod: string;
+  culturalContext?: string;
+  visibleFeatures: string[];
+  condition: string;
+  manufacturingTechnique?: string;
+  documentationAdvice: string[];
+  fieldNote: string;
+  confidence: Confidence;
+  alternatives: string[];
+  sources: { label: string; url: string }[];
+  notes?: string;
+}
+
+export type IdentifyResult = NatureResult | ArchaeologyResult;
+
+function buildNatureSources(category: Category, scientific: string): { label: string; url: string }[] {
   const q = encodeURIComponent(scientific);
   const wiki = `https://en.wikipedia.org/wiki/Special:Search?search=${q}`;
   const sources: { label: string; url: string }[] = [{ label: "Wikipedia", url: wiki }];
@@ -48,16 +83,27 @@ function buildSources(category: Category, scientific: string): { label: string; 
   }
   return sources;
 }
+function buildArchaeologySources(query: string): { label: string; url: string }[] {
+  const q = encodeURIComponent(query || "archaeology artifact");
+  return [
+    { label: "Archaeological Survey of India", url: `https://www.google.com/search?q=site:asi.nic.in+${q}` },
+    { label: "Indian Culture Portal", url: `https://indianculture.gov.in/search/node/${q}` },
+    { label: "National Museum India", url: `https://www.google.com/search?q=site:nationalmuseumindia.gov.in+${q}` },
+    { label: "British Museum", url: `https://www.britishmuseum.org/collection/search?keyword=${q}` },
+    { label: "Met Museum", url: `https://www.metmuseum.org/art/collection/search?q=${q}` },
+    { label: "UNESCO World Heritage", url: `https://whc.unesco.org/en/search/?criteria=${q}` },
+  ];
+}
 
 export const identifyImage = createServerFn({ method: "POST" })
-  .inputValidator((data: { imageBase64: string }) => {
+  .inputValidator((data: { imageBase64: string; mode?: ScanMode }) => {
     if (!data?.imageBase64 || typeof data.imageBase64 !== "string") {
       throw new Error("imageBase64 is required");
     }
     if (data.imageBase64.length > 8_000_000) {
       throw new Error("Image too large");
     }
-    return data;
+    return { ...data, mode: data.mode ?? "nature" as ScanMode };
   })
   .handler(async ({ data }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
@@ -72,16 +118,12 @@ export const identifyImage = createServerFn({ method: "POST" })
       ? data.imageBase64
       : `data:image/jpeg;base64,${data.imageBase64}`;
 
-    const systemPrompt = `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
+    const isArchaeology = data.mode === "archaeology";
+    const systemPrompt = isArchaeology
+      ? `You are an expert archaeological field documentation assistant. Analyze photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculptures, bones, or metal objects. Always call the report_identification tool. Give preliminary observation only, never final authentication. Be conservative with periods and cultural attribution; use "possible" language. Include diagnostic visible features, condition, manufacturing technique when visible, and professional documentation advice. If it is not an artifact, say unknown with low confidence.`
+      : `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
 
-    const tool = {
-      type: "function" as const,
-      function: {
-        name: "report_identification",
-        description: "Return the identification of the subject in the image.",
-        parameters: {
-          type: "object",
-          properties: {
+    const natureProperties = {
             category: {
               type: "string",
               enum: ["plant", "animal", "mineral", "unknown"],
@@ -132,15 +174,59 @@ export const identifyImage = createServerFn({ method: "POST" })
               description: "Optional caveat for the user (e.g., poor lighting, partial view).",
             },
           },
-          required: [
-            "category",
-            "scientificName",
-            "englishName",
-            "localNames",
-            "summary",
-            "confidence",
-            "alternatives",
-          ],
+          };
+
+    const archaeologyProperties = {
+      archaeologyCategory: {
+        type: "string",
+        enum: ["pottery", "lithic", "coin", "inscription", "rock_art", "bone", "metal", "terracotta", "brick", "sculpture", "artifact", "unknown"],
+      },
+      objectType: { type: "string", description: "Likely object type, e.g. pottery sherd, blade, coin, brick fragment." },
+      material: { type: "string", description: "Visible material: ceramic, stone, copper alloy, iron, terracotta, bone, pigment, etc." },
+      possiblePeriod: { type: "string", description: "Possible date/cultural period, if inferable. Use cautious language." },
+      culturalContext: { type: "string", description: "Possible cultural context or tradition, if visible and cautiously inferable." },
+      visibleFeatures: { type: "array", items: { type: "string" }, description: "Diagnostic visible features." },
+      condition: { type: "string", description: "Preservation, wear, breaks, patina, abrasion, weathering." },
+      manufacturingTechnique: { type: "string", description: "Wheel-made, handmade, cast, struck, flaked, carved, engraved, painted etc." },
+      documentationAdvice: { type: "array", items: { type: "string" }, description: "Next steps: scale, context, measurements, angles, rim/base photos, etc." },
+      fieldNote: { type: "string", description: "Professional field observation paragraph, 3-5 sentences." },
+      confidence: { type: "string", enum: ["high", "medium", "low"] },
+      alternatives: { type: "array", items: { type: "string" }, description: "Up to 3 alternative interpretations." },
+      notes: { type: "string", description: "Caveat about context/uncertainty." },
+    };
+
+    const tool = {
+      type: "function" as const,
+      function: {
+        name: "report_identification",
+        description: isArchaeology
+          ? "Return a preliminary archaeological field observation."
+          : "Return the identification of the subject in the image.",
+        parameters: {
+          type: "object",
+          properties: isArchaeology ? archaeologyProperties : natureProperties,
+          required: isArchaeology
+            ? [
+                "archaeologyCategory",
+                "objectType",
+                "material",
+                "possiblePeriod",
+                "visibleFeatures",
+                "condition",
+                "documentationAdvice",
+                "fieldNote",
+                "confidence",
+                "alternatives",
+              ]
+            : [
+                "category",
+                "scientificName",
+                "englishName",
+                "localNames",
+                "summary",
+                "confidence",
+                "alternatives",
+              ],
           additionalProperties: false,
         },
       },
@@ -163,7 +249,9 @@ export const identifyImage = createServerFn({ method: "POST" })
               content: [
                 {
                   type: "text",
-                  text: "Identify the main subject in this photo. Respond by calling the report_identification tool.",
+                  text: isArchaeology
+                    ? "Create a preliminary archaeological field observation for the main object in this photo. Respond by calling the report_identification tool."
+                    : "Identify the main subject in this photo. Respond by calling the report_identification tool.",
                 },
                 { type: "image_url", image_url: { url: dataUrl } },
               ],
@@ -213,21 +301,40 @@ export const identifyImage = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Could not parse the AI's identification." };
     }
 
-    const result: IdentifyResult = {
-      category: (parsed.category as Category) ?? "unknown",
-      scientificName: parsed.scientificName ?? "",
-      englishName: parsed.englishName ?? "",
-      family: parsed.family || undefined,
-      localNames: parsed.localNames ?? {},
-      summary: parsed.summary ?? "",
-      confidence: (parsed.confidence as Confidence) ?? "low",
-      alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
-      notes: parsed.notes || undefined,
-      sources: buildSources(
-        (parsed.category as Category) ?? "unknown",
-        parsed.scientificName || parsed.englishName || "",
-      ),
-    };
+    const result: IdentifyResult = isArchaeology
+      ? {
+          mode: "archaeology",
+          archaeologyCategory: (parsed.archaeologyCategory as ArchaeologyCategory) ?? "unknown",
+          objectType: parsed.objectType ?? "Unidentified object",
+          material: parsed.material ?? "Unknown",
+          possiblePeriod: parsed.possiblePeriod ?? "Unknown / requires context",
+          culturalContext: parsed.culturalContext || undefined,
+          visibleFeatures: Array.isArray(parsed.visibleFeatures) ? parsed.visibleFeatures.slice(0, 8) : [],
+          condition: parsed.condition ?? "Not determined from image",
+          manufacturingTechnique: parsed.manufacturingTechnique || undefined,
+          documentationAdvice: Array.isArray(parsed.documentationAdvice) ? parsed.documentationAdvice.slice(0, 6) : [],
+          fieldNote: parsed.fieldNote ?? "Preliminary observation requires clearer photographs and archaeological context.",
+          confidence: (parsed.confidence as Confidence) ?? "low",
+          alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
+          notes: parsed.notes || undefined,
+          sources: buildArchaeologySources(`${parsed.objectType ?? "artifact"} ${parsed.material ?? ""} ${parsed.possiblePeriod ?? ""}`),
+        }
+      : {
+          mode: "nature",
+          category: (parsed.category as Category) ?? "unknown",
+          scientificName: parsed.scientificName ?? "",
+          englishName: parsed.englishName ?? "",
+          family: parsed.family || undefined,
+          localNames: parsed.localNames ?? {},
+          summary: parsed.summary ?? "",
+          confidence: (parsed.confidence as Confidence) ?? "low",
+          alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
+          notes: parsed.notes || undefined,
+          sources: buildNatureSources(
+            (parsed.category as Category) ?? "unknown",
+            parsed.scientificName || parsed.englishName || "",
+          ),
+        };
 
     return { ok: true as const, result };
   });
