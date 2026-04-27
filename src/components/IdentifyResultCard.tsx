@@ -29,7 +29,7 @@ function downloadText(filename: string, content: string) {
 
 function archaeologyReport(result: ArchaeologyResult) {
   return [
-    "LensID Archaeology Field Record",
+    "ArchaeoLens Archaeological Photo Observation",
     "",
     `Object type: ${result.objectType}`,
     `Category: ${result.archaeologyCategory}`,
@@ -52,7 +52,7 @@ function archaeologyReport(result: ArchaeologyResult) {
     "Sources:",
     ...result.sources.map((s) => `- ${s.label}: ${s.url}`),
     "",
-    "Disclaimer: AI-assisted preliminary observation only. Final identification requires context, stratigraphy, measurements, and expert verification.",
+    "Authenticity note: Photo observation is not authentication. Reliable attribution requires context, stratigraphy, measurements, provenance, comparative typology, and expert review.",
   ].filter(Boolean).join("\n");
 }
 
@@ -74,9 +74,9 @@ function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence
     low: "bg-destructive/10 text-destructive border-destructive/30",
   };
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${map[confidence]}`}>
+    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${map[confidence]}`}>
       <Sparkles className="h-3 w-3" />
-      {confidence} signal
+      {confidence} evidence
     </span>
   );
 }
@@ -108,7 +108,7 @@ function Badge({ icon, label, cls }: { icon: React.ReactNode; label: string; cls
 function SourceLinks({ sources }: { sources: { label: string; url: string }[] }) {
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Verify sources</h3>
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Research references</h3>
       <div className="flex flex-wrap gap-2">
         {sources.map((s) => (
           <a
@@ -116,7 +116,7 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
             href={s.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-cyber/25 bg-background/55 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-cyber transition-colors hover:bg-cyber/10"
+            className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-card px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-accent"
           >
             {s.label}
             <ExternalLink className="h-3.5 w-3.5" />
