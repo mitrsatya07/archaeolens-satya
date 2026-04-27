@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Image as ImageIcon, Loader2, X, ScanLine, Terminal, Crosshair } from "lucide-react";
+import { Image as ImageIcon, Loader2, X, ScanLine, Terminal, Crosshair } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Props {
