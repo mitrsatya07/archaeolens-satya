@@ -57,19 +57,19 @@ function IndexPage() {
 
   if (result && imageUrl) {
     return (
-      <main className="min-h-screen bg-background px-4 py-6">
+      <main className="dark min-h-screen cyber-shell px-4 py-6 text-foreground">
         <IdentifyResultCard result={result} imageUrl={imageUrl} onAgain={reset} />
       </main>
     );
   }
 
   return (
-    <main className="relative h-[100dvh] w-screen overflow-hidden bg-black">
+    <main className="dark relative h-[100dvh] w-screen overflow-hidden cyber-shell text-foreground">
       <CameraCapture busy={busy} onCapture={handleCapture} />
       {busy && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 -translate-y-1/2 px-6 text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-black/70 px-4 py-2 text-sm text-white backdrop-blur-md">
-            Analyzing image…
+          <div className="mx-auto inline-flex items-center gap-2 rounded-md border border-cyber/35 bg-background/75 px-4 py-2 font-mono text-xs uppercase tracking-[0.18em] text-cyber backdrop-blur-md cyber-glow">
+            Analyzing specimen…
           </div>
         </div>
       )}

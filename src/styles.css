@@ -64,6 +64,10 @@
   --color-mineral: var(--mineral);
   --color-warn: var(--warn);
   --color-warn-foreground: var(--warn-foreground);
+  --color-cyber: var(--cyber);
+  --color-cyber-foreground: var(--cyber-foreground);
+  --color-cyber-muted: var(--cyber-muted);
+  --color-surface-grid: var(--surface-grid);
   --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
 }
 
@@ -106,6 +110,10 @@
   --mineral: oklch(0.45 0.06 260);
   --warn: oklch(0.78 0.16 80);
   --warn-foreground: oklch(0.32 0.1 70);
+  --cyber: oklch(0.86 0.25 135);
+  --cyber-foreground: oklch(0.11 0.04 150);
+  --cyber-muted: oklch(0.68 0.16 150);
+  --surface-grid: oklch(0.12 0.03 145);
 }
 
 .dark {
@@ -146,6 +154,69 @@
   --mineral: oklch(0.7 0.06 260);
   --warn: oklch(0.78 0.16 80);
   --warn-foreground: oklch(0.92 0.08 80);
+  --cyber: oklch(0.86 0.25 135);
+  --cyber-foreground: oklch(0.11 0.04 150);
+  --cyber-muted: oklch(0.68 0.16 150);
+  --surface-grid: oklch(0.12 0.03 145);
+}
+
+
+@layer utilities {
+  .cyber-shell {
+    background:
+      radial-gradient(circle at 20% 0%, color-mix(in oklab, var(--cyber) 18%, transparent), transparent 34%),
+      radial-gradient(circle at 85% 18%, color-mix(in oklab, var(--leaf) 12%, transparent), transparent 28%),
+      linear-gradient(180deg, oklch(0.09 0.025 150), oklch(0.05 0.018 150));
+  }
+
+  .cyber-grid {
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--cyber) 12%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--cyber) 12%, transparent) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: linear-gradient(to bottom, transparent, black 16%, black 78%, transparent);
+  }
+
+  .cyber-scanline {
+    animation: cyber-scan 2.8s ease-in-out infinite;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--cyber) 70%, transparent), transparent);
+    box-shadow: 0 0 28px color-mix(in oklab, var(--cyber) 55%, transparent);
+  }
+
+  .cyber-glow {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--cyber) 28%, transparent),
+      0 0 32px color-mix(in oklab, var(--cyber) 22%, transparent),
+      inset 0 0 20px color-mix(in oklab, var(--cyber) 6%, transparent);
+  }
+
+  .cyber-text-glow {
+    text-shadow: 0 0 18px color-mix(in oklab, var(--cyber) 45%, transparent);
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.35s ease-out both;
+  }
+
+  .hover-scale {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hover-scale:hover {
+    transform: translateY(-1px) scale(1.02);
+  }
+}
+
+@keyframes cyber-scan {
+  0% { transform: translateY(-120px); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(120px); opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @layer base {
