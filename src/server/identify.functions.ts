@@ -103,7 +103,7 @@ export const identifyImage = createServerFn({ method: "POST" })
     if (data.imageBase64.length > 8_000_000) {
       throw new Error("Image too large");
     }
-    return { ...data, mode: data.mode ?? "nature" as ScanMode };
+    return { ...data, mode: (data.mode ?? "archaeology") as ScanMode };
   })
   .handler(async ({ data }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
@@ -120,7 +120,7 @@ export const identifyImage = createServerFn({ method: "POST" })
 
     const isArchaeology = data.mode === "archaeology";
     const systemPrompt = isArchaeology
-      ? `You are an expert archaeological field documentation assistant. Analyze photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculptures, bones, or metal objects. Always call the report_identification tool. Give preliminary observation only, never final authentication. Be conservative with periods and cultural attribution; use "possible" language. Include diagnostic visible features, condition, manufacturing technique when visible, and professional documentation advice. If it is not an artifact, say unknown with low confidence.`
+      ? `You are an archaeological field documentation assistant for professional photo observation. Analyze only visible evidence in photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculpture, bone, or metal objects. Always call the report_identification tool. Never claim final authentication, exact dating, legality, market value, provenance, or ownership from an image. Use cautious language such as "possible", "consistent with", "not determinable from photograph", and "requires stratigraphic/site context". Prioritize material, form, breakage, surface treatment, manufacture marks, inscriptions, patina/weathering, measurements needed, and photo limitations. Confidence should usually be low or medium unless multiple strong diagnostic features are clearly visible. If it is not clearly an archaeological object, report unknown with low confidence.`
       : `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
 
     const natureProperties = {
@@ -180,15 +180,15 @@ export const identifyImage = createServerFn({ method: "POST" })
         type: "string",
         enum: ["pottery", "lithic", "coin", "inscription", "rock_art", "bone", "metal", "terracotta", "brick", "sculpture", "artifact", "unknown"],
       },
-      objectType: { type: "string", description: "Likely object type, e.g. pottery sherd, blade, coin, brick fragment." },
+      objectType: { type: "string", description: "Likely object type from visible evidence only, e.g. possible pottery sherd, blade, coin, brick fragment." },
       material: { type: "string", description: "Visible material: ceramic, stone, copper alloy, iron, terracotta, bone, pigment, etc." },
-      possiblePeriod: { type: "string", description: "Possible date/cultural period, if inferable. Use cautious language." },
-      culturalContext: { type: "string", description: "Possible cultural context or tradition, if visible and cautiously inferable." },
-      visibleFeatures: { type: "array", items: { type: "string" }, description: "Diagnostic visible features." },
+      possiblePeriod: { type: "string", description: "Possible broad chronology only if visible diagnostic evidence supports it; otherwise say not determinable from photograph." },
+      culturalContext: { type: "string", description: "Possible cultural context only if visible and cautiously inferable; otherwise leave empty." },
+      visibleFeatures: { type: "array", items: { type: "string" }, description: "Visible diagnostic features, including form, surface, breakage, marks, inscription traces, wear, patina, or limitations." },
       condition: { type: "string", description: "Preservation, wear, breaks, patina, abrasion, weathering." },
       manufacturingTechnique: { type: "string", description: "Wheel-made, handmade, cast, struck, flaked, carved, engraved, painted etc." },
       documentationAdvice: { type: "array", items: { type: "string" }, description: "Next steps: scale, context, measurements, angles, rim/base photos, etc." },
-      fieldNote: { type: "string", description: "Professional field observation paragraph, 3-5 sentences." },
+      fieldNote: { type: "string", description: "Professional field observation paragraph, 3-5 sentences. Be realistic and cautious; state what cannot be determined from the photograph." },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
       alternatives: { type: "array", items: { type: "string" }, description: "Up to 3 alternative interpretations." },
       notes: { type: "string", description: "Caveat about context/uncertainty." },
