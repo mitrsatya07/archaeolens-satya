@@ -173,7 +173,6 @@ export const identifyImage = createServerFn({ method: "POST" })
               type: "string",
               description: "Optional caveat for the user (e.g., poor lighting, partial view).",
             },
-          },
           };
 
     const archaeologyProperties = {
