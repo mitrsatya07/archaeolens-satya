@@ -29,7 +29,7 @@ function downloadText(filename: string, content: string) {
 
 function archaeologyReport(result: ArchaeologyResult) {
   return [
-    "LensID Archaeology Field Record",
+    "ArchaeoLens Archaeological Photo Observation",
     "",
     `Object type: ${result.objectType}`,
     `Category: ${result.archaeologyCategory}`,
@@ -52,7 +52,7 @@ function archaeologyReport(result: ArchaeologyResult) {
     "Sources:",
     ...result.sources.map((s) => `- ${s.label}: ${s.url}`),
     "",
-    "Disclaimer: AI-assisted preliminary observation only. Final identification requires context, stratigraphy, measurements, and expert verification.",
+    "Authenticity note: Photo observation is not authentication. Reliable attribution requires context, stratigraphy, measurements, provenance, comparative typology, and expert review.",
   ].filter(Boolean).join("\n");
 }
 
@@ -74,9 +74,9 @@ function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence
     low: "bg-destructive/10 text-destructive border-destructive/30",
   };
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${map[confidence]}`}>
+    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${map[confidence]}`}>
       <Sparkles className="h-3 w-3" />
-      {confidence} signal
+      {confidence} evidence
     </span>
   );
 }
@@ -93,12 +93,12 @@ function NatureCategoryBadge({ category }: { category: NatureResult["category"] 
 }
 
 function ArchaeologyBadge({ category }: { category: ArchaeologyResult["archaeologyCategory"] }) {
-  return <Badge icon={<Landmark className="h-3.5 w-3.5" />} label={category.replace("_", " ")} cls="bg-cyber/15 text-cyber border-cyber/40" />;
+  return <Badge icon={<Landmark className="h-3.5 w-3.5" />} label={category.replace("_", " ")} cls="bg-primary/10 text-primary border-primary/30" />;
 }
 
 function Badge({ icon, label, cls }: { icon: React.ReactNode; label: string; cls: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] ${cls}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${cls}`}>
       {icon}
       {label}
     </span>
@@ -108,7 +108,7 @@ function Badge({ icon, label, cls }: { icon: React.ReactNode; label: string; cls
 function SourceLinks({ sources }: { sources: { label: string; url: string }[] }) {
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Verify sources</h3>
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Research references</h3>
       <div className="flex flex-wrap gap-2">
         {sources.map((s) => (
           <a
@@ -116,7 +116,7 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
             href={s.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-cyber/25 bg-background/55 px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-cyber transition-colors hover:bg-cyber/10"
+            className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-card px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-accent"
           >
             {s.label}
             <ExternalLink className="h-3.5 w-3.5" />
@@ -202,11 +202,11 @@ function NatureResultCard({ result, imageUrl, onAgain }: { result: NatureResult;
 function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: ArchaeologyResult; imageUrl: string; onAgain: () => void }) {
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 animate-fade-in">
-      <div className="overflow-hidden rounded-2xl border border-cyber/25 bg-card/80 shadow-sm backdrop-blur cyber-glow">
+      <div className="field-paper overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <div className="relative aspect-square w-full bg-muted sm:aspect-[4/3]">
           <img src={imageUrl} alt="Captured artifact" className="h-full w-full object-cover" />
-          <div className="pointer-events-none absolute inset-0 cyber-grid opacity-30" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/75 via-transparent to-background/25" />
+          <div className="pointer-events-none absolute inset-0 field-grid opacity-20" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/15" />
           <div className="absolute left-3 top-3 flex flex-wrap gap-2">
             <ArchaeologyBadge category={result.archaeologyCategory} />
             <ConfidenceChip confidence={result.confidence} />
@@ -215,27 +215,34 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
 
         <div className="space-y-5 p-5">
           <div>
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-cyber-muted">Preliminary field record</p>
-            <h2 className="font-mono text-2xl font-bold uppercase leading-tight tracking-tight text-cyber cyber-text-glow">{result.objectType}</h2>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Archaeological photo observation</p>
+            <h2 className="text-2xl font-bold leading-tight text-primary">{result.objectType}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{result.material} · {result.possiblePeriod}</p>
             {result.culturalContext && <p className="mt-0.5 text-xs text-muted-foreground">Context: {result.culturalContext}</p>}
           </div>
 
           <InfoGrid result={result} />
 
-          <Panel icon={<ScrollText className="h-4 w-4 text-cyber" />} title="Field note">
+          <Panel icon={<ScrollText className="h-4 w-4 text-primary" />} title="Field note">
             <p className="text-sm leading-relaxed text-foreground/90">{result.fieldNote}</p>
           </Panel>
 
-          <Panel icon={<Pickaxe className="h-4 w-4 text-cyber" />} title="Visible diagnostic features">
+          <Panel icon={<Pickaxe className="h-4 w-4 text-primary" />} title="Observed diagnostic features">
             <BulletList items={result.visibleFeatures} />
           </Panel>
 
           {result.documentationAdvice.length > 0 && (
-            <Panel icon={<Ruler className="h-4 w-4 text-cyber" />} title="Documentation advice">
+            <Panel icon={<Ruler className="h-4 w-4 text-primary" />} title="Next documentation steps">
               <BulletList items={result.documentationAdvice} />
             </Panel>
           )}
+
+          <Panel icon={<ShieldCheck className="h-4 w-4 text-primary" />} title="Authenticity note">
+            <p className="text-sm leading-relaxed text-foreground/90">
+              This photo can support observation, not authentication. Reliable attribution needs measurements,
+              stratigraphic or findspot context, provenance, comparative typology, and expert review.
+            </p>
+          </Panel>
 
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
           <SourceLinks sources={result.sources} />
@@ -243,7 +250,7 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
           <Button
             type="button"
             variant="outline"
-            className="w-full border-cyber/30 bg-background/45 font-mono text-xs uppercase tracking-[0.14em] text-cyber hover:bg-cyber/10"
+            className="w-full border-primary/25 bg-card text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent"
             onClick={() => downloadText(`lensid-${result.objectType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-field-record.txt`, archaeologyReport(result))}
           >
             <Download className="h-4 w-4" /> Export field record
@@ -252,7 +259,7 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
           <Caution confidence={result.confidence} notes={result.notes} archaeology />
         </div>
       </div>
-      <Button onClick={onAgain} className="w-full border border-cyber bg-cyber font-mono uppercase tracking-[0.16em] text-cyber-foreground hover:bg-cyber/90" size="lg">Start new scan</Button>
+      <Button onClick={onAgain} className="w-full border border-primary bg-primary font-semibold uppercase tracking-wide text-primary-foreground hover:bg-primary/90" size="lg">Start new observation</Button>
     </div>
   );
 }
@@ -267,8 +274,8 @@ function InfoGrid({ result }: { result: ArchaeologyResult }) {
   return (
     <div className="grid grid-cols-2 gap-2">
       {rows.map(([label, value]) => (
-        <div key={label} className="rounded-xl border border-cyber/15 bg-background/45 p-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyber-muted">{label}</p>
+        <div key={label} className="rounded-lg border border-border bg-background/55 p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
           <p className="mt-1 text-sm font-medium text-foreground">{value}</p>
         </div>
       ))}
@@ -278,10 +285,10 @@ function InfoGrid({ result }: { result: ArchaeologyResult }) {
 
 function Panel({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-cyber/15 bg-background/45 p-4">
+    <div className="rounded-lg border border-border bg-background/55 p-4">
       <div className="mb-2 flex items-center gap-2">
         {icon}
-        <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-cyber-muted">{title}</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
       </div>
       {children}
     </div>
@@ -292,7 +299,7 @@ function BulletList({ items }: { items: string[] }) {
   if (!items.length) return <p className="text-sm text-muted-foreground">No reliable details visible.</p>;
   return (
     <ul className="space-y-1.5 text-sm text-foreground/90">
-      {items.map((item) => <li key={item} className="flex gap-2"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-cyber" />{item}</li>)}
+      {items.map((item) => <li key={item} className="flex gap-2"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />{item}</li>)}
     </ul>
   );
 }
@@ -303,7 +310,7 @@ function Alternatives({ alternatives, title }: { alternatives: string[]; title: 
     <div>
       <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
       <div className="flex flex-wrap gap-1.5">
-        {alternatives.map((alt) => <span key={alt} className="rounded-md border border-cyber/20 bg-background/60 px-2 py-0.5 font-mono text-xs italic text-foreground/80">{alt}</span>)}
+        {alternatives.map((alt) => <span key={alt} className="rounded-md border border-border bg-background/70 px-2 py-0.5 text-xs italic text-foreground/80">{alt}</span>)}
       </div>
     </div>
   );
@@ -320,7 +327,7 @@ function Caution({ confidence, notes, archaeology }: { confidence: Confidence; n
       )}
       <p className="text-[11px] leading-relaxed text-muted-foreground">
         {archaeology
-          ? "AI-assisted field support. Not authentication, dating proof, legal advice, or final expert classification."
+          ? "AI-assisted archaeological observation. Not authentication, dating proof, legal advice, valuation, provenance, or final expert classification."
           : "AI-assisted identification. Not a substitute for expert advice. No information here is medicinal, edibility, or safety guidance."}
       </p>
     </>
