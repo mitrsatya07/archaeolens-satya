@@ -17,16 +17,17 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-5 py-8">
+    <main className="dark min-h-screen cyber-shell px-5 py-8 text-foreground"><div className="pointer-events-none fixed inset-0 cyber-grid opacity-35" /><div className="relative mx-auto max-w-2xl animate-fade-in">
       <Link
         to="/"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-6 inline-flex items-center gap-1.5 rounded-md border border-cyber/20 bg-background/45 px-3 py-2 font-mono text-xs uppercase tracking-[0.14em] text-cyber hover:bg-cyber/10"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to camera
+        <ArrowLeft className="h-4 w-4" /> Back to scan
       </Link>
 
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground">About LensID</h1>
-      <p className="mt-3 text-muted-foreground">
+      <p className="font-mono text-[10px] uppercase tracking-[0.34em] text-cyber-muted">System brief</p>
+      <h1 className="mt-2 font-mono text-4xl font-black uppercase tracking-tight text-cyber cyber-text-glow">LensID Intel</h1>
+      <p className="mt-3 rounded-xl border border-cyber/15 bg-background/45 p-4 text-muted-foreground backdrop-blur">
         Point your phone or laptop camera at any plant, animal, or mineral on Earth. LensID will identify it
         and show you its scientific name, common name, names in major Indian languages, and links to
         authoritative scientific databases.
@@ -64,7 +65,7 @@ function AboutPage() {
         </ol>
       </section>
 
-      <section className="mt-10 rounded-xl border border-border bg-muted/40 p-5">
+      <section className="mt-10 rounded-xl border border-cyber/20 bg-background/45 p-5 backdrop-blur cyber-glow">
         <div className="mb-2 flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-foreground" />
           <h2 className="text-base font-semibold text-foreground">Honest limits</h2>
@@ -79,13 +80,13 @@ function AboutPage() {
           <li>No images, results, or accounts are stored. v1 is intentionally minimal.</li>
         </ul>
       </section>
-    </main>
+    </div></main>
   );
 }
 
 function Card({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-cyber/20 bg-card/70 p-4 backdrop-blur hover-scale">
       <div className="mb-2 flex items-center gap-2">
         {icon}
         <h3 className="font-semibold text-foreground">{title}</h3>
