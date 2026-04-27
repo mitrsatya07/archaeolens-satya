@@ -160,7 +160,7 @@ export function CameraCapture({ busy, onCapture }: Props) {
           {busy ? (
             <Loader2 className="h-7 w-7 animate-spin text-cyber-foreground" />
           ) : (
-            <Camera className="h-7 w-7 text-foreground" />
+            <ScanLine className="h-7 w-7 text-cyber-foreground" />
           )}
         </button>
 
