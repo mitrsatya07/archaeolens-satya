@@ -11,9 +11,50 @@ import {
   ScrollText,
   Ruler,
   ShieldCheck,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ArchaeologyResult, Confidence, IdentifyResult, NatureResult } from "@/server/identify.functions";
+
+
+function downloadText(filename: string, content: string) {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function archaeologyReport(result: ArchaeologyResult) {
+  return [
+    "LensID Archaeology Field Record",
+    "",
+    `Object type: ${result.objectType}`,
+    `Category: ${result.archaeologyCategory}`,
+    `Material: ${result.material}`,
+    `Possible period: ${result.possiblePeriod}`,
+    result.culturalContext ? `Cultural context: ${result.culturalContext}` : "",
+    `Condition: ${result.condition}`,
+    result.manufacturingTechnique ? `Technique: ${result.manufacturingTechnique}` : "",
+    `Confidence: ${result.confidence}`,
+    "",
+    "Field note:",
+    result.fieldNote,
+    "",
+    "Visible features:",
+    ...result.visibleFeatures.map((x) => `- ${x}`),
+    "",
+    "Documentation advice:",
+    ...result.documentationAdvice.map((x) => `- ${x}`),
+    "",
+    "Sources:",
+    ...result.sources.map((s) => `- ${s.label}: ${s.url}`),
+    "",
+    "Disclaimer: AI-assisted preliminary observation only. Final identification requires context, stratigraphy, measurements, and expert verification.",
+  ].filter(Boolean).join("\n");
+}
 
 const LANG_LABELS: Record<string, string> = {
   hi: "हिन्दी (Hindi)",
@@ -198,6 +239,16 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
 
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
           <SourceLinks sources={result.sources} />
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full border-cyber/30 bg-background/45 font-mono text-xs uppercase tracking-[0.14em] text-cyber hover:bg-cyber/10"
+            onClick={() => downloadText(`lensid-${result.objectType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-field-record.txt`, archaeologyReport(result))}
+          >
+            <Download className="h-4 w-4" /> Export field record
+          </Button>
+
           <Caution confidence={result.confidence} notes={result.notes} archaeology />
         </div>
       </div>
