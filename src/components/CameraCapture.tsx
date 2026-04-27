@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Image as ImageIcon, Loader2, X, ScanLine, Terminal, Crosshair } from "lucide-react";
+import { Image as ImageIcon, Loader2, X, ScanLine, Landmark, Crosshair, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Props {
   busy: boolean;
-  mode: "nature" | "archaeology";
-  onModeChange: (mode: "nature" | "archaeology") => void;
   onCapture: (dataUrl: string) => void;
 }
 
@@ -24,7 +22,7 @@ function downscaleToJpeg(source: HTMLImageElement | HTMLVideoElement, sw: number
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
-export function CameraCapture({ busy, mode, onModeChange, onCapture }: Props) {
+export function CameraCapture({ busy, onCapture }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -109,56 +107,32 @@ export function CameraCapture({ busy, mode, onModeChange, onCapture }: Props) {
         className="absolute inset-0 h-full w-full bg-background object-cover"
       />
 
-      <div className="pointer-events-none absolute inset-0 z-[5] cyber-grid opacity-70" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-background via-background/60 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-36 bg-gradient-to-b from-background via-background/70 to-transparent" />
       <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),0.75rem)]">
-        <div className="rounded-xl border border-cyber/25 bg-background/55 px-3 py-2 backdrop-blur-md cyber-glow">
+        <div className="rounded-lg border border-primary/15 bg-card/90 px-3 py-2 shadow-sm backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            <Terminal className="h-4 w-4 text-cyber" />
-            <h1 className="font-mono text-sm font-bold uppercase tracking-[0.24em] text-cyber cyber-text-glow">LensID</h1>
+            <Landmark className="h-4 w-4 text-primary" />
+            <h1 className="text-sm font-bold uppercase tracking-wide text-primary">ArchaeoLens</h1>
           </div>
-          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-cyber-muted">{mode === "archaeology" ? "artifact · context · field note" : "bio · fauna · geo scan"}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">Photo observation record</p>
         </div>
         <a
           href="/about"
-          className="rounded-md border border-cyber/30 bg-background/55 px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-cyber backdrop-blur-md transition-colors hover:bg-cyber/10"
+          className="rounded-md border border-primary/15 bg-card/90 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-accent"
         >
-          intel
+          method
         </a>
-      </div>
-      <div className="absolute left-4 right-4 top-28 z-20 grid grid-cols-2 gap-2 rounded-xl border border-cyber/20 bg-background/55 p-1 backdrop-blur-md cyber-glow">
-        <button
-          type="button"
-          onClick={() => onModeChange("nature")}
-          disabled={busy}
-          className={`rounded-lg px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
-            mode === "nature" ? "bg-cyber text-cyber-foreground" : "text-cyber-muted hover:bg-cyber/10"
-          }`}
-        >
-          Nature scan
-        </button>
-        <button
-          type="button"
-          onClick={() => onModeChange("archaeology")}
-          disabled={busy}
-          className={`rounded-lg px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
-            mode === "archaeology" ? "bg-cyber text-cyber-foreground" : "text-cyber-muted hover:bg-cyber/10"
-          }`}
-        >
-          Archaeology
-        </button>
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <div className="relative h-72 w-72 max-h-[68vw] max-w-[68vw] border border-cyber/55 cyber-glow">
-          <div className="absolute -left-1 -top-1 h-8 w-8 border-l-2 border-t-2 border-cyber" />
-          <div className="absolute -right-1 -top-1 h-8 w-8 border-r-2 border-t-2 border-cyber" />
-          <div className="absolute -bottom-1 -left-1 h-8 w-8 border-b-2 border-l-2 border-cyber" />
-          <div className="absolute -bottom-1 -right-1 h-8 w-8 border-b-2 border-r-2 border-cyber" />
-          <div className="absolute left-0 right-0 top-1/2 h-px bg-cyber/45" />
-          <div className="absolute bottom-0 left-1/2 top-0 w-px bg-cyber/45" />
-          <div className="absolute inset-x-4 top-1/2 h-px cyber-scanline" />
-          <Crosshair className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-cyber/80" />
+        <div className="relative h-72 w-72 max-h-[68vw] max-w-[68vw] border border-primary/45 bg-background/5">
+          <div className="absolute -left-1 -top-1 h-8 w-8 border-l-2 border-t-2 border-primary/70" />
+          <div className="absolute -right-1 -top-1 h-8 w-8 border-r-2 border-t-2 border-primary/70" />
+          <div className="absolute -bottom-1 -left-1 h-8 w-8 border-b-2 border-l-2 border-primary/70" />
+          <div className="absolute -bottom-1 -right-1 h-8 w-8 border-b-2 border-r-2 border-primary/70" />
+          <div className="absolute inset-x-6 top-1/2 h-px bg-primary/35" />
+          <div className="absolute bottom-6 left-1/2 top-6 w-px bg-primary/35" />
+          <Crosshair className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-primary/70" />
         </div>
       </div>
 
@@ -169,7 +143,7 @@ export function CameraCapture({ busy, mode, onModeChange, onCapture }: Props) {
           onClick={() => fileRef.current?.click()}
           disabled={busy}
           aria-label="Upload photo"
-          className="flex h-12 w-12 items-center justify-center rounded-md border border-cyber/30 bg-background/60 text-cyber backdrop-blur-md transition-colors hover:bg-cyber/10 disabled:opacity-50"
+          className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/20 bg-card/90 text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-accent disabled:opacity-50"
         >
           <ImageIcon className="h-5 w-5" />
         </button>
@@ -179,28 +153,28 @@ export function CameraCapture({ busy, mode, onModeChange, onCapture }: Props) {
           onClick={handleShutter}
           disabled={busy || !ready}
           aria-label="Capture and identify"
-          className="group relative flex h-20 w-20 items-center justify-center rounded-md border border-cyber bg-cyber text-cyber-foreground shadow-[0_0_34px_color-mix(in_oklab,var(--cyber)_40%,transparent)] transition-transform active:scale-95 disabled:opacity-60"
+          className="group relative flex h-20 w-20 items-center justify-center rounded-md border border-primary bg-primary text-primary-foreground shadow-md transition-transform active:scale-95 disabled:opacity-60"
         >
           {busy ? (
-            <Loader2 className="h-7 w-7 animate-spin text-cyber-foreground" />
+            <Loader2 className="h-7 w-7 animate-spin text-primary-foreground" />
           ) : (
-            <ScanLine className="h-7 w-7 text-cyber-foreground" />
+            <ScanLine className="h-7 w-7 text-primary-foreground" />
           )}
         </button>
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-cyber/10 bg-background/30 font-mono text-[10px] uppercase tracking-widest text-cyber-muted">
-          {mode === "archaeology" ? "record" : "armed"}
+        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/10 bg-card/70 text-primary/70 shadow-sm">
+          <Ruler className="h-4 w-4" />
         </div>
       </div>
 
       {!ready && !error && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/70 font-mono text-sm text-cyber backdrop-blur-sm">
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/75 text-sm text-primary backdrop-blur-sm">
           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Starting camera…
         </div>
       )}
 
       {error && (
-        <div className="absolute inset-x-4 top-24 z-30 rounded-xl border border-destructive/30 bg-background/80 p-4 text-sm text-foreground backdrop-blur-md cyber-glow">
+        <div className="absolute inset-x-4 top-24 z-30 rounded-lg border border-destructive/30 bg-card/95 p-4 text-sm text-foreground shadow-sm backdrop-blur-sm">
           <div className="mb-3 flex items-start gap-2">
             <X className="mt-0.5 h-4 w-4 shrink-0" />
             <p>{error}</p>
