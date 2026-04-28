@@ -159,16 +159,33 @@ export function IdentifyResultCard({
   result,
   imageUrl,
   onAgain,
+  similarExamples = [],
 }: {
   result: IdentifyResult;
   imageUrl: string;
   onAgain: () => void;
+  similarExamples?: SimilarExample[];
 }) {
   if (result.mode === "archaeology") {
-    return <ArchaeologyResultCard result={result} imageUrl={imageUrl} onAgain={onAgain} />;
+    return (
+      <ArchaeologyResultCard
+        result={result}
+        imageUrl={imageUrl}
+        onAgain={onAgain}
+        similarExamples={similarExamples}
+      />
+    );
   }
   return <NatureResultCard result={result} imageUrl={imageUrl} onAgain={onAgain} />;
 }
+
+type SimilarExample = {
+  imageUrl: string;
+  objectType: string;
+  material: string;
+  possiblePeriod: string;
+  confidence: Confidence;
+};
 
 function Frame({ imageUrl, children }: { imageUrl: string; children: React.ReactNode }) {
   return (
@@ -267,10 +284,12 @@ function ArchaeologyResultCard({
   result,
   imageUrl,
   onAgain,
+  similarExamples,
 }: {
   result: ArchaeologyResult;
   imageUrl: string;
   onAgain: () => void;
+  similarExamples: SimilarExample[];
 }) {
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 animate-fade-in">
@@ -340,6 +359,7 @@ function ArchaeologyResultCard({
           </Panel>
 
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
+          <SimilarExamples examples={similarExamples} />
           <SourceLinks sources={result.sources} />
 
           <Button
@@ -366,6 +386,29 @@ function ArchaeologyResultCard({
       >
         Start new observation
       </Button>
+    </div>
+  );
+}
+
+function SimilarExamples({ examples }: { examples: SimilarExample[] }) {
+  if (!examples.length) return null;
+  return (
+    <div>
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Similar previously reported examples
+      </h3>
+      <div className="grid grid-cols-2 gap-2">
+        {examples.map((example, index) => (
+          <div key={`${example.objectType}-${index}`} className="overflow-hidden rounded-lg border border-border bg-background/55">
+            <img src={example.imageUrl} alt={`Previously reported ${example.objectType}`} className="aspect-square w-full object-cover" />
+            <div className="space-y-1 p-2">
+              <p className="text-xs font-semibold text-foreground">{example.objectType}</p>
+              <p className="text-[11px] text-muted-foreground">{example.material}</p>
+              <p className="text-[10px] text-muted-foreground">{example.possiblePeriod}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
