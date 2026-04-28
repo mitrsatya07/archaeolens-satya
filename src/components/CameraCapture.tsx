@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 interface Props {
   busy: boolean;
   onCapture: (dataUrl: string) => void;
+  onClose?: () => void;
 }
 
 const MAX_DIM = 1024;
@@ -22,7 +23,7 @@ function downscaleToJpeg(source: HTMLImageElement | HTMLVideoElement, sw: number
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
-export function CameraCapture({ busy, onCapture }: Props) {
+export function CameraCapture({ busy, onCapture, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -107,43 +108,55 @@ export function CameraCapture({ busy, onCapture }: Props) {
         className="absolute inset-0 h-full w-full bg-background object-cover"
       />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-36 bg-gradient-to-b from-background via-background/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28 bg-gradient-to-b from-foreground/45 to-transparent" />
       <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),0.75rem)]">
-        <div className="rounded-lg border border-primary/15 bg-card/90 px-3 py-2 shadow-sm backdrop-blur-sm">
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={busy}
+            aria-label="Close camera"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 bg-foreground/30 text-primary-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-foreground/45 disabled:opacity-60"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        ) : (
+          <div className="h-10 w-10" />
+        )}
+        <div className="rounded-full border border-primary-foreground/25 bg-foreground/25 px-3 py-1.5 shadow-sm backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            <Landmark className="h-4 w-4 text-primary" />
-            <h1 className="text-sm font-bold uppercase tracking-wide text-primary">ArchaeoLens</h1>
+            <Landmark className="h-4 w-4 text-primary-foreground" />
+            <h1 className="text-xs font-bold uppercase tracking-wide text-primary-foreground">Field Camera</h1>
           </div>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">Photo observation record</p>
         </div>
         <a
           href="/about"
-          className="rounded-md border border-primary/15 bg-card/90 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-accent"
+          className="rounded-full border border-primary-foreground/25 bg-foreground/25 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-foreground/45"
         >
           method
         </a>
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <div className="relative h-72 w-72 max-h-[68vw] max-w-[68vw] border border-primary/45 bg-background/5">
-          <div className="absolute -left-1 -top-1 h-8 w-8 border-l-2 border-t-2 border-primary/70" />
-          <div className="absolute -right-1 -top-1 h-8 w-8 border-r-2 border-t-2 border-primary/70" />
-          <div className="absolute -bottom-1 -left-1 h-8 w-8 border-b-2 border-l-2 border-primary/70" />
-          <div className="absolute -bottom-1 -right-1 h-8 w-8 border-b-2 border-r-2 border-primary/70" />
-          <div className="absolute inset-x-6 top-1/2 h-px bg-primary/35" />
-          <div className="absolute bottom-6 left-1/2 top-6 w-px bg-primary/35" />
-          <Crosshair className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-primary/70" />
+        <div className="relative h-[62vmin] w-[62vmin] min-h-60 min-w-60 max-h-[430px] max-w-[430px]">
+          <div className="absolute inset-0 rounded-[2rem] border border-primary-foreground/45" />
+          <div className="absolute -left-1 -top-1 h-12 w-12 rounded-tl-[2rem] border-l-4 border-t-4 border-primary-foreground" />
+          <div className="absolute -right-1 -top-1 h-12 w-12 rounded-tr-[2rem] border-r-4 border-t-4 border-primary-foreground" />
+          <div className="absolute -bottom-1 -left-1 h-12 w-12 rounded-bl-[2rem] border-b-4 border-l-4 border-primary-foreground" />
+          <div className="absolute -bottom-1 -right-1 h-12 w-12 rounded-br-[2rem] border-b-4 border-r-4 border-primary-foreground" />
+          <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary-foreground/60" />
+          <Crosshair className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-primary-foreground" />
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-44 bg-gradient-to-t from-background via-background/80 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-44 bg-gradient-to-t from-foreground/55 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-around px-6 pb-[max(env(safe-area-inset-bottom),1.25rem)] pt-4">
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy}
           aria-label="Upload photo"
-          className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/20 bg-card/90 text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-accent disabled:opacity-50"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-primary-foreground/25 bg-foreground/25 text-primary-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-foreground/45 disabled:opacity-50"
         >
           <ImageIcon className="h-5 w-5" />
         </button>
@@ -153,7 +166,7 @@ export function CameraCapture({ busy, onCapture }: Props) {
           onClick={handleShutter}
           disabled={busy || !ready}
           aria-label="Capture and identify"
-          className="group relative flex h-20 w-20 items-center justify-center rounded-md border border-primary bg-primary text-primary-foreground shadow-md transition-transform active:scale-95 disabled:opacity-60"
+          className="group relative flex h-20 w-20 items-center justify-center rounded-full border-4 border-primary-foreground bg-primary text-primary-foreground shadow-md transition-transform active:scale-95 disabled:opacity-60"
         >
           {busy ? (
             <Loader2 className="h-7 w-7 animate-spin text-primary-foreground" />
@@ -162,7 +175,7 @@ export function CameraCapture({ busy, onCapture }: Props) {
           )}
         </button>
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/10 bg-card/70 text-primary/70 shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary-foreground/20 bg-foreground/20 text-primary-foreground/80 shadow-sm backdrop-blur-sm">
           <Ruler className="h-4 w-4" />
         </div>
       </div>
