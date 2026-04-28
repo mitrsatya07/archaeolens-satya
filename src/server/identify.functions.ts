@@ -437,7 +437,7 @@ export const identifyImage = createServerFn({ method: "POST" })
           notes: asString(parsed.notes) || undefined,
           sources: buildNatureSources(
             (parsed.category as Category) ?? "unknown",
-            parsed.scientificName || parsed.englishName || "",
+            asString(parsed.scientificName) || asString(parsed.englishName),
           ),
         };
 
