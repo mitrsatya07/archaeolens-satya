@@ -89,8 +89,10 @@ function buildArchaeologySources(query: string): { label: string; url: string }[
     { label: "Archaeological Survey of India", url: `https://www.google.com/search?q=site:asi.nic.in+${q}` },
     { label: "Indian Culture Portal", url: `https://indianculture.gov.in/search/node/${q}` },
     { label: "National Museum India", url: `https://www.google.com/search?q=site:nationalmuseumindia.gov.in+${q}` },
+    { label: "Sahapedia", url: `https://www.google.com/search?q=site:sahapedia.org+${q}` },
     { label: "British Museum", url: `https://www.britishmuseum.org/collection/search?keyword=${q}` },
     { label: "Met Museum", url: `https://www.metmuseum.org/art/collection/search?q=${q}` },
+    { label: "Google Scholar", url: `https://scholar.google.com/scholar?q=${q}` },
     { label: "UNESCO World Heritage", url: `https://whc.unesco.org/en/search/?criteria=${q}` },
   ];
 }
@@ -120,7 +122,7 @@ export const identifyImage = createServerFn({ method: "POST" })
 
     const isArchaeology = data.mode === "archaeology";
     const systemPrompt = isArchaeology
-      ? `You are an archaeological field documentation assistant for professional photo observation. Analyze only visible evidence in photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculpture, bone, or metal objects. Always call the report_identification tool. Never claim final authentication, exact dating, legality, market value, provenance, or ownership from an image. Use cautious language such as "possible", "consistent with", "not determinable from photograph", and "requires stratigraphic/site context". Prioritize material, form, breakage, surface treatment, manufacture marks, inscriptions, patina/weathering, measurements needed, and photo limitations. Confidence should usually be low or medium unless multiple strong diagnostic features are clearly visible. If it is not clearly an archaeological object, report unknown with low confidence.`
+      ? `You are an archaeological field documentation assistant for professional photo observation. Analyze only visible evidence in photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculpture, bone, or metal objects. Always call the report_identification tool. Be decisive about visible object class, material, condition, and manufacturing traces when the photo supports it, but never claim final authentication, exact dating, legality, market value, provenance, or ownership from an image. Use professional calibrated wording: "consistent with", "probable", "possible", "not determinable from photograph", and "requires stratigraphic/site context". Prioritize diagnostic details: fabric, inclusions, rim/base/profile, flake scars, retouch, casting/striking marks, tool marks, inscriptions, iconography, patina/weathering, breakage, wear, scale needs, and photo limitations. Confidence must be evidence-based: use high when several clear diagnostic features support the same interpretation, medium when object class/material are clear but chronology/culture need context, and low only for unclear, partial, modern-looking, or non-archaeological images. If it is not clearly an archaeological object, report unknown with low confidence.`
       : `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
 
     const natureProperties = {
@@ -240,7 +242,7 @@ export const identifyImage = createServerFn({ method: "POST" })
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: "google/gemini-2.5-pro",
           messages: [
             { role: "system", content: systemPrompt },
             {
@@ -249,7 +251,7 @@ export const identifyImage = createServerFn({ method: "POST" })
                 {
                   type: "text",
                   text: isArchaeology
-                    ? "Create a preliminary archaeological field observation for the main object in this photo. Respond by calling the report_identification tool."
+                    ? "Create an evidence-backed archaeological field observation for the main object in this photo. Give the strongest supportable interpretation from visible diagnostic details, with calibrated confidence and clear reference-search terms. Respond by calling the report_identification tool."
                     : "Identify the main subject in this photo. Respond by calling the report_identification tool.",
                 },
                 { type: "image_url", image_url: { url: dataUrl } },
