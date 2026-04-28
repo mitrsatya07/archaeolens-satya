@@ -14,8 +14,12 @@ import {
   Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ArchaeologyResult, Confidence, IdentifyResult, NatureResult } from "@/server/identify.functions";
-
+import type {
+  ArchaeologyResult,
+  Confidence,
+  IdentifyResult,
+  NatureResult,
+} from "@/server/identify.functions";
 
 function downloadText(filename: string, content: string) {
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
@@ -53,7 +57,9 @@ function archaeologyReport(result: ArchaeologyResult) {
     ...result.sources.map((s) => `- ${s.label}: ${s.url}`),
     "",
     "Authenticity note: Photo observation is not authentication. Reliable attribution requires context, stratigraphy, measurements, provenance, comparative typology, and expert review.",
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 const LANG_LABELS: Record<string, string> = {
@@ -68,14 +74,21 @@ const LANG_LABELS: Record<string, string> = {
 };
 
 function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence"] }) {
-  const label = confidence === "high" ? "strong evidence" : confidence === "medium" ? "moderate evidence" : "limited evidence";
+  const label =
+    confidence === "high"
+      ? "strong evidence"
+      : confidence === "medium"
+        ? "moderate evidence"
+        : "limited evidence";
   const map = {
     high: "bg-leaf/15 text-leaf border-leaf/40",
     medium: "bg-warn/20 text-warn-foreground border-warn/40",
     low: "bg-destructive/10 text-destructive border-destructive/30",
   };
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${map[confidence]}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${map[confidence]}`}
+    >
       <Sparkles className="h-3 w-3" />
       {label}
     </span>
@@ -87,19 +100,31 @@ function NatureCategoryBadge({ category }: { category: NatureResult["category"] 
     plant: { icon: Leaf, label: "PLANT", cls: "bg-leaf/15 text-leaf border-leaf/40" },
     animal: { icon: PawPrint, label: "ANIMAL", cls: "bg-fauna/15 text-fauna border-fauna/40" },
     mineral: { icon: Gem, label: "MINERAL", cls: "bg-mineral/15 text-mineral border-mineral/40" },
-    unknown: { icon: HelpCircle, label: "UNKNOWN", cls: "bg-muted text-muted-foreground border-border" },
+    unknown: {
+      icon: HelpCircle,
+      label: "UNKNOWN",
+      cls: "bg-muted text-muted-foreground border-border",
+    },
   } as const;
   const { icon: Icon, label, cls } = map[category];
   return <Badge icon={<Icon className="h-3.5 w-3.5" />} label={label} cls={cls} />;
 }
 
 function ArchaeologyBadge({ category }: { category: ArchaeologyResult["archaeologyCategory"] }) {
-  return <Badge icon={<Landmark className="h-3.5 w-3.5" />} label={category.replace("_", " ")} cls="bg-primary/10 text-primary border-primary/30" />;
+  return (
+    <Badge
+      icon={<Landmark className="h-3.5 w-3.5" />}
+      label={category.replace("_", " ")}
+      cls="bg-primary/10 text-primary border-primary/30"
+    />
+  );
 }
 
 function Badge({ icon, label, cls }: { icon: React.ReactNode; label: string; cls: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${cls}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${cls}`}
+    >
       {icon}
       {label}
     </span>
@@ -109,7 +134,9 @@ function Badge({ icon, label, cls }: { icon: React.ReactNode; label: string; cls
 function SourceLinks({ sources }: { sources: { label: string; url: string }[] }) {
   return (
     <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Research references</h3>
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Research references
+      </h3>
       <div className="flex flex-wrap gap-2">
         {sources.map((s) => (
           <a
@@ -128,7 +155,15 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
   );
 }
 
-export function IdentifyResultCard({ result, imageUrl, onAgain }: { result: IdentifyResult; imageUrl: string; onAgain: () => void }) {
+export function IdentifyResultCard({
+  result,
+  imageUrl,
+  onAgain,
+}: {
+  result: IdentifyResult;
+  imageUrl: string;
+  onAgain: () => void;
+}) {
   if (result.mode === "archaeology") {
     return <ArchaeologyResultCard result={result} imageUrl={imageUrl} onAgain={onAgain} />;
   }
@@ -148,7 +183,15 @@ function Frame({ imageUrl, children }: { imageUrl: string; children: React.React
   );
 }
 
-function NatureResultCard({ result, imageUrl, onAgain }: { result: NatureResult; imageUrl: string; onAgain: () => void }) {
+function NatureResultCard({
+  result,
+  imageUrl,
+  onAgain,
+}: {
+  result: NatureResult;
+  imageUrl: string;
+  onAgain: () => void;
+}) {
   const localEntries = Object.entries(result.localNames).filter(([, v]) => !!v);
 
   return (
@@ -166,19 +209,33 @@ function NatureResultCard({ result, imageUrl, onAgain }: { result: NatureResult;
 
         <div className="space-y-5 p-5">
           <div>
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-cyber-muted">Identification lock</p>
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.28em] text-cyber-muted">
+              Identification lock
+            </p>
             <h2 className="font-mono text-2xl font-bold uppercase leading-tight tracking-tight text-cyber cyber-text-glow">
               {result.scientificName || "Unknown species"}
             </h2>
-            {result.englishName && <p className="mt-1 text-base font-medium text-foreground">{result.englishName}</p>}
-            {result.family && <p className="mt-0.5 text-xs text-muted-foreground">Classification: {result.family}</p>}
+            {result.englishName && (
+              <p className="mt-1 text-base font-medium text-foreground">{result.englishName}</p>
+            )}
+            {result.family && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Classification: {result.family}
+              </p>
+            )}
           </div>
 
-          {result.summary && <div className="rounded-xl border border-cyber/15 bg-background/45 p-4"><p className="text-sm leading-relaxed text-foreground/90">{result.summary}</p></div>}
+          {result.summary && (
+            <div className="rounded-xl border border-cyber/15 bg-background/45 p-4">
+              <p className="text-sm leading-relaxed text-foreground/90">{result.summary}</p>
+            </div>
+          )}
 
           {localEntries.length > 0 && (
             <div className="rounded-xl border border-cyber/15 bg-background/45 p-3">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Local aliases</h3>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Local aliases
+              </h3>
               <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                 {localEntries.map(([code, name]) => (
                   <li key={code} className="flex items-baseline justify-between gap-2 text-sm">
@@ -195,12 +252,26 @@ function NatureResultCard({ result, imageUrl, onAgain }: { result: NatureResult;
           <Caution confidence={result.confidence} notes={result.notes} archaeology={false} />
         </div>
       </div>
-      <Button onClick={onAgain} className="w-full border border-cyber bg-cyber font-mono uppercase tracking-[0.16em] text-cyber-foreground hover:bg-cyber/90" size="lg">Start new scan</Button>
+      <Button
+        onClick={onAgain}
+        className="w-full border border-cyber bg-cyber font-mono uppercase tracking-[0.16em] text-cyber-foreground hover:bg-cyber/90"
+        size="lg"
+      >
+        Start new scan
+      </Button>
     </div>
   );
 }
 
-function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: ArchaeologyResult; imageUrl: string; onAgain: () => void }) {
+function ArchaeologyResultCard({
+  result,
+  imageUrl,
+  onAgain,
+}: {
+  result: ArchaeologyResult;
+  imageUrl: string;
+  onAgain: () => void;
+}) {
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 animate-fade-in">
       <div className="field-paper overflow-hidden rounded-xl border border-border bg-card shadow-sm">
@@ -216,10 +287,18 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
 
         <div className="space-y-5 p-5">
           <div>
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Archaeological photo observation</p>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Archaeological photo observation
+            </p>
             <h2 className="text-2xl font-bold leading-tight text-primary">{result.objectType}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{result.material} · {result.possiblePeriod}</p>
-            {result.culturalContext && <p className="mt-0.5 text-xs text-muted-foreground">Context: {result.culturalContext}</p>}
+            <p className="mt-1 text-sm text-muted-foreground">
+              {result.material} · {result.possiblePeriod}
+            </p>
+            {result.culturalContext && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Context: {result.culturalContext}
+              </p>
+            )}
           </div>
 
           <InfoGrid result={result} />
@@ -228,27 +307,35 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
             <p className="text-sm leading-relaxed text-foreground/90">{result.fieldNote}</p>
           </Panel>
 
-          <Panel icon={<Pickaxe className="h-4 w-4 text-primary" />} title="Observed diagnostic features">
+          <Panel
+            icon={<Pickaxe className="h-4 w-4 text-primary" />}
+            title="Observed diagnostic features"
+          >
             <BulletList items={result.visibleFeatures} />
           </Panel>
 
           {result.documentationAdvice.length > 0 && (
-            <Panel icon={<Ruler className="h-4 w-4 text-primary" />} title="Next documentation steps">
+            <Panel
+              icon={<Ruler className="h-4 w-4 text-primary" />}
+              title="Next documentation steps"
+            >
               <BulletList items={result.documentationAdvice} />
             </Panel>
           )}
 
           <Panel icon={<ShieldCheck className="h-4 w-4 text-primary" />} title="Authenticity note">
             <p className="text-sm leading-relaxed text-foreground/90">
-              The confidence level reflects visible diagnostic evidence only. Final authentication still requires measurements,
-              findspot or stratigraphic context, provenance, comparative typology, conservation review, and expert confirmation.
+              The confidence level reflects visible diagnostic evidence only. Final authentication
+              still requires measurements, findspot or stratigraphic context, provenance,
+              comparative typology, conservation review, and expert confirmation.
             </p>
           </Panel>
 
           <Panel icon={<LibraryIcon />} title="Reference workflow">
             <p className="text-sm leading-relaxed text-foreground/90">
-              Use the links below to compare forms, materials, inscriptions, and typologies against museum and heritage records.
-              Matching references strengthen interpretation, but they are not proof of origin or date by themselves.
+              Use the links below to compare forms, materials, inscriptions, and typologies against
+              museum and heritage records. Matching references strengthen interpretation, but they
+              are not proof of origin or date by themselves.
             </p>
           </Panel>
 
@@ -259,7 +346,12 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
             type="button"
             variant="outline"
             className="w-full border-primary/25 bg-card text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent"
-            onClick={() => downloadText(`archaeolens-${result.objectType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-field-record.txt`, archaeologyReport(result))}
+            onClick={() =>
+              downloadText(
+                `archaeolens-${result.objectType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-field-record.txt`,
+                archaeologyReport(result),
+              )
+            }
           >
             <Download className="h-4 w-4" /> Export field record
           </Button>
@@ -267,7 +359,13 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
           <Caution confidence={result.confidence} notes={result.notes} archaeology />
         </div>
       </div>
-      <Button onClick={onAgain} className="w-full border border-primary bg-primary font-semibold uppercase tracking-wide text-primary-foreground hover:bg-primary/90" size="lg">Start new observation</Button>
+      <Button
+        onClick={onAgain}
+        className="w-full border border-primary bg-primary font-semibold uppercase tracking-wide text-primary-foreground hover:bg-primary/90"
+        size="lg"
+      >
+        Start new observation
+      </Button>
     </div>
   );
 }
@@ -287,7 +385,9 @@ function InfoGrid({ result }: { result: ArchaeologyResult }) {
     <div className="grid grid-cols-2 gap-2">
       {rows.map(([label, value]) => (
         <div key={label} className="rounded-lg border border-border bg-background/55 p-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {label}
+          </p>
           <p className="mt-1 text-sm font-medium text-foreground">{value}</p>
         </div>
       ))}
@@ -295,12 +395,22 @@ function InfoGrid({ result }: { result: ArchaeologyResult }) {
   );
 }
 
-function Panel({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+function Panel({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-lg border border-border bg-background/55 p-4">
       <div className="mb-2 flex items-center gap-2">
         {icon}
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {title}
+        </h3>
       </div>
       {children}
     </div>
@@ -308,10 +418,16 @@ function Panel({ icon, title, children }: { icon: React.ReactNode; title: string
 }
 
 function BulletList({ items }: { items: string[] }) {
-  if (!items.length) return <p className="text-sm text-muted-foreground">No reliable details visible.</p>;
+  if (!items.length)
+    return <p className="text-sm text-muted-foreground">No reliable details visible.</p>;
   return (
     <ul className="space-y-1.5 text-sm text-foreground/90">
-      {items.map((item) => <li key={item} className="flex gap-2"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />{item}</li>)}
+      {items.map((item) => (
+        <li key={item} className="flex gap-2">
+          <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
+          {item}
+        </li>
+      ))}
     </ul>
   );
 }
@@ -320,21 +436,47 @@ function Alternatives({ alternatives, title }: { alternatives: string[]; title: 
   if (!alternatives.length) return null;
   return (
     <div>
-      <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
+      <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </h3>
       <div className="flex flex-wrap gap-1.5">
-        {alternatives.map((alt) => <span key={alt} className="rounded-md border border-border bg-background/70 px-2 py-0.5 text-xs italic text-foreground/80">{alt}</span>)}
+        {alternatives.map((alt) => (
+          <span
+            key={alt}
+            className="rounded-md border border-border bg-background/70 px-2 py-0.5 text-xs italic text-foreground/80"
+          >
+            {alt}
+          </span>
+        ))}
       </div>
     </div>
   );
 }
 
-function Caution({ confidence, notes, archaeology }: { confidence: Confidence; notes?: string; archaeology: boolean }) {
+function Caution({
+  confidence,
+  notes,
+  archaeology,
+}: {
+  confidence: Confidence;
+  notes?: string;
+  archaeology: boolean;
+}) {
   return (
     <>
       {(confidence === "low" || notes || archaeology) && (
         <div className="flex items-start gap-2 rounded-lg border border-warn/40 bg-warn/15 p-3 text-xs text-warn-foreground">
-          {archaeology ? <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" /> : <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />}
-          <p>{notes ?? (archaeology ? "Preliminary AI-assisted observation only. Final identification requires archaeological context, measurements, stratigraphy, and expert verification." : "Low confidence — please verify with the linked scientific sources before relying on this.")}</p>
+          {archaeology ? (
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : (
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          )}
+          <p>
+            {notes ??
+              (archaeology
+                ? "Preliminary AI-assisted observation only. Final identification requires archaeological context, measurements, stratigraphy, and expert verification."
+                : "Low confidence — please verify with the linked scientific sources before relying on this.")}
+          </p>
         </div>
       )}
       <p className="text-[11px] leading-relaxed text-muted-foreground">

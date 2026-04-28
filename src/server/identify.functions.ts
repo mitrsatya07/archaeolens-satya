@@ -62,7 +62,10 @@ export interface ArchaeologyResult {
 
 export type IdentifyResult = NatureResult | ArchaeologyResult;
 
-function buildNatureSources(category: Category, scientific: string): { label: string; url: string }[] {
+function buildNatureSources(
+  category: Category,
+  scientific: string,
+): { label: string; url: string }[] {
   const q = encodeURIComponent(scientific);
   const wiki = `https://en.wikipedia.org/wiki/Special:Search?search=${q}`;
   const sources: { label: string; url: string }[] = [{ label: "Wikipedia", url: wiki }];
@@ -86,11 +89,20 @@ function buildNatureSources(category: Category, scientific: string): { label: st
 function buildArchaeologySources(query: string): { label: string; url: string }[] {
   const q = encodeURIComponent(query || "archaeology artifact");
   return [
-    { label: "Archaeological Survey of India", url: `https://www.google.com/search?q=site:asi.nic.in+${q}` },
+    {
+      label: "Archaeological Survey of India",
+      url: `https://www.google.com/search?q=site:asi.nic.in+${q}`,
+    },
     { label: "Indian Culture Portal", url: `https://indianculture.gov.in/search/node/${q}` },
-    { label: "National Museum India", url: `https://www.google.com/search?q=site:nationalmuseumindia.gov.in+${q}` },
+    {
+      label: "National Museum India",
+      url: `https://www.google.com/search?q=site:nationalmuseumindia.gov.in+${q}`,
+    },
     { label: "Sahapedia", url: `https://www.google.com/search?q=site:sahapedia.org+${q}` },
-    { label: "British Museum", url: `https://www.britishmuseum.org/collection/search?keyword=${q}` },
+    {
+      label: "British Museum",
+      url: `https://www.britishmuseum.org/collection/search?keyword=${q}`,
+    },
     { label: "Met Museum", url: `https://www.metmuseum.org/art/collection/search?q=${q}` },
     { label: "Google Scholar", url: `https://scholar.google.com/scholar?q=${q}` },
     { label: "UNESCO World Heritage", url: `https://whc.unesco.org/en/search/?criteria=${q}` },
@@ -126,73 +138,125 @@ export const identifyImage = createServerFn({ method: "POST" })
       : `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
 
     const natureProperties = {
-            category: {
-              type: "string",
-              enum: ["plant", "animal", "mineral", "unknown"],
-              description: "What kind of subject is in the image.",
-            },
-            scientificName: {
-              type: "string",
-              description: "Binomial scientific name (Latin) or mineral species name. Empty if unknown.",
-            },
-            englishName: {
-              type: "string",
-              description: "Common English name. Empty if unknown.",
-            },
-            family: {
-              type: "string",
-              description: "Taxonomic family or mineral group, if relevant.",
-            },
-            localNames: {
-              type: "object",
-              description: "Common name in major Indian languages, by ISO code.",
-              properties: {
-                hi: { type: "string", description: "Hindi" },
-                ta: { type: "string", description: "Tamil" },
-                te: { type: "string", description: "Telugu" },
-                bn: { type: "string", description: "Bengali" },
-                mr: { type: "string", description: "Marathi" },
-                kn: { type: "string", description: "Kannada" },
-                ml: { type: "string", description: "Malayalam" },
-                gu: { type: "string", description: "Gujarati" },
-              },
-              additionalProperties: false,
-            },
-            summary: {
-              type: "string",
-              description: "3-5 sentence factual description.",
-            },
-            confidence: {
-              type: "string",
-              enum: ["high", "medium", "low"],
-            },
-            alternatives: {
-              type: "array",
-              items: { type: "string" },
-              description: "Up to 3 alternative scientific names if uncertain.",
-            },
-            notes: {
-              type: "string",
-              description: "Optional caveat for the user (e.g., poor lighting, partial view).",
-            },
-          };
+      category: {
+        type: "string",
+        enum: ["plant", "animal", "mineral", "unknown"],
+        description: "What kind of subject is in the image.",
+      },
+      scientificName: {
+        type: "string",
+        description: "Binomial scientific name (Latin) or mineral species name. Empty if unknown.",
+      },
+      englishName: {
+        type: "string",
+        description: "Common English name. Empty if unknown.",
+      },
+      family: {
+        type: "string",
+        description: "Taxonomic family or mineral group, if relevant.",
+      },
+      localNames: {
+        type: "object",
+        description: "Common name in major Indian languages, by ISO code.",
+        properties: {
+          hi: { type: "string", description: "Hindi" },
+          ta: { type: "string", description: "Tamil" },
+          te: { type: "string", description: "Telugu" },
+          bn: { type: "string", description: "Bengali" },
+          mr: { type: "string", description: "Marathi" },
+          kn: { type: "string", description: "Kannada" },
+          ml: { type: "string", description: "Malayalam" },
+          gu: { type: "string", description: "Gujarati" },
+        },
+        additionalProperties: false,
+      },
+      summary: {
+        type: "string",
+        description: "3-5 sentence factual description.",
+      },
+      confidence: {
+        type: "string",
+        enum: ["high", "medium", "low"],
+      },
+      alternatives: {
+        type: "array",
+        items: { type: "string" },
+        description: "Up to 3 alternative scientific names if uncertain.",
+      },
+      notes: {
+        type: "string",
+        description: "Optional caveat for the user (e.g., poor lighting, partial view).",
+      },
+    };
 
     const archaeologyProperties = {
       archaeologyCategory: {
         type: "string",
-        enum: ["pottery", "lithic", "coin", "inscription", "rock_art", "bone", "metal", "terracotta", "brick", "sculpture", "artifact", "unknown"],
+        enum: [
+          "pottery",
+          "lithic",
+          "coin",
+          "inscription",
+          "rock_art",
+          "bone",
+          "metal",
+          "terracotta",
+          "brick",
+          "sculpture",
+          "artifact",
+          "unknown",
+        ],
       },
-      objectType: { type: "string", description: "Likely object type from visible evidence only, e.g. possible pottery sherd, blade, coin, brick fragment." },
-      material: { type: "string", description: "Visible material: ceramic, stone, copper alloy, iron, terracotta, bone, pigment, etc." },
-      possiblePeriod: { type: "string", description: "Possible broad chronology only if visible diagnostic evidence supports it; otherwise say not determinable from photograph." },
-      culturalContext: { type: "string", description: "Possible cultural context only if visible and cautiously inferable; otherwise leave empty." },
-      visibleFeatures: { type: "array", items: { type: "string" }, description: "Visible diagnostic features, including form, surface, breakage, marks, inscription traces, wear, patina, or limitations." },
-      condition: { type: "string", description: "Preservation, wear, breaks, patina, abrasion, weathering." },
-      manufacturingTechnique: { type: "string", description: "Wheel-made, handmade, cast, struck, flaked, carved, engraved, painted etc." },
-      documentationAdvice: { type: "array", items: { type: "string" }, description: "Next steps: scale, context, measurements, angles, rim/base photos, etc." },
-      fieldNote: { type: "string", description: "Professional field observation paragraph, 3-5 sentences. Be realistic and cautious; state what cannot be determined from the photograph." },
+      objectType: {
+        type: "string",
+        description:
+          "Likely object type from visible evidence only, e.g. possible pottery sherd, blade, coin, brick fragment.",
+      },
+      material: {
+        type: "string",
+        description:
+          "Visible material: ceramic, stone, copper alloy, iron, terracotta, bone, pigment, etc.",
+      },
+      possiblePeriod: {
+        type: "string",
+        description:
+          "Possible broad chronology only if visible diagnostic evidence supports it; otherwise say not determinable from photograph.",
+      },
+      culturalContext: {
+        type: "string",
+        description:
+          "Possible cultural context only if visible and cautiously inferable; otherwise leave empty.",
+      },
+      visibleFeatures: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "Visible diagnostic features, including form, surface, breakage, marks, inscription traces, wear, patina, or limitations.",
+      },
+      condition: {
+        type: "string",
+        description: "Preservation, wear, breaks, patina, abrasion, weathering.",
+      },
+      manufacturingTechnique: {
+        type: "string",
+        description: "Wheel-made, handmade, cast, struck, flaked, carved, engraved, painted etc.",
+      },
+      documentationAdvice: {
+        type: "array",
+        items: { type: "string" },
+        description: "Next steps: scale, context, measurements, angles, rim/base photos, etc.",
+      },
+      fieldNote: {
+        type: "string",
+        description:
+          "Professional field observation paragraph, 3-5 sentences. Be realistic and cautious; state what cannot be determined from the photograph.",
+      },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
-      alternatives: { type: "array", items: { type: "string" }, description: "Up to 3 alternative interpretations." },
+      alternatives: {
+        type: "array",
+        items: { type: "string" },
+        description: "Up to 3 alternative interpretations.",
+      },
       notes: { type: "string", description: "Caveat about context/uncertainty." },
     };
 
@@ -264,14 +328,23 @@ export const identifyImage = createServerFn({ method: "POST" })
       });
     } catch (e) {
       console.error("AI gateway network error", e);
-      return { ok: false as const, error: "Could not reach the AI service. Check your connection." };
+      return {
+        ok: false as const,
+        error: "Could not reach the AI service. Check your connection.",
+      };
     }
 
     if (response.status === 429) {
-      return { ok: false as const, error: "Too many requests right now. Please wait a moment and try again." };
+      return {
+        ok: false as const,
+        error: "Too many requests right now. Please wait a moment and try again.",
+      };
     }
     if (response.status === 402) {
-      return { ok: false as const, error: "AI credits exhausted. Add credits in Settings → Workspace → Usage." };
+      return {
+        ok: false as const,
+        error: "AI credits exhausted. Add credits in Settings → Workspace → Usage.",
+      };
     }
     if (!response.ok) {
       const t = await response.text();
@@ -291,7 +364,10 @@ export const identifyImage = createServerFn({ method: "POST" })
     const argsStr = toolCall?.function?.arguments;
     if (!argsStr) {
       console.error("No tool call returned", JSON.stringify(payload).slice(0, 500));
-      return { ok: false as const, error: "AI did not return a structured identification. Try a clearer photo." };
+      return {
+        ok: false as const,
+        error: "AI did not return a structured identification. Try a clearer photo.",
+      };
     }
 
     let parsed: any;
@@ -310,15 +386,23 @@ export const identifyImage = createServerFn({ method: "POST" })
           material: parsed.material ?? "Unknown",
           possiblePeriod: parsed.possiblePeriod ?? "Unknown / requires context",
           culturalContext: parsed.culturalContext || undefined,
-          visibleFeatures: Array.isArray(parsed.visibleFeatures) ? parsed.visibleFeatures.slice(0, 8) : [],
+          visibleFeatures: Array.isArray(parsed.visibleFeatures)
+            ? parsed.visibleFeatures.slice(0, 8)
+            : [],
           condition: parsed.condition ?? "Not determined from image",
           manufacturingTechnique: parsed.manufacturingTechnique || undefined,
-          documentationAdvice: Array.isArray(parsed.documentationAdvice) ? parsed.documentationAdvice.slice(0, 6) : [],
-          fieldNote: parsed.fieldNote ?? "Preliminary observation requires clearer photographs and archaeological context.",
+          documentationAdvice: Array.isArray(parsed.documentationAdvice)
+            ? parsed.documentationAdvice.slice(0, 6)
+            : [],
+          fieldNote:
+            parsed.fieldNote ??
+            "Preliminary observation requires clearer photographs and archaeological context.",
           confidence: (parsed.confidence as Confidence) ?? "low",
           alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
           notes: parsed.notes || undefined,
-          sources: buildArchaeologySources(`${parsed.objectType ?? "artifact"} ${parsed.material ?? ""} ${parsed.possiblePeriod ?? ""}`),
+          sources: buildArchaeologySources(
+            `${parsed.objectType ?? "artifact"} ${parsed.material ?? ""} ${parsed.possiblePeriod ?? ""}`,
+          ),
         }
       : {
           mode: "nature",

@@ -10,7 +10,11 @@ interface Props {
 
 const MAX_DIM = 1024;
 
-function downscaleToJpeg(source: HTMLImageElement | HTMLVideoElement, sw: number, sh: number): string {
+function downscaleToJpeg(
+  source: HTMLImageElement | HTMLVideoElement,
+  sw: number,
+  sh: number,
+): string {
   const scale = Math.min(1, MAX_DIM / Math.max(sw, sh));
   const w = Math.round(sw * scale);
   const h = Math.round(sh * scale);
@@ -126,7 +130,9 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
         <div className="rounded-full border border-primary-foreground/25 bg-foreground/25 px-3 py-1.5 shadow-sm backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <Landmark className="h-4 w-4 text-primary-foreground" />
-            <h1 className="text-xs font-bold uppercase tracking-wide text-primary-foreground">Field Camera</h1>
+            <h1 className="text-xs font-bold uppercase tracking-wide text-primary-foreground">
+              Field Camera
+            </h1>
           </div>
         </div>
         <a
