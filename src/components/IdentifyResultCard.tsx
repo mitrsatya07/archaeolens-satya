@@ -68,6 +68,7 @@ const LANG_LABELS: Record<string, string> = {
 };
 
 function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence"] }) {
+  const label = confidence === "high" ? "strong evidence" : confidence === "medium" ? "moderate evidence" : "limited evidence";
   const map = {
     high: "bg-leaf/15 text-leaf border-leaf/40",
     medium: "bg-warn/20 text-warn-foreground border-warn/40",
@@ -76,7 +77,7 @@ function ConfidenceChip({ confidence }: { confidence: IdentifyResult["confidence
   return (
     <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${map[confidence]}`}>
       <Sparkles className="h-3 w-3" />
-      {confidence} evidence
+      {label}
     </span>
   );
 }
@@ -239,8 +240,15 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
 
           <Panel icon={<ShieldCheck className="h-4 w-4 text-primary" />} title="Authenticity note">
             <p className="text-sm leading-relaxed text-foreground/90">
-              This photo can support observation, not authentication. Reliable attribution needs measurements,
-              stratigraphic or findspot context, provenance, comparative typology, and expert review.
+              The confidence level reflects visible diagnostic evidence only. Final authentication still requires measurements,
+              findspot or stratigraphic context, provenance, comparative typology, conservation review, and expert confirmation.
+            </p>
+          </Panel>
+
+          <Panel icon={<LibraryIcon />} title="Reference workflow">
+            <p className="text-sm leading-relaxed text-foreground/90">
+              Use the links below to compare forms, materials, inscriptions, and typologies against museum and heritage records.
+              Matching references strengthen interpretation, but they are not proof of origin or date by themselves.
             </p>
           </Panel>
 
@@ -251,7 +259,7 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
             type="button"
             variant="outline"
             className="w-full border-primary/25 bg-card text-xs font-semibold uppercase tracking-wide text-primary hover:bg-accent"
-            onClick={() => downloadText(`lensid-${result.objectType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-field-record.txt`, archaeologyReport(result))}
+            onClick={() => downloadText(`archaeolens-${result.objectType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-field-record.txt`, archaeologyReport(result))}
           >
             <Download className="h-4 w-4" /> Export field record
           </Button>
@@ -262,6 +270,10 @@ function ArchaeologyResultCard({ result, imageUrl, onAgain }: { result: Archaeol
       <Button onClick={onAgain} className="w-full border border-primary bg-primary font-semibold uppercase tracking-wide text-primary-foreground hover:bg-primary/90" size="lg">Start new observation</Button>
     </div>
   );
+}
+
+function LibraryIcon() {
+  return <ExternalLink className="h-4 w-4 text-primary" />;
 }
 
 function InfoGrid({ result }: { result: ArchaeologyResult }) {
