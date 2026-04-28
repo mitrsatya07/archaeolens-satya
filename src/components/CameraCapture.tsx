@@ -1,10 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Image as ImageIcon, Loader2, X, ScanLine, Landmark, Crosshair, Ruler } from "lucide-react";
+import {
+  Check,
+  Image as ImageIcon,
+  Layers,
+  Loader2,
+  X,
+  ScanLine,
+  Landmark,
+  Crosshair,
+  Ruler,
+  Video,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Props {
   busy: boolean;
-  onCapture: (dataUrl: string) => void;
+  onCapture: (dataUrl: string | string[]) => void;
   onClose?: () => void;
 }
 
@@ -30,9 +41,12 @@ function downscaleToJpeg(
 export function CameraCapture({ busy, onCapture, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const videoFileRef = useRef<HTMLInputElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [scaleVisible, setScaleVisible] = useState(false);
+  const [angles, setAngles] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,7 +90,7 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
     if (!v || !ready) return;
     try {
       const dataUrl = downscaleToJpeg(v, v.videoWidth, v.videoHeight);
-      onCapture(dataUrl);
+      setAngles((current) => [...current, dataUrl].slice(0, 6));
     } catch (e) {
       console.error(e);
       setError("Could not capture frame. Try again.");
@@ -90,7 +104,7 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
       img.onload = () => {
         try {
           const dataUrl = downscaleToJpeg(img, img.naturalWidth, img.naturalHeight);
-          onCapture(dataUrl);
+          setAngles((current) => [...current, dataUrl].slice(0, 6));
         } catch (e) {
           console.error(e);
           setError("Could not read the image.");
@@ -101,6 +115,42 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
     };
     reader.onerror = () => setError("Could not read the file.");
     reader.readAsDataURL(file);
+  };
+
+  const handleVideoFile = (file: File) => {
+    const url = URL.createObjectURL(file);
+    const clip = document.createElement("video");
+    clip.preload = "metadata";
+    clip.muted = true;
+    clip.playsInline = true;
+
+    clip.onloadedmetadata = async () => {
+      const duration = Number.isFinite(clip.duration) && clip.duration > 0 ? clip.duration : 1;
+      const seekPoints = [0.1, 0.35, 0.6, 0.85].map((p) => Math.min(duration * p, duration - 0.05));
+      const frames: string[] = [];
+
+      try {
+        for (const point of seekPoints) {
+          await new Promise<void>((resolve, reject) => {
+            clip.onseeked = () => resolve();
+            clip.onerror = () => reject(new Error("Video seek failed"));
+            clip.currentTime = Math.max(0, point);
+          });
+          frames.push(downscaleToJpeg(clip, clip.videoWidth, clip.videoHeight));
+        }
+        onCapture(frames);
+      } catch (e) {
+        console.error(e);
+        setError("Could not analyze that video. Try a shorter, clearer clip.");
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    };
+    clip.onerror = () => {
+      URL.revokeObjectURL(url);
+      setError("Could not load that video file.");
+    };
+    clip.src = url;
   };
 
   return (
@@ -155,6 +205,45 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
         </div>
       </div>
 
+      {scaleVisible && (
+        <div className="pointer-events-none absolute bottom-36 left-1/2 z-20 w-48 -translate-x-1/2 text-primary-foreground">
+          <div className="h-3 border-x-2 border-b-2 border-primary-foreground" />
+          <div className="mt-1 flex justify-between text-[10px] font-bold uppercase tracking-wide drop-shadow">
+            <span>0</span>
+            <span>Scale reference</span>
+            <span>10 cm</span>
+          </div>
+        </div>
+      )}
+
+      {angles.length > 0 && (
+        <div className="absolute inset-x-4 bottom-32 z-20 rounded-xl border border-primary-foreground/20 bg-foreground/30 p-2 text-primary-foreground shadow-sm backdrop-blur-sm">
+          <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide">
+            <span className="inline-flex items-center gap-1.5">
+              <Layers className="h-3.5 w-3.5" /> {angles.length} angle{angles.length > 1 ? "s" : ""}{" "}
+              saved
+            </span>
+            <button
+              type="button"
+              onClick={() => setAngles([])}
+              disabled={busy}
+              className="opacity-90"
+            >
+              Clear
+            </button>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => onCapture(angles)}
+            disabled={busy}
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Check className="h-4 w-4" /> Analyze same antiquity
+          </Button>
+        </div>
+      )}
+
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-44 bg-gradient-to-t from-foreground/55 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-around px-6 pb-[max(env(safe-area-inset-bottom),1.25rem)] pt-4">
         <button
@@ -169,9 +258,19 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
 
         <button
           type="button"
+          onClick={() => videoFileRef.current?.click()}
+          disabled={busy}
+          aria-label="Upload video"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-primary-foreground/25 bg-foreground/25 text-primary-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-foreground/45 disabled:opacity-50"
+        >
+          <Video className="h-5 w-5" />
+        </button>
+
+        <button
+          type="button"
           onClick={handleShutter}
-          disabled={busy || !ready}
-          aria-label="Capture and identify"
+          disabled={busy || !ready || angles.length >= 6}
+          aria-label="Capture angle"
           className="group relative flex h-20 w-20 items-center justify-center rounded-full border-4 border-primary-foreground bg-primary text-primary-foreground shadow-md transition-transform active:scale-95 disabled:opacity-60"
         >
           {busy ? (
@@ -181,9 +280,15 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
           )}
         </button>
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary-foreground/20 bg-foreground/20 text-primary-foreground/80 shadow-sm backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => setScaleVisible((value) => !value)}
+          disabled={busy}
+          aria-label="Toggle scale guide"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-primary-foreground/20 bg-foreground/20 text-primary-foreground/80 shadow-sm backdrop-blur-sm transition-colors hover:bg-foreground/40 disabled:opacity-50"
+        >
           <Ruler className="h-4 w-4" />
-        </div>
+        </button>
       </div>
 
       {!ready && !error && (
@@ -219,6 +324,18 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) handleFile(f);
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={videoFileRef}
+        type="file"
+        accept="video/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleVideoFile(f);
           e.target.value = "";
         }}
       />

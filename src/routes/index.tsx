@@ -6,6 +6,14 @@ import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult } from "@/server/identify.functions";
 
+type ReportedExample = {
+  imageUrl: string;
+  objectType: string;
+  material: string;
+  possiblePeriod: string;
+  confidence: IdentifyResult["confidence"];
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -31,18 +39,36 @@ function IndexPage() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
+  const [examples, setExamples] = useState<ReportedExample[]>([]);
 
-  const handleCapture = async (dataUrl: string) => {
+  const handleCapture = async (dataUrl: string | string[]) => {
+    const images = Array.isArray(dataUrl) ? dataUrl : [dataUrl];
+    const primaryImage = images[0];
     setBusy(true);
-    setImageUrl(dataUrl);
+    setImageUrl(primaryImage);
     try {
-      const res = await identifyImage({ data: { imageBase64: dataUrl, mode: "archaeology" } });
+      const res = await identifyImage({ data: { imagesBase64: images, mode: "archaeology" } });
       if (!res.ok) {
         toast.error(res.error);
         setImageUrl(null);
         return;
       }
       setResult(res.result);
+      if (res.result.mode === "archaeology") {
+        const archaeologicalResult = res.result;
+        setExamples((current) =>
+          [
+            {
+              imageUrl: primaryImage,
+              objectType: archaeologicalResult.objectType,
+              material: archaeologicalResult.material,
+              possiblePeriod: archaeologicalResult.possiblePeriod,
+              confidence: archaeologicalResult.confidence,
+            },
+            ...current,
+          ].slice(0, 8),
+        );
+      }
     } catch (e) {
       console.error(e);
       toast.error("Something went wrong. Please try again.");
@@ -61,7 +87,12 @@ function IndexPage() {
   if (result && imageUrl) {
     return (
       <main className="min-h-screen field-shell px-4 py-6 text-foreground">
-        <IdentifyResultCard result={result} imageUrl={imageUrl} onAgain={reset} />
+        <IdentifyResultCard
+          result={result}
+          imageUrl={imageUrl}
+          onAgain={reset}
+          similarExamples={examples.slice(1)}
+        />
       </main>
     );
   }

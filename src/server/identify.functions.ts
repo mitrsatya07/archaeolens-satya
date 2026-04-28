@@ -146,14 +146,25 @@ function buildArchaeologySources(query: string): { label: string; url: string }[
 
 export const identifyImage = createServerFn({ method: "POST" })
   .middleware([attachAuthHeader, requireSupabaseAuth])
-  .inputValidator((data: { imageBase64: string; mode?: ScanMode }) => {
-    if (!data?.imageBase64 || typeof data.imageBase64 !== "string") {
-      throw new Error("imageBase64 is required");
+  .inputValidator((data: { imageBase64?: string; imagesBase64?: string[]; mode?: ScanMode }) => {
+    const images = Array.isArray(data?.imagesBase64)
+      ? data.imagesBase64.filter(
+          (item): item is string => typeof item === "string" && item.length > 0,
+        )
+      : data?.imageBase64 && typeof data.imageBase64 === "string"
+        ? [data.imageBase64]
+        : [];
+
+    if (!images.length) {
+      throw new Error("At least one image is required");
     }
-    if (data.imageBase64.length > 8_000_000) {
-      throw new Error("Image too large");
+    if (images.length > 6) {
+      throw new Error("Too many angles");
     }
-    return { ...data, mode: (data.mode ?? "archaeology") as ScanMode };
+    if (images.some((image) => image.length > 8_000_000) || images.join("").length > 18_000_000) {
+      throw new Error("Images too large");
+    }
+    return { imagesBase64: images, mode: (data.mode ?? "archaeology") as ScanMode };
   })
   .handler(async ({ data }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
@@ -165,9 +176,9 @@ export const identifyImage = createServerFn({ method: "POST" })
       };
     }
 
-    const dataUrl = data.imageBase64.startsWith("data:")
-      ? data.imageBase64
-      : `data:image/jpeg;base64,${data.imageBase64}`;
+    const dataUrls = data.imagesBase64.map((image) =>
+      image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}`,
+    );
 
     const isArchaeology = data.mode === "archaeology";
     const systemPrompt = isArchaeology
@@ -352,10 +363,10 @@ export const identifyImage = createServerFn({ method: "POST" })
                 {
                   type: "text",
                   text: isArchaeology
-                    ? "Create an evidence-backed archaeological field observation for the main object in this photo. Give the strongest supportable interpretation from visible diagnostic details, with calibrated confidence and clear reference-search terms. Respond by calling the report_identification tool."
-                    : "Identify the main subject in this photo. Respond by calling the report_identification tool.",
+                    ? `Create an evidence-backed archaeological field observation for the same object from ${dataUrls.length} capture(s). Treat multiple images as different angles or video frames of one antiquity. Combine only consistent visible details, mention any contradictions or missing scale, and give the strongest supportable interpretation with calibrated confidence. Respond by calling the report_identification tool.`
+                    : "Identify the main subject in these capture(s). Respond by calling the report_identification tool.",
                 },
-                { type: "image_url", image_url: { url: dataUrl } },
+                ...dataUrls.map((url) => ({ type: "image_url" as const, image_url: { url } })),
               ],
             },
           ],
