@@ -148,7 +148,9 @@ export const identifyImage = createServerFn({ method: "POST" })
   .middleware([attachAuthHeader, requireSupabaseAuth])
   .inputValidator((data: { imageBase64?: string; imagesBase64?: string[]; mode?: ScanMode }) => {
     const images = Array.isArray(data?.imagesBase64)
-      ? data.imagesBase64.filter((item): item is string => typeof item === "string" && item.length > 0)
+      ? data.imagesBase64.filter(
+          (item): item is string => typeof item === "string" && item.length > 0,
+        )
       : data?.imageBase64 && typeof data.imageBase64 === "string"
         ? [data.imageBase64]
         : [];

@@ -399,8 +399,15 @@ function SimilarExamples({ examples }: { examples: SimilarExample[] }) {
       </h3>
       <div className="grid grid-cols-2 gap-2">
         {examples.map((example, index) => (
-          <div key={`${example.objectType}-${index}`} className="overflow-hidden rounded-lg border border-border bg-background/55">
-            <img src={example.imageUrl} alt={`Previously reported ${example.objectType}`} className="aspect-square w-full object-cover" />
+          <div
+            key={`${example.objectType}-${index}`}
+            className="overflow-hidden rounded-lg border border-border bg-background/55"
+          >
+            <img
+              src={example.imageUrl}
+              alt={`Previously reported ${example.objectType}`}
+              className="aspect-square w-full object-cover"
+            />
             <div className="space-y-1 p-2">
               <p className="text-xs font-semibold text-foreground">{example.objectType}</p>
               <p className="text-[11px] text-muted-foreground">{example.material}</p>

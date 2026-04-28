@@ -220,9 +220,15 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
         <div className="absolute inset-x-4 bottom-32 z-20 rounded-xl border border-primary-foreground/20 bg-foreground/30 p-2 text-primary-foreground shadow-sm backdrop-blur-sm">
           <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide">
             <span className="inline-flex items-center gap-1.5">
-              <Layers className="h-3.5 w-3.5" /> {angles.length} angle{angles.length > 1 ? "s" : ""} saved
+              <Layers className="h-3.5 w-3.5" /> {angles.length} angle{angles.length > 1 ? "s" : ""}{" "}
+              saved
             </span>
-            <button type="button" onClick={() => setAngles([])} disabled={busy} className="opacity-90">
+            <button
+              type="button"
+              onClick={() => setAngles([])}
+              disabled={busy}
+              className="opacity-90"
+            >
               Clear
             </button>
           </div>

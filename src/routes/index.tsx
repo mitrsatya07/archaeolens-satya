@@ -56,16 +56,18 @@ function IndexPage() {
       setResult(res.result);
       if (res.result.mode === "archaeology") {
         const archaeologicalResult = res.result;
-        setExamples((current) => [
-          {
-            imageUrl: primaryImage,
-            objectType: archaeologicalResult.objectType,
-            material: archaeologicalResult.material,
-            possiblePeriod: archaeologicalResult.possiblePeriod,
-            confidence: archaeologicalResult.confidence,
-          },
-          ...current,
-        ].slice(0, 8));
+        setExamples((current) =>
+          [
+            {
+              imageUrl: primaryImage,
+              objectType: archaeologicalResult.objectType,
+              material: archaeologicalResult.material,
+              possiblePeriod: archaeologicalResult.possiblePeriod,
+              confidence: archaeologicalResult.confidence,
+            },
+            ...current,
+          ].slice(0, 8),
+        );
       }
     } catch (e) {
       console.error(e);
@@ -85,7 +87,12 @@ function IndexPage() {
   if (result && imageUrl) {
     return (
       <main className="min-h-screen field-shell px-4 py-6 text-foreground">
-        <IdentifyResultCard result={result} imageUrl={imageUrl} onAgain={reset} similarExamples={examples.slice(1)} />
+        <IdentifyResultCard
+          result={result}
+          imageUrl={imageUrl}
+          onAgain={reset}
+          similarExamples={examples.slice(1)}
+        />
       </main>
     );
   }
