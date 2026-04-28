@@ -62,6 +62,18 @@ export interface ArchaeologyResult {
 
 export type IdentifyResult = NatureResult | ArchaeologyResult;
 
+type AiToolPayload = {
+  choices?: Array<{
+    message?: {
+      tool_calls?: Array<{
+        function?: { arguments?: unknown };
+      }>;
+    };
+  }>;
+};
+
+type ParsedToolArgs = Record<string, unknown>;
+
 function buildNatureSources(
   category: Category,
   scientific: string,
@@ -352,7 +364,7 @@ export const identifyImage = createServerFn({ method: "POST" })
       return { ok: false as const, error: `Identification failed (${response.status}).` };
     }
 
-    let payload: any;
+    let payload: AiToolPayload;
     try {
       payload = await response.json();
     } catch (e) {
@@ -370,9 +382,9 @@ export const identifyImage = createServerFn({ method: "POST" })
       };
     }
 
-    let parsed: any;
+    let parsed: ParsedToolArgs;
     try {
-      parsed = typeof argsStr === "string" ? JSON.parse(argsStr) : argsStr;
+      parsed = (typeof argsStr === "string" ? JSON.parse(argsStr) : argsStr) as ParsedToolArgs;
     } catch (e) {
       console.error("Failed to parse tool args", e, argsStr);
       return { ok: false as const, error: "Could not parse the AI's identification." };
