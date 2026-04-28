@@ -55,13 +55,14 @@ function IndexPage() {
       }
       setResult(res.result);
       if (res.result.mode === "archaeology") {
+        const archaeologicalResult = res.result;
         setExamples((current) => [
           {
             imageUrl: primaryImage,
-            objectType: res.result.objectType,
-            material: res.result.material,
-            possiblePeriod: res.result.possiblePeriod,
-            confidence: res.result.confidence,
+            objectType: archaeologicalResult.objectType,
+            material: archaeologicalResult.material,
+            possiblePeriod: archaeologicalResult.possiblePeriod,
+            confidence: archaeologicalResult.confidence,
           },
           ...current,
         ].slice(0, 8));
