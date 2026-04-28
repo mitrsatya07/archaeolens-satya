@@ -74,6 +74,16 @@ type AiToolPayload = {
 
 type ParsedToolArgs = Record<string, unknown>;
 
+function asString(value: unknown, fallback = ""): string {
+  return typeof value === "string" ? value : fallback;
+}
+
+function asStringArray(value: unknown, limit: number): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string").slice(0, limit)
+    : [];
+}
+
 function buildNatureSources(
   category: Category,
   scientific: string,
@@ -390,43 +400,41 @@ export const identifyImage = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Could not parse the AI's identification." };
     }
 
+    const objectType = asString(parsed.objectType, "Unidentified object");
+    const material = asString(parsed.material, "Unknown");
+    const possiblePeriod = asString(parsed.possiblePeriod, "Unknown / requires context");
+
     const result: IdentifyResult = isArchaeology
       ? {
           mode: "archaeology",
           archaeologyCategory: (parsed.archaeologyCategory as ArchaeologyCategory) ?? "unknown",
-          objectType: parsed.objectType ?? "Unidentified object",
-          material: parsed.material ?? "Unknown",
-          possiblePeriod: parsed.possiblePeriod ?? "Unknown / requires context",
-          culturalContext: parsed.culturalContext || undefined,
-          visibleFeatures: Array.isArray(parsed.visibleFeatures)
-            ? parsed.visibleFeatures.slice(0, 8)
-            : [],
-          condition: parsed.condition ?? "Not determined from image",
-          manufacturingTechnique: parsed.manufacturingTechnique || undefined,
-          documentationAdvice: Array.isArray(parsed.documentationAdvice)
-            ? parsed.documentationAdvice.slice(0, 6)
-            : [],
+          objectType,
+          material,
+          possiblePeriod,
+          culturalContext: asString(parsed.culturalContext) || undefined,
+          visibleFeatures: asStringArray(parsed.visibleFeatures, 8),
+          condition: asString(parsed.condition, "Not determined from image"),
+          manufacturingTechnique: asString(parsed.manufacturingTechnique) || undefined,
+          documentationAdvice: asStringArray(parsed.documentationAdvice, 6),
           fieldNote:
-            parsed.fieldNote ??
+            asString(parsed.fieldNote) ||
             "Preliminary observation requires clearer photographs and archaeological context.",
           confidence: (parsed.confidence as Confidence) ?? "low",
-          alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
-          notes: parsed.notes || undefined,
-          sources: buildArchaeologySources(
-            `${parsed.objectType ?? "artifact"} ${parsed.material ?? ""} ${parsed.possiblePeriod ?? ""}`,
-          ),
+          alternatives: asStringArray(parsed.alternatives, 3),
+          notes: asString(parsed.notes) || undefined,
+          sources: buildArchaeologySources(`${objectType} ${material} ${possiblePeriod}`),
         }
       : {
           mode: "nature",
           category: (parsed.category as Category) ?? "unknown",
-          scientificName: parsed.scientificName ?? "",
-          englishName: parsed.englishName ?? "",
-          family: parsed.family || undefined,
-          localNames: parsed.localNames ?? {},
-          summary: parsed.summary ?? "",
+          scientificName: asString(parsed.scientificName),
+          englishName: asString(parsed.englishName),
+          family: asString(parsed.family) || undefined,
+          localNames: (parsed.localNames as LocalNames) ?? {},
+          summary: asString(parsed.summary),
           confidence: (parsed.confidence as Confidence) ?? "low",
-          alternatives: Array.isArray(parsed.alternatives) ? parsed.alternatives.slice(0, 3) : [],
-          notes: parsed.notes || undefined,
+          alternatives: asStringArray(parsed.alternatives, 3),
+          notes: asString(parsed.notes) || undefined,
           sources: buildNatureSources(
             (parsed.category as Category) ?? "unknown",
             parsed.scientificName || parsed.englishName || "",
