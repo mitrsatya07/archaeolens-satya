@@ -12,7 +12,43 @@ type ReportedExample = {
   material: string;
   possiblePeriod: string;
   confidence: IdentifyResult["confidence"];
+  context?: string;
 };
+
+const referenceExamples: ReportedExample[] = [
+  {
+    imageUrl: "https://images.unsplash.com/photo-1590598016917-227f5271f25f?auto=format&fit=crop&w=600&q=80",
+    objectType: "Decorated pottery sherd",
+    material: "Ceramic / terracotta fabric",
+    possiblePeriod: "Broad historic to early historic comparison",
+    confidence: "medium",
+    context: "Use for comparing rim profile, surface treatment, firing color, inclusions, and break edge.",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1602491673980-73aa38de027a?auto=format&fit=crop&w=600&q=80",
+    objectType: "Copper-alloy coin or token",
+    material: "Copper alloy / patinated metal",
+    possiblePeriod: "Period not fixed without inscription and weight",
+    confidence: "medium",
+    context: "Compare diameter, weight, strike/cast marks, corrosion, iconography, and inscription traces.",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1631631480669-535cc43f2327?auto=format&fit=crop&w=600&q=80",
+    objectType: "Carved stone fragment",
+    material: "Stone",
+    possiblePeriod: "Requires site and typological context",
+    confidence: "low",
+    context: "Compare tool marks, break pattern, weathering, carved profile, and original architectural position.",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1569396116180-210c182bedb8?auto=format&fit=crop&w=600&q=80",
+    objectType: "Terracotta figurine fragment",
+    material: "Terracotta",
+    possiblePeriod: "Broad cultural context needed",
+    confidence: "low",
+    context: "Compare moulding seams, hand-modelled details, slip, firing marks, and surviving iconography.",
+  },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -64,6 +100,7 @@ function IndexPage() {
               material: archaeologicalResult.material,
               possiblePeriod: archaeologicalResult.possiblePeriod,
               confidence: archaeologicalResult.confidence,
+              context: `User capture with ${images.length} angle${images.length > 1 ? "s" : ""}; compare visible fabric, condition, shape, and marks only.`,
             },
             ...current,
           ].slice(0, 8),
@@ -92,7 +129,7 @@ function IndexPage() {
           result={result}
           imageUrl={imageUrl}
           onAgain={reset}
-          similarExamples={examples.slice(1)}
+          similarExamples={[...examples.slice(1), ...referenceExamples].slice(0, 8)}
         />
       </main>
     );
