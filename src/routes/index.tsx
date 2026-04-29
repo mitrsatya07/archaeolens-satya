@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Camera, Landmark, Library, ShieldCheck } from "lucide-react";
+import { Camera, Landmark, Library, Loader2, ShieldCheck } from "lucide-react";
+import type { Session } from "@supabase/supabase-js";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { identifyImage, type IdentifyResult } from "@/server/identify.functions";
 
 type ReportedExample = {
@@ -40,10 +43,37 @@ function IndexPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
   const [examples, setExamples] = useState<ReportedExample[]>([]);
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      setSession(data.session);
+      setAuthReady(true);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setAuthReady(true);
+    });
+
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const handleCapture = async (dataUrl: string | string[]) => {
     const images = Array.isArray(dataUrl) ? dataUrl : [dataUrl];
     const primaryImage = images[0];
+    if (!session) {
+      toast.error("Please sign in before running an archaeological observation.");
+      setCameraOpen(false);
+      return;
+    }
     setBusy(true);
     setImageUrl(primaryImage);
     try {
@@ -71,7 +101,8 @@ function IndexPage() {
       }
     } catch (e) {
       console.error(e);
-      toast.error("Something went wrong. Please try again.");
+      const message = e instanceof Error ? e.message : "Something went wrong. Please try again.";
+      toast.error(message.includes("Unauthorized") ? "Please sign in again to view results." : message);
       setImageUrl(null);
     } finally {
       setBusy(false);
@@ -165,13 +196,14 @@ function IndexPage() {
         </div>
 
         <div className="pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-8">
+          <AuthPanel session={session} authReady={authReady} />
           <button
             type="button"
-            onClick={() => setCameraOpen(true)}
-            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 py-4 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]"
+            onClick={() => (session ? setCameraOpen(true) : toast.error("Sign in to open the field camera."))}
+            className="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 py-4 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
-            Open full-screen camera
+            {session ? "Open full-screen camera" : "Sign in to open camera"}
           </button>
         </div>
       </div>
