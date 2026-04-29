@@ -37,6 +37,66 @@ export const Route = createFileRoute("/")({
   component: IndexPage,
 });
 
+function AuthPanel({ session, authReady }: { session: Session | null; authReady: boolean }) {
+  const [email, setEmail] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
+
+  const handleMagicLink = async () => {
+    if (!email.trim()) {
+      toast.error("Enter your email to sign in.");
+      return;
+    }
+    setAuthBusy(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { emailRedirectTo: window.location.origin },
+    });
+    setAuthBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Check your email for the sign-in link.");
+  };
+
+  if (!authReady) {
+    return (
+      <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground shadow-sm">
+        <Loader2 className="h-4 w-4 animate-spin" /> Checking secure session…
+      </div>
+    );
+  }
+
+  if (session) {
+    return (
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 text-sm shadow-sm">
+        <span className="min-w-0 truncate text-muted-foreground">Signed in securely</span>
+        <Button type="button" size="sm" variant="secondary" onClick={() => supabase.auth.signOut()}>
+          Sign out
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
+      <p className="text-sm font-semibold text-foreground">Sign in to generate results</p>
+      <div className="mt-3 flex gap-2">
+        <input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="Email address"
+          className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+        />
+        <Button type="button" onClick={handleMagicLink} disabled={authBusy}>
+          {authBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function IndexPage() {
   const [busy, setBusy] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -224,66 +284,6 @@ function Feature({ icon, title, text }: { icon: React.ReactNode; title: string; 
       <div>
         <h3 className="font-semibold text-foreground">{title}</h3>
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
-      </div>
-    </div>
-  );
-}
-
-function AuthPanel({ session, authReady }: { session: Session | null; authReady: boolean }) {
-  const [email, setEmail] = useState("");
-  const [authBusy, setAuthBusy] = useState(false);
-
-  const handleMagicLink = async () => {
-    if (!email.trim()) {
-      toast.error("Enter your email to sign in.");
-      return;
-    }
-    setAuthBusy(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setAuthBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Check your email for the sign-in link.");
-  };
-
-  if (!authReady) {
-    return (
-      <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground shadow-sm">
-        <Loader2 className="h-4 w-4 animate-spin" /> Checking secure session…
-      </div>
-    );
-  }
-
-  if (session) {
-    return (
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 text-sm shadow-sm">
-        <span className="min-w-0 truncate text-muted-foreground">Signed in securely</span>
-        <Button type="button" size="sm" variant="secondary" onClick={() => supabase.auth.signOut()}>
-          Sign out
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
-      <p className="text-sm font-semibold text-foreground">Sign in to generate results</p>
-      <div className="mt-3 flex gap-2">
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Email address"
-          className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-        />
-        <Button type="button" onClick={handleMagicLink} disabled={authBusy}>
-          {authBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
-        </Button>
       </div>
     </div>
   );
