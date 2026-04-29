@@ -12,6 +12,7 @@ import {
   Ruler,
   ShieldCheck,
   Download,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type {
@@ -50,6 +51,9 @@ function archaeologyReport(result: ArchaeologyResult) {
     "Visible features:",
     ...result.visibleFeatures.map((x) => `- ${x}`),
     "",
+    result.angleObservations?.length ? "Angle-by-angle observations:" : "",
+    ...(result.angleObservations ?? []).map((x, index) => `- Angle ${index + 1}: ${x}`),
+    result.angleObservations?.length ? "" : "",
     "Documentation advice:",
     ...result.documentationAdvice.map((x) => `- ${x}`),
     "",
@@ -185,6 +189,7 @@ type SimilarExample = {
   material: string;
   possiblePeriod: string;
   confidence: Confidence;
+  context?: string;
 };
 
 function Frame({ imageUrl, children }: { imageUrl: string; children: React.ReactNode }) {
@@ -333,6 +338,21 @@ function ArchaeologyResultCard({
             <BulletList items={result.visibleFeatures} />
           </Panel>
 
+          {result.angleObservations && result.angleObservations.length > 0 && (
+            <Panel icon={<Camera className="h-4 w-4 text-primary" />} title="Multi-angle analysis">
+              <ol className="space-y-2 text-sm text-foreground/90">
+                {result.angleObservations.map((observation, index) => (
+                  <li key={`${observation}-${index}`} className="flex gap-2">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary">
+                      {index + 1}
+                    </span>
+                    <span>{observation}</span>
+                  </li>
+                ))}
+              </ol>
+            </Panel>
+          )}
+
           {result.documentationAdvice.length > 0 && (
             <Panel
               icon={<Ruler className="h-4 w-4 text-primary" />}
@@ -412,6 +432,9 @@ function SimilarExamples({ examples }: { examples: SimilarExample[] }) {
               <p className="text-xs font-semibold text-foreground">{example.objectType}</p>
               <p className="text-[11px] text-muted-foreground">{example.material}</p>
               <p className="text-[10px] text-muted-foreground">{example.possiblePeriod}</p>
+              {example.context && (
+                <p className="text-[10px] leading-snug text-muted-foreground">{example.context}</p>
+              )}
             </div>
           </div>
         ))}
