@@ -50,6 +50,7 @@ export interface ArchaeologyResult {
   possiblePeriod: string;
   culturalContext?: string;
   visibleFeatures: string[];
+  angleObservations?: string[];
   condition: string;
   manufacturingTechnique?: string;
   documentationAdvice: string[];
@@ -267,6 +268,12 @@ export const identifyImage = createServerFn({ method: "POST" })
         description:
           "Visible diagnostic features, including form, surface, breakage, marks, inscription traces, wear, patina, or limitations.",
       },
+      angleObservations: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "One concise observation per provided angle/frame, noting what that view contributes to the same-object analysis.",
+      },
       condition: {
         type: "string",
         description: "Preservation, wear, breaks, patina, abrasion, weathering.",
@@ -311,6 +318,7 @@ export const identifyImage = createServerFn({ method: "POST" })
                 "material",
                 "possiblePeriod",
                 "visibleFeatures",
+                "angleObservations",
                 "condition",
                 "documentationAdvice",
                 "fieldNote",
@@ -349,7 +357,7 @@ export const identifyImage = createServerFn({ method: "POST" })
                 {
                   type: "text",
                   text: isArchaeology
-                    ? `Create an evidence-backed archaeological field observation for the same object from ${dataUrls.length} capture(s). Treat multiple images as different angles or video frames of one antiquity. Combine only consistent visible details, mention any contradictions or missing scale, and give the strongest supportable interpretation with calibrated confidence. Respond by calling the report_identification tool.`
+                    ? `Create an evidence-backed archaeological field observation for the same object from ${dataUrls.length} capture(s). Treat every image as a different angle or video frame of one antiquity, not separate objects. Analyze each angle, then synthesize a complete same-object interpretation. Include angleObservations with one note for each supplied image in order, explaining what that angle adds or what remains unclear. Combine only consistent visible details, mention contradictions or missing scale, and give the strongest supportable interpretation with calibrated confidence. Respond by calling the report_identification tool.`
                     : "Identify the main subject in these capture(s). Respond by calling the report_identification tool.",
                 },
                 ...dataUrls.map((url) => ({ type: "image_url" as const, image_url: { url } })),
@@ -425,6 +433,7 @@ export const identifyImage = createServerFn({ method: "POST" })
           possiblePeriod,
           culturalContext: asString(parsed.culturalContext) || undefined,
           visibleFeatures: asStringArray(parsed.visibleFeatures, 8),
+          angleObservations: asStringArray(parsed.angleObservations, 6),
           condition: asString(parsed.condition, "Not determined from image"),
           manufacturingTechnique: asString(parsed.manufacturingTechnique) || undefined,
           documentationAdvice: asStringArray(parsed.documentationAdvice, 6),
