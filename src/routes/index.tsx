@@ -1,12 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Camera, Landmark, Library, Loader2, ShieldCheck } from "lucide-react";
-import type { Session } from "@supabase/supabase-js";
+import { Camera, Landmark, Library, ShieldCheck } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { identifyImage, type IdentifyResult } from "@/server/identify.functions";
 
 type ReportedExample = {
@@ -37,103 +34,16 @@ export const Route = createFileRoute("/")({
   component: IndexPage,
 });
 
-function AuthPanel({ session, authReady }: { session: Session | null; authReady: boolean }) {
-  const [email, setEmail] = useState("");
-  const [authBusy, setAuthBusy] = useState(false);
-
-  const handleMagicLink = async () => {
-    if (!email.trim()) {
-      toast.error("Enter your email to sign in.");
-      return;
-    }
-    setAuthBusy(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setAuthBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Check your email for the sign-in link.");
-  };
-
-  if (!authReady) {
-    return (
-      <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground shadow-sm">
-        <Loader2 className="h-4 w-4 animate-spin" /> Checking secure session…
-      </div>
-    );
-  }
-
-  if (session) {
-    return (
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 text-sm shadow-sm">
-        <span className="min-w-0 truncate text-muted-foreground">Signed in securely</span>
-        <Button type="button" size="sm" variant="secondary" onClick={() => supabase.auth.signOut()}>
-          Sign out
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
-      <p className="text-sm font-semibold text-foreground">Sign in to generate results</p>
-      <div className="mt-3 flex gap-2">
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Email address"
-          className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-        />
-        <Button type="button" onClick={handleMagicLink} disabled={authBusy}>
-          {authBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 function IndexPage() {
   const [busy, setBusy] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
   const [examples, setExamples] = useState<ReportedExample[]>([]);
-  const [session, setSession] = useState<Session | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setSession(data.session);
-      setAuthReady(true);
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
-      setAuthReady(true);
-    });
-
-    return () => {
-      mounted = false;
-      listener.subscription.unsubscribe();
-    };
-  }, []);
 
   const handleCapture = async (dataUrl: string | string[]) => {
     const images = Array.isArray(dataUrl) ? dataUrl : [dataUrl];
     const primaryImage = images[0];
-    if (!session) {
-      toast.error("Please sign in before running an archaeological observation.");
-      setCameraOpen(false);
-      return;
-    }
     setBusy(true);
     setImageUrl(primaryImage);
     try {
@@ -162,9 +72,7 @@ function IndexPage() {
     } catch (e) {
       console.error(e);
       const message = e instanceof Error ? e.message : "Something went wrong. Please try again.";
-      toast.error(
-        message.includes("Unauthorized") ? "Please sign in again to view results." : message,
-      );
+      toast.error(message);
       setImageUrl(null);
     } finally {
       setBusy(false);
@@ -258,16 +166,13 @@ function IndexPage() {
         </div>
 
         <div className="pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-8">
-          <AuthPanel session={session} authReady={authReady} />
           <button
             type="button"
-            onClick={() =>
-              session ? setCameraOpen(true) : toast.error("Sign in to open the field camera.")
-            }
-            className="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 py-4 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]"
+            onClick={() => setCameraOpen(true)}
+            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 py-4 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
-            {session ? "Open full-screen camera" : "Sign in to open camera"}
+            Open full-screen camera
           </button>
         </div>
       </div>
