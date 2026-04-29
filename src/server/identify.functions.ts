@@ -1,6 +1,4 @@
-import { createMiddleware, createServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { createServerFn } from "@tanstack/react-start";
 
 export type ScanMode = "nature" | "archaeology";
 export type Category = "plant" | "animal" | "mineral" | "unknown";
@@ -76,17 +74,6 @@ type AiToolPayload = {
 
 type ParsedToolArgs = Record<string, unknown>;
 
-const attachAuthHeader = createMiddleware({ type: "function" }).client(async ({ next }) => {
-  if (typeof window === "undefined") return next();
-
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-
-  return next({
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
-});
-
 function asString(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
 }
@@ -145,7 +132,6 @@ function buildArchaeologySources(query: string): { label: string; url: string }[
 }
 
 export const identifyImage = createServerFn({ method: "POST" })
-  .middleware([attachAuthHeader, requireSupabaseAuth])
   .inputValidator((data: { imageBase64?: string; imagesBase64?: string[]; mode?: ScanMode }) => {
     const images = Array.isArray(data?.imagesBase64)
       ? data.imagesBase64.filter(
