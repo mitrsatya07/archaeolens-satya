@@ -102,7 +102,9 @@ function IndexPage() {
     } catch (e) {
       console.error(e);
       const message = e instanceof Error ? e.message : "Something went wrong. Please try again.";
-      toast.error(message.includes("Unauthorized") ? "Please sign in again to view results." : message);
+      toast.error(
+        message.includes("Unauthorized") ? "Please sign in again to view results." : message,
+      );
       setImageUrl(null);
     } finally {
       setBusy(false);
@@ -199,7 +201,9 @@ function IndexPage() {
           <AuthPanel session={session} authReady={authReady} />
           <button
             type="button"
-            onClick={() => (session ? setCameraOpen(true) : toast.error("Sign in to open the field camera."))}
+            onClick={() =>
+              session ? setCameraOpen(true) : toast.error("Sign in to open the field camera.")
+            }
             className="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 py-4 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]"
           >
             <Camera className="h-5 w-5" />
