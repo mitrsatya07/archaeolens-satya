@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink } from "lucide-react";
+import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2 } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
@@ -136,12 +136,20 @@ function IndexPage() {
               <h1 className="text-2xl font-black tracking-tight text-primary">ArchaeoLens</h1>
             </div>
           </div>
-          <a
-            href="/about"
-            className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
-          >
-            Method
-          </a>
+          <div className="flex gap-2">
+            <Link
+              to="/about"
+              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
+            >
+              Method
+            </Link>
+            <Link
+              to="/museums"
+              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
+            >
+              Museums
+            </Link>
+          </div>
         </div>
 
         {/* Hero */}
@@ -171,6 +179,20 @@ function IndexPage() {
             title="Reference-backed"
             text="Links point to museum, heritage, IGS, and typology comparison resources."
           />
+          <Link
+            to="/museums"
+            className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
+          >
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+              <Building2 className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Museum directory</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Browse ASI site museums, state museums, and international collections with Indian objects.
+              </p>
+            </div>
+          </Link>
         </section>
 
         {/* Scan Mode Selector */}
