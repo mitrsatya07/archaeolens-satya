@@ -101,6 +101,10 @@ function buildNatureSources(
     sources.push({ label: "iNaturalist", url: `https://www.inaturalist.org/search?q=${q}` });
     sources.push({ label: "IUCN Red List", url: `https://www.iucnredlist.org/search?query=${q}` });
   } else if (category === "mineral") {
+    sources.push({
+      label: "IGS (International Gem Society)",
+      url: `https://www.gemsociety.org/article/gemstone-listing/?q=${q}`,
+    });
     sources.push({ label: "Mindat", url: `https://www.mindat.org/search.php?search=${q}` });
     sources.push({
       label: "Geological Survey of India",

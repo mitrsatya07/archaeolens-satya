@@ -163,12 +163,10 @@ export function IdentifyResultCard({
   result,
   imageUrl,
   onAgain,
-  similarExamples = [],
 }: {
   result: IdentifyResult;
   imageUrl: string;
   onAgain: () => void;
-  similarExamples?: SimilarExample[];
 }) {
   if (result.mode === "archaeology") {
     return (
@@ -176,21 +174,12 @@ export function IdentifyResultCard({
         result={result}
         imageUrl={imageUrl}
         onAgain={onAgain}
-        similarExamples={similarExamples}
       />
     );
   }
   return <NatureResultCard result={result} imageUrl={imageUrl} onAgain={onAgain} />;
 }
 
-type SimilarExample = {
-  imageUrl: string;
-  objectType: string;
-  material: string;
-  possiblePeriod: string;
-  confidence: Confidence;
-  context?: string;
-};
 
 function Frame({ imageUrl, children }: { imageUrl: string; children: React.ReactNode }) {
   return (
@@ -289,12 +278,10 @@ function ArchaeologyResultCard({
   result,
   imageUrl,
   onAgain,
-  similarExamples,
 }: {
   result: ArchaeologyResult;
   imageUrl: string;
   onAgain: () => void;
-  similarExamples: SimilarExample[];
 }) {
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 animate-fade-in">
@@ -379,7 +366,7 @@ function ArchaeologyResultCard({
           </Panel>
 
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
-          <SimilarExamples examples={similarExamples} />
+          <SourceLinks sources={result.sources} />
           <SourceLinks sources={result.sources} />
 
           <Button
@@ -410,38 +397,6 @@ function ArchaeologyResultCard({
   );
 }
 
-function SimilarExamples({ examples }: { examples: SimilarExample[] }) {
-  if (!examples.length) return null;
-  return (
-    <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Similar previously reported examples
-      </h3>
-      <div className="grid grid-cols-2 gap-2">
-        {examples.map((example, index) => (
-          <div
-            key={`${example.objectType}-${index}`}
-            className="overflow-hidden rounded-lg border border-border bg-background/55"
-          >
-            <img
-              src={example.imageUrl}
-              alt={`Previously reported ${example.objectType}`}
-              className="aspect-square w-full object-cover"
-            />
-            <div className="space-y-1 p-2">
-              <p className="text-xs font-semibold text-foreground">{example.objectType}</p>
-              <p className="text-[11px] text-muted-foreground">{example.material}</p>
-              <p className="text-[10px] text-muted-foreground">{example.possiblePeriod}</p>
-              {example.context && (
-                <p className="text-[10px] leading-snug text-muted-foreground">{example.context}</p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function LibraryIcon() {
   return <ExternalLink className="h-4 w-4 text-primary" />;
