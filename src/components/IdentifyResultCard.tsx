@@ -163,12 +163,10 @@ export function IdentifyResultCard({
   result,
   imageUrl,
   onAgain,
-  similarExamples = [],
 }: {
   result: IdentifyResult;
   imageUrl: string;
   onAgain: () => void;
-  similarExamples?: SimilarExample[];
 }) {
   if (result.mode === "archaeology") {
     return (
@@ -176,7 +174,6 @@ export function IdentifyResultCard({
         result={result}
         imageUrl={imageUrl}
         onAgain={onAgain}
-        similarExamples={similarExamples}
       />
     );
   }
@@ -289,12 +286,10 @@ function ArchaeologyResultCard({
   result,
   imageUrl,
   onAgain,
-  similarExamples,
 }: {
   result: ArchaeologyResult;
   imageUrl: string;
   onAgain: () => void;
-  similarExamples: SimilarExample[];
 }) {
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 animate-fade-in">
@@ -379,7 +374,7 @@ function ArchaeologyResultCard({
           </Panel>
 
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
-          <SimilarExamples examples={similarExamples} />
+          <SourceLinks sources={result.sources} />
           <SourceLinks sources={result.sources} />
 
           <Button
