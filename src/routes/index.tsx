@@ -199,6 +199,20 @@ function IndexPage() {
               </p>
             </div>
           </Link>
+          <Link
+            to="/stone-tools"
+            className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
+          >
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+              <Pickaxe className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Stone Tools — 3D Collection</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Explore prehistoric stone tools with interactive 3D models from every region and period.
+              </p>
+            </div>
+          </Link>
         </section>
 
         {/* Scan Mode Selector */}
