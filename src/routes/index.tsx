@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2 } from "lucide-react";
+import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2, Pickaxe } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
