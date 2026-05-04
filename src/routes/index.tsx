@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2 } from "lucide-react";
+import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2, Pickaxe } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
@@ -144,6 +144,12 @@ function IndexPage() {
               Method
             </Link>
             <Link
+              to="/stone-tools"
+              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
+            >
+              Tools
+            </Link>
+            <Link
               to="/museums"
               className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
             >
@@ -190,6 +196,20 @@ function IndexPage() {
               <h3 className="font-semibold text-foreground">Museum directory</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 Browse ASI site museums, state museums, and international collections with Indian objects.
+              </p>
+            </div>
+          </Link>
+          <Link
+            to="/stone-tools"
+            className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent"
+          >
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+              <Pickaxe className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Stone Tools — 3D Collection</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Explore prehistoric stone tools with interactive 3D models from every region and period.
               </p>
             </div>
           </Link>

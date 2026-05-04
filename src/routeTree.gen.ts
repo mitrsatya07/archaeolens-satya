@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StoneToolsRouteImport } from './routes/stone-tools'
 import { Route as MuseumsRouteImport } from './routes/museums'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const StoneToolsRoute = StoneToolsRouteImport.update({
+  id: '/stone-tools',
+  path: '/stone-tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MuseumsRoute = MuseumsRouteImport.update({
   id: '/museums',
   path: '/museums',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/museums': typeof MuseumsRoute
+  '/stone-tools': typeof StoneToolsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/museums': typeof MuseumsRoute
+  '/stone-tools': typeof StoneToolsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/museums': typeof MuseumsRoute
+  '/stone-tools': typeof StoneToolsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/museums'
+  fullPaths: '/' | '/about' | '/museums' | '/stone-tools'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/museums'
-  id: '__root__' | '/' | '/about' | '/museums'
+  to: '/' | '/about' | '/museums' | '/stone-tools'
+  id: '__root__' | '/' | '/about' | '/museums' | '/stone-tools'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   MuseumsRoute: typeof MuseumsRoute
+  StoneToolsRoute: typeof StoneToolsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stone-tools': {
+      id: '/stone-tools'
+      path: '/stone-tools'
+      fullPath: '/stone-tools'
+      preLoaderRoute: typeof StoneToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/museums': {
       id: '/museums'
       path: '/museums'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   MuseumsRoute: MuseumsRoute,
+  StoneToolsRoute: StoneToolsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
