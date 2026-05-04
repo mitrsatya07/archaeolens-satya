@@ -144,6 +144,12 @@ function IndexPage() {
               Method
             </Link>
             <Link
+              to="/stone-tools"
+              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
+            >
+              Tools
+            </Link>
+            <Link
               to="/museums"
               className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
             >
