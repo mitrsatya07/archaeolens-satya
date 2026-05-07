@@ -29,7 +29,11 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#1a1a2e" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { title: "ArchaeoLens" },
       { name: "description", content: "Archaeological photo observation for artifacts, fragments, ceramics, lithics, inscriptions, and field records." },
       { name: "author", content: "Lovable" },
@@ -47,6 +51,19 @@ export const Route = createRootRoute({
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "manifest",
+        href: "/manifest.json",
+      },
+      {
+        rel: "icon",
+        href: "/icon-192.png",
+        type: "image/png",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/icon-512.png",
       },
     ],
   }),

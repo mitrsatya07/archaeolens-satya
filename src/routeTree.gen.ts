@@ -9,14 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StoneToolsRouteImport } from './routes/stone-tools'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as MuseumsRouteImport } from './routes/museums'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoneToolsRoute = StoneToolsRouteImport.update({
   id: '/stone-tools',
   path: '/stone-tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MuseumsRoute = MuseumsRouteImport.update({
@@ -39,43 +51,84 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/museums': typeof MuseumsRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/stone-tools': typeof StoneToolsRoute
+  '/terms': typeof TermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/museums': typeof MuseumsRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/stone-tools': typeof StoneToolsRoute
+  '/terms': typeof TermsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/museums': typeof MuseumsRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/stone-tools': typeof StoneToolsRoute
+  '/terms': typeof TermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/museums' | '/stone-tools'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/museums'
+    | '/privacy-policy'
+    | '/stone-tools'
+    | '/terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/museums' | '/stone-tools'
-  id: '__root__' | '/' | '/about' | '/museums' | '/stone-tools'
+  to:
+    | '/'
+    | '/about'
+    | '/museums'
+    | '/privacy-policy'
+    | '/stone-tools'
+    | '/terms'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/museums'
+    | '/privacy-policy'
+    | '/stone-tools'
+    | '/terms'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   MuseumsRoute: typeof MuseumsRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   StoneToolsRoute: typeof StoneToolsRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stone-tools': {
       id: '/stone-tools'
       path: '/stone-tools'
       fullPath: '/stone-tools'
       preLoaderRoute: typeof StoneToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/museums': {
@@ -106,17 +159,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   MuseumsRoute: MuseumsRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   StoneToolsRoute: StoneToolsRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
