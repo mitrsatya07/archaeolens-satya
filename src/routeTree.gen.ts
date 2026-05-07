@@ -13,6 +13,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StoneToolsRouteImport } from './routes/stone-tools'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as MuseumsRouteImport } from './routes/museums'
+import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const MuseumsRoute = MuseumsRouteImport.update({
   path: '/museums',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedbackRoute = FeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/feedback': typeof FeedbackRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/stone-tools': typeof StoneToolsRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/feedback': typeof FeedbackRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/stone-tools': typeof StoneToolsRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/feedback': typeof FeedbackRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/stone-tools': typeof StoneToolsRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/feedback'
     | '/museums'
     | '/privacy-policy'
     | '/stone-tools'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/feedback'
     | '/museums'
     | '/privacy-policy'
     | '/stone-tools'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/feedback'
     | '/museums'
     | '/privacy-policy'
     | '/stone-tools'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  FeedbackRoute: typeof FeedbackRoute
   MuseumsRoute: typeof MuseumsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   StoneToolsRoute: typeof StoneToolsRoute
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MuseumsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  FeedbackRoute: FeedbackRoute,
   MuseumsRoute: MuseumsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   StoneToolsRoute: StoneToolsRoute,
