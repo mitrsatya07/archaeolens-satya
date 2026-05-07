@@ -305,9 +305,10 @@ function IndexPage() {
 
         {/* Footer */}
         <footer className="mt-10 border-t border-border pt-6 pb-8 text-center text-xs text-muted-foreground space-y-2">
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/privacy-policy" className="hover:text-primary underline">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-primary underline">Terms of Service</Link>
+            <Link to="/feedback" className="hover:text-primary underline">Rate App</Link>
             <Link to="/about" className="hover:text-primary underline">About</Link>
           </div>
           <p>© 2026 ArchaeoLens. For educational and research purposes only.</p>
