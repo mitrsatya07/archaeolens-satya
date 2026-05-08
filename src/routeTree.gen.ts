@@ -14,6 +14,7 @@ import { Route as StoneToolsRouteImport } from './routes/stone-tools'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as MuseumsRouteImport } from './routes/museums'
 import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as AttributionsRouteImport } from './routes/attributions'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -42,6 +43,11 @@ const FeedbackRoute = FeedbackRouteImport.update({
   path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AttributionsRoute = AttributionsRouteImport.update({
+  id: '/attributions',
+  path: '/attributions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -56,6 +62,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/attributions': typeof AttributionsRoute
   '/feedback': typeof FeedbackRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/attributions': typeof AttributionsRoute
   '/feedback': typeof FeedbackRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/attributions': typeof AttributionsRoute
   '/feedback': typeof FeedbackRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/attributions'
     | '/feedback'
     | '/museums'
     | '/privacy-policy'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/attributions'
     | '/feedback'
     | '/museums'
     | '/privacy-policy'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/attributions'
     | '/feedback'
     | '/museums'
     | '/privacy-policy'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AttributionsRoute: typeof AttributionsRoute
   FeedbackRoute: typeof FeedbackRoute
   MuseumsRoute: typeof MuseumsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/attributions': {
+      id: '/attributions'
+      path: '/attributions'
+      fullPath: '/attributions'
+      preLoaderRoute: typeof AttributionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AttributionsRoute: AttributionsRoute,
   FeedbackRoute: FeedbackRoute,
   MuseumsRoute: MuseumsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
@@ -187,12 +208,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
