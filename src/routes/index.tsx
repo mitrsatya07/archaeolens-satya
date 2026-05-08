@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2, Pickaxe } from "lucide-react";
+import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
@@ -211,6 +211,41 @@ function IndexPage() {
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 Explore prehistoric stone tools with interactive 3D models from every region and period.
               </p>
+            </div>
+          </Link>
+          <Link to="/sites" className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary"><MapPin className="h-5 w-5" /></div>
+            <div>
+              <h3 className="font-semibold text-foreground">Archaeological Sites</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">42+ ASI &amp; UNESCO sites across India — search by state, period, or culture.</p>
+            </div>
+          </Link>
+          <Link to="/timeline" className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary"><Clock className="h-5 w-5" /></div>
+            <div>
+              <h3 className="font-semibold text-foreground">Cultural Periods Timeline</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Paleolithic to Modern — characteristic artifacts and key sites for every period.</p>
+            </div>
+          </Link>
+          <Link to="/typology" className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary"><BookOpen className="h-5 w-5" /></div>
+            <div>
+              <h3 className="font-semibold text-foreground">Pottery &amp; Script Typology</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Diagnostic guide for NBPW, PGW, BRW, Brahmi, Kharosthi, Indus script &amp; more.</p>
+            </div>
+          </Link>
+          <Link to="/field-notes" className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary"><NotebookPen className="h-5 w-5" /></div>
+            <div>
+              <h3 className="font-semibold text-foreground">My Field Notes</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Save observations with photo, GPS, and notes — stored privately on your device.</p>
+            </div>
+          </Link>
+          <Link to="/heritage-laws" className="flex gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-accent">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary"><Scale className="h-5 w-5" /></div>
+            <div>
+              <h3 className="font-semibold text-foreground">Heritage Laws &amp; Reporting</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">AMASR Act, Antiquities Act, and how to report a chance find to ASI.</p>
             </div>
           </Link>
         </section>

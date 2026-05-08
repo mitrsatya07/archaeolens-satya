@@ -9,15 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TypologyRouteImport } from './routes/typology'
+import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StoneToolsRouteImport } from './routes/stone-tools'
+import { Route as SitesRouteImport } from './routes/sites'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as MuseumsRouteImport } from './routes/museums'
+import { Route as HeritageLawsRouteImport } from './routes/heritage-laws'
+import { Route as FieldNotesRouteImport } from './routes/field-notes'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as AttributionsRouteImport } from './routes/attributions'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TypologyRoute = TypologyRouteImport.update({
+  id: '/typology',
+  path: '/typology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -28,6 +43,11 @@ const StoneToolsRoute = StoneToolsRouteImport.update({
   path: '/stone-tools',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitesRoute = SitesRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
@@ -36,6 +56,16 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
 const MuseumsRoute = MuseumsRouteImport.update({
   id: '/museums',
   path: '/museums',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HeritageLawsRoute = HeritageLawsRouteImport.update({
+  id: '/heritage-laws',
+  path: '/heritage-laws',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FieldNotesRoute = FieldNotesRouteImport.update({
+  id: '/field-notes',
+  path: '/field-notes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedbackRoute = FeedbackRouteImport.update({
@@ -64,20 +94,30 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
   '/feedback': typeof FeedbackRoute
+  '/field-notes': typeof FieldNotesRoute
+  '/heritage-laws': typeof HeritageLawsRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/sites': typeof SitesRoute
   '/stone-tools': typeof StoneToolsRoute
   '/terms': typeof TermsRoute
+  '/timeline': typeof TimelineRoute
+  '/typology': typeof TypologyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
   '/feedback': typeof FeedbackRoute
+  '/field-notes': typeof FieldNotesRoute
+  '/heritage-laws': typeof HeritageLawsRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/sites': typeof SitesRoute
   '/stone-tools': typeof StoneToolsRoute
   '/terms': typeof TermsRoute
+  '/timeline': typeof TimelineRoute
+  '/typology': typeof TypologyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +125,15 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
   '/feedback': typeof FeedbackRoute
+  '/field-notes': typeof FieldNotesRoute
+  '/heritage-laws': typeof HeritageLawsRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/sites': typeof SitesRoute
   '/stone-tools': typeof StoneToolsRoute
   '/terms': typeof TermsRoute
+  '/timeline': typeof TimelineRoute
+  '/typology': typeof TypologyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +142,45 @@ export interface FileRouteTypes {
     | '/about'
     | '/attributions'
     | '/feedback'
+    | '/field-notes'
+    | '/heritage-laws'
     | '/museums'
     | '/privacy-policy'
+    | '/sites'
     | '/stone-tools'
     | '/terms'
+    | '/timeline'
+    | '/typology'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/attributions'
     | '/feedback'
+    | '/field-notes'
+    | '/heritage-laws'
     | '/museums'
     | '/privacy-policy'
+    | '/sites'
     | '/stone-tools'
     | '/terms'
+    | '/timeline'
+    | '/typology'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/attributions'
     | '/feedback'
+    | '/field-notes'
+    | '/heritage-laws'
     | '/museums'
     | '/privacy-policy'
+    | '/sites'
     | '/stone-tools'
     | '/terms'
+    | '/timeline'
+    | '/typology'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,14 +188,33 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AttributionsRoute: typeof AttributionsRoute
   FeedbackRoute: typeof FeedbackRoute
+  FieldNotesRoute: typeof FieldNotesRoute
+  HeritageLawsRoute: typeof HeritageLawsRoute
   MuseumsRoute: typeof MuseumsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  SitesRoute: typeof SitesRoute
   StoneToolsRoute: typeof StoneToolsRoute
   TermsRoute: typeof TermsRoute
+  TimelineRoute: typeof TimelineRoute
+  TypologyRoute: typeof TypologyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/typology': {
+      id: '/typology'
+      path: '/typology'
+      fullPath: '/typology'
+      preLoaderRoute: typeof TypologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -150,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoneToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sites': {
+      id: '/sites'
+      path: '/sites'
+      fullPath: '/sites'
+      preLoaderRoute: typeof SitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
@@ -162,6 +248,20 @@ declare module '@tanstack/react-router' {
       path: '/museums'
       fullPath: '/museums'
       preLoaderRoute: typeof MuseumsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/heritage-laws': {
+      id: '/heritage-laws'
+      path: '/heritage-laws'
+      fullPath: '/heritage-laws'
+      preLoaderRoute: typeof HeritageLawsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/field-notes': {
+      id: '/field-notes'
+      path: '/field-notes'
+      fullPath: '/field-notes'
+      preLoaderRoute: typeof FieldNotesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feedback': {
@@ -200,10 +300,15 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AttributionsRoute: AttributionsRoute,
   FeedbackRoute: FeedbackRoute,
+  FieldNotesRoute: FieldNotesRoute,
+  HeritageLawsRoute: HeritageLawsRoute,
   MuseumsRoute: MuseumsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  SitesRoute: SitesRoute,
   StoneToolsRoute: StoneToolsRoute,
   TermsRoute: TermsRoute,
+  TimelineRoute: TimelineRoute,
+  TypologyRoute: TypologyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
