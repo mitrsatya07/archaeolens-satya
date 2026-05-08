@@ -310,6 +310,7 @@ function IndexPage() {
             <Link to="/terms" className="hover:text-primary underline">Terms of Service</Link>
             <Link to="/feedback" className="hover:text-primary underline">Rate App</Link>
             <Link to="/about" className="hover:text-primary underline">About</Link>
+            <Link to="/attributions" className="hover:text-primary underline">Attributions &amp; Credits</Link>
           </div>
           <p>© 2026 ArchaeoLens. For educational and research purposes only.</p>
           <p>Not a certified authentication service. Consult qualified archaeologists for professional assessments.</p>
