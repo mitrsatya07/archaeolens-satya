@@ -160,7 +160,7 @@ function AttributionsPage() {
             (2) the specific location in the app, (3) proof of ownership, and (4) your contact details.
           </p>
           <p className="mt-2 text-sm">
-            Contact: <a href="mailto:support@archaeolens.app" className="text-primary underline">support@archaeolens.app</a>
+            Contact: <a href="mailto:satyaprakashkumawat07@gmail.com" className="text-primary underline">satyaprakashkumawat07@gmail.com</a>
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             We commit to reviewing every request within <strong>7 business days</strong> and removing or correcting

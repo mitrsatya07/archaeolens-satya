@@ -344,6 +344,7 @@ function IndexPage() {
             <Link to="/privacy-policy" className="hover:text-primary underline">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-primary underline">Terms of Service</Link>
             <Link to="/feedback" className="hover:text-primary underline">Rate App</Link>
+            <Link to="/contact" className="hover:text-primary underline">Contact</Link>
             <Link to="/about" className="hover:text-primary underline">About</Link>
             <Link to="/attributions" className="hover:text-primary underline">Attributions &amp; Credits</Link>
           </div>

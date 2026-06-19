@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Star, Send, ArrowLeft } from "lucide-react";
+import { Star, Send, ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -126,6 +126,17 @@ function FeedbackPage() {
           <p className="text-xs text-center text-muted-foreground">
             Your feedback helps improve ArchaeoLens. If you enjoy the app, please also rate us on the Play Store!
           </p>
+
+          <div className="rounded-lg border border-border bg-card p-4 text-center space-y-2">
+            <p className="text-sm font-medium text-foreground">Have a query or need help?</p>
+            <a
+              href="mailto:satyaprakashkumawat07@gmail.com"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary underline"
+            >
+              <Mail className="h-4 w-4" />
+              satyaprakashkumawat07@gmail.com
+            </a>
+          </div>
         </form>
       </main>
     </div>
