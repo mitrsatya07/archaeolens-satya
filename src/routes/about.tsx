@@ -178,9 +178,9 @@ function AboutPage() {
             <Link to="/feedback" className="flex items-center gap-2 rounded-lg border border-border bg-card p-3 text-sm font-medium hover:bg-accent">
               <Star className="h-4 w-4 text-primary" /> Rate This App
             </Link>
-            <a href="mailto:support@archaeolens.app" className="flex items-center gap-2 rounded-lg border border-border bg-card p-3 text-sm font-medium hover:bg-accent">
-              <Mail className="h-4 w-4 text-primary" /> Contact Support
-            </a>
+            <Link to="/contact" className="flex items-center gap-2 rounded-lg border border-border bg-card p-3 text-sm font-medium hover:bg-accent">
+              <Mail className="h-4 w-4 text-primary" /> Contact & Queries
+            </Link>
             <Link to="/attributions" className="flex items-center gap-2 rounded-lg border border-border bg-card p-3 text-sm font-medium hover:bg-accent sm:col-span-2">
               <ShieldCheck className="h-4 w-4 text-primary" /> Attributions &amp; Credits (Data Sources &amp; Licenses)
             </Link>
