@@ -134,6 +134,7 @@ function ContactPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={100}
               placeholder="Your name"
               className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
@@ -147,6 +148,7 @@ function ContactPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              maxLength={255}
               placeholder="you@example.com"
               className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
@@ -159,6 +161,7 @@ function ContactPage() {
               id="c-message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              maxLength={2000}
               placeholder="Describe your query, feedback, or bug in detail..."
               rows={5}
               className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
