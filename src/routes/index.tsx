@@ -5,6 +5,7 @@ import { Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink, B
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
+import { AuthHeader } from "@/components/AuthHeader";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -136,24 +137,13 @@ function IndexPage() {
               <h1 className="text-2xl font-black tracking-tight text-primary">ArchaeoLens</h1>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <AuthHeader />
             <Link
               to="/about"
-              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
+              className="hidden sm:inline-block rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
             >
-              Method
-            </Link>
-            <Link
-              to="/stone-tools"
-              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
-            >
-              Tools
-            </Link>
-            <Link
-              to="/museums"
-              className="rounded-full border border-primary/20 bg-card px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm hover:bg-accent"
-            >
-              Museums
+              About
             </Link>
           </div>
         </div>
@@ -346,6 +336,7 @@ function IndexPage() {
             <Link to="/feedback" className="hover:text-primary underline">Rate App</Link>
             <Link to="/contact" className="hover:text-primary underline">Contact</Link>
             <Link to="/about" className="hover:text-primary underline">About</Link>
+            <Link to="/references" className="hover:text-primary underline">References</Link>
             <Link to="/attributions" className="hover:text-primary underline">Attributions &amp; Credits</Link>
           </div>
           <p>© 2026 ArchaeoLens. For educational and research purposes only.</p>
