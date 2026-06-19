@@ -14,12 +14,14 @@ import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StoneToolsRouteImport } from './routes/stone-tools'
 import { Route as SitesRouteImport } from './routes/sites'
+import { Route as ReferencesRouteImport } from './routes/references'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as MuseumsRouteImport } from './routes/museums'
 import { Route as HeritageLawsRouteImport } from './routes/heritage-laws'
 import { Route as FieldNotesRouteImport } from './routes/field-notes'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AttributionsRouteImport } from './routes/attributions'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -47,6 +49,11 @@ const StoneToolsRoute = StoneToolsRouteImport.update({
 const SitesRoute = SitesRouteImport.update({
   id: '/sites',
   path: '/sites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferencesRoute = ReferencesRouteImport.update({
+  id: '/references',
+  path: '/references',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
@@ -79,6 +86,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AttributionsRoute = AttributionsRouteImport.update({
   id: '/attributions',
   path: '/attributions',
@@ -99,12 +111,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
   '/heritage-laws': typeof HeritageLawsRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/references': typeof ReferencesRoute
   '/sites': typeof SitesRoute
   '/stone-tools': typeof StoneToolsRoute
   '/terms': typeof TermsRoute
@@ -115,12 +129,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
   '/heritage-laws': typeof HeritageLawsRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/references': typeof ReferencesRoute
   '/sites': typeof SitesRoute
   '/stone-tools': typeof StoneToolsRoute
   '/terms': typeof TermsRoute
@@ -132,12 +148,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
   '/heritage-laws': typeof HeritageLawsRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/references': typeof ReferencesRoute
   '/sites': typeof SitesRoute
   '/stone-tools': typeof StoneToolsRoute
   '/terms': typeof TermsRoute
@@ -150,12 +168,14 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/attributions'
+    | '/auth'
     | '/contact'
     | '/feedback'
     | '/field-notes'
     | '/heritage-laws'
     | '/museums'
     | '/privacy-policy'
+    | '/references'
     | '/sites'
     | '/stone-tools'
     | '/terms'
@@ -166,12 +186,14 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/attributions'
+    | '/auth'
     | '/contact'
     | '/feedback'
     | '/field-notes'
     | '/heritage-laws'
     | '/museums'
     | '/privacy-policy'
+    | '/references'
     | '/sites'
     | '/stone-tools'
     | '/terms'
@@ -182,12 +204,14 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/attributions'
+    | '/auth'
     | '/contact'
     | '/feedback'
     | '/field-notes'
     | '/heritage-laws'
     | '/museums'
     | '/privacy-policy'
+    | '/references'
     | '/sites'
     | '/stone-tools'
     | '/terms'
@@ -199,12 +223,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AttributionsRoute: typeof AttributionsRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   FeedbackRoute: typeof FeedbackRoute
   FieldNotesRoute: typeof FieldNotesRoute
   HeritageLawsRoute: typeof HeritageLawsRoute
   MuseumsRoute: typeof MuseumsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ReferencesRoute: typeof ReferencesRoute
   SitesRoute: typeof SitesRoute
   StoneToolsRoute: typeof StoneToolsRoute
   TermsRoute: typeof TermsRoute
@@ -249,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/references': {
+      id: '/references'
+      path: '/references'
+      fullPath: '/references'
+      preLoaderRoute: typeof ReferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
@@ -291,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/attributions': {
       id: '/attributions'
       path: '/attributions'
@@ -319,12 +359,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AttributionsRoute: AttributionsRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   FeedbackRoute: FeedbackRoute,
   FieldNotesRoute: FieldNotesRoute,
   HeritageLawsRoute: HeritageLawsRoute,
   MuseumsRoute: MuseumsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ReferencesRoute: ReferencesRoute,
   SitesRoute: SitesRoute,
   StoneToolsRoute: StoneToolsRoute,
   TermsRoute: TermsRoute,

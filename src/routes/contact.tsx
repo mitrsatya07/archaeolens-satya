@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ArrowLeft, Mail, MessageSquare, Send, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { contactSchema } from "@/lib/validation";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -17,21 +18,23 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState<"general" | "feedback" | "bug" | "collab">("general");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) {
-      toast.error("Please write a message.");
+    const parsed = contactSchema.safeParse({ name, email, category, message });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
       return;
     }
     setSubmitted(true);
     toast.success("Message prepared! Opening your email app…");
-    // Open mailto with pre-filled subject and body
     const subject = encodeURIComponent(`ArchaeoLens — ${category.charAt(0).toUpperCase() + category.slice(1)}`);
-    const body = encodeURIComponent(`Name: ${name || "Not provided"}\nEmail: ${email || "Not provided"}\nCategory: ${category}\n\nMessage:\n${message}`);
+    const body = encodeURIComponent(
+      `Name: ${parsed.data.name || "Not provided"}\nEmail: ${parsed.data.email || "Not provided"}\nCategory: ${parsed.data.category}\n\nMessage:\n${parsed.data.message}`
+    );
     window.location.href = `mailto:satyaprakashkumawat07@gmail.com?subject=${subject}&body=${body}`;
   };
 
@@ -109,7 +112,7 @@ function ContactPage() {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => setCategory(c.id)}
+                  onClick={() => setCategory(c.id as typeof category)}
                   className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
                     category === c.id
                       ? "border-primary bg-primary/10 text-primary"
@@ -131,6 +134,7 @@ function ContactPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={100}
               placeholder="Your name"
               className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
@@ -144,6 +148,7 @@ function ContactPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              maxLength={255}
               placeholder="you@example.com"
               className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
@@ -156,6 +161,7 @@ function ContactPage() {
               id="c-message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              maxLength={2000}
               placeholder="Describe your query, feedback, or bug in detail..."
               rows={5}
               className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"

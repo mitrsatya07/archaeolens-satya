@@ -1,35 +1,58 @@
-Plan to make the app lighter and fully archaeology-focused
+# Website Upgrade Plan
 
-1. Remove the heavy cyber/Hack-the-Box feel
-- Replace neon grid, scanline animation, strong glow shadows, dense borders, and terminal-style labels with a clean field-documentation aesthetic.
-- Use a lighter archaeological palette: parchment/sand background, clay/terracotta accents, charcoal text, subtle paper-like panels.
-- Keep camera/photo capture simple and fast-looking: minimal overlay, no animated scanning effects, fewer translucent layers.
+Scope is large — I'll deliver in 4 phases in one go.
 
-2. Change the whole product perspective to archaeology
-- Make archaeology the default and primary mode.
-- Remove the Nature Scan toggle and nature-focused homepage copy.
-- Rename visible UI language from “LensID / scan / intel / signal” style to a professional archaeology tool tone, such as “ArchaeoLens”, “Field Record”, “Photo Observation”, and “Evidence Level”.
-- Update metadata and descriptions in `src/routes/index.tsx`, `src/routes/about.tsx`, and `src/routes/__root.tsx` so the website is clearly about archaeological observation, not plants/animals/minerals.
+## Phase 1 — Authentication & Cloud Sync for Field Notes
 
-3. Improve authenticity and realism of AI results
-- Tighten the archaeology AI prompt so it never claims final authentication, exact dating, market value, legality, provenance, or certainty from an image alone.
-- Require cautious wording: “possible”, “consistent with”, “not determinable from photograph”, and “requires stratigraphic/site context”.
-- Ask the model to prioritize visible evidence only: material, form, breakage, surface treatment, manufacture marks, inscriptions, patina/weathering, measurements needed, and photo limitations.
-- Make low/medium confidence more common unless the visible diagnostic features are strong.
+- Enable Email/Password + Google sign-in (Lovable managed OAuth, no setup needed)
+- New `/auth` page (sign in / sign up tabs)
+- Create `_authenticated/route.tsx` (integration-managed gate)
+- Migration: `profiles` table + `field_notes` table with RLS (user-scoped)
+- Field Notes page becomes hybrid: signed-out → localStorage; signed-in → cloud sync via server functions
+- Header shows sign-in button / user menu (sign out)
 
-4. Redesign the result card as a professional archaeological record
-- Replace “confidence signal” with “Evidence level”.
-- Emphasize: Object type, material, observed features, condition, possible chronology/cultural context, limitations, and recommended next documentation steps.
-- Add a clear “Authenticity note” section explaining that true authentication requires context, lab/typological comparison, provenance, and expert review.
-- Keep source links, but label them as “Research references” and frame them as places to compare typologies, not proof.
+## Phase 2 — Authentic Content & Citations
 
-5. Update supporting pages
-- Rewrite the About page around archaeological field workflow: photograph, observe, record, compare, verify.
-- Replace plant/animal/mineral cards with archaeology categories: ceramics, lithics/tools, coins/metals, inscriptions/rock art, terracotta/sculptural fragments.
-- Update limits and ethics: do not disturb sites, follow local heritage laws, consult professionals, record context and scale.
+Add a structured `references` data module with full citation objects: `{ author, year, title, publication, publisher, url, type }`. Wire into every content page:
 
-Technical notes
-- Files to update: `src/components/CameraCapture.tsx`, `src/components/IdentifyResultCard.tsx`, `src/server/identify.functions.ts`, `src/routes/index.tsx`, `src/routes/about.tsx`, `src/routes/__root.tsx`, and `src/styles.css`.
-- I will keep the existing camera/upload and export functionality.
-- I will avoid database changes; this is a UI, copy, and AI-prompt refocus.
-- After implementation, I will run a build/type check to catch JSX, import, and server-function syntax issues.
+- **Sites directory**: each site gets ASI notification number, UNESCO inscription year/ref, lat/long, discoverer, primary excavator, key reports (e.g., Marshall 1931 for Mohenjo-daro)
+- **Timeline**: each period cites foundational sources (e.g., Allchin & Allchin 1982, Chakrabarti 1999, Coningham & Young 2015)
+- **Typology**: pottery wares cite Wheeler 1947 (NBPW), Lal 1954 (PGW); scripts cite Salomon 1998, Parpola 1994
+- **Heritage Laws**: link to actual AMASR Act PDF on asi.nic.in, Antiquities Act 1972, official ASI reporting contacts
+- **New `/references` page**: full bibliography (40+ entries) with DOI/URL links
+- Inline footnote-style citation chips `[1]` on factual claims
+
+## Phase 3 — Security Hardening
+
+- **Input validation**: Zod schemas on Contact, Feedback, Field Notes forms (name/email/message length caps, type checks, sanitization)
+- **Remove `dangerouslySetInnerHTML`** anywhere it exists
+- **RLS audit**: every new table has user-scoped policies + GRANTs to authenticated/service_role only
+- **HIBP password check** enabled on auth
+- **mailto encoding**: `encodeURIComponent` everywhere
+- Run security scan, address findings
+
+## Phase 4 — UI/UX Polish
+
+- Consistent page header component (breadcrumb + title + description) across all routes
+- Unified card/section spacing using design tokens
+- Better mobile nav (drawer)
+- Accessibility: alt text audit, aria-labels on icon buttons, focus rings, semantic headings (single H1 per page)
+- Loading skeletons for cloud-synced field notes
+- Empty states with helpful CTAs
+
+## Technical Notes
+
+- Stack: TanStack Start + Supabase via Lovable Cloud
+- New routes: `/auth`, `/references`, `_authenticated/field-notes` (moved)
+- New tables: `profiles`, `field_notes` (with photo_url, lat, lng, category, notes)
+- Server functions: `saveFieldNote`, `listFieldNotes`, `deleteFieldNote` (all `requireSupabaseAuth`)
+- Field Notes migration helper: one-click "Upload local notes to cloud" after sign-in
+- Validation lib: `zod` (already common in stack)
+
+## Out of Scope
+
+- Storage bucket for photos (Phase 1 keeps photos as base64 in DB with size cap; upgrade later if needed)
+- Backend rate limiting (no primitive available; will skip per platform guidance)
+- Marketing/SEO automation beyond per-page `head()` metadata
+
+Approve and I'll build all 4 phases sequentially.
