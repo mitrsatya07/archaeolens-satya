@@ -1,7 +1,8 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
+import { Link, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PageTransition, TopProgressBar } from "@/components/RouteTransition";
 
 import appCss from "../styles.css?url";
 
@@ -103,7 +104,8 @@ function RootComponent() {
   }, [router]);
   return (
     <>
-      <Outlet />
+      <TopProgressBar />
+      <PageTransition />
       <Toaster position="top-center" richColors />
     </>
   );
