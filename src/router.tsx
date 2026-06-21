@@ -1,5 +1,6 @@
 import { createRouter, useRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { PageSkeleton } from "./components/RouteTransition";
 
 function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
@@ -59,7 +60,11 @@ export const getRouter = () => {
     routeTree,
     context: {},
     scrollRestoration: true,
+    defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
+    defaultPendingComponent: PageSkeleton,
+    defaultPendingMs: 200,
+    defaultPendingMinMs: 300,
     defaultErrorComponent: DefaultErrorComponent,
   });
 
