@@ -253,8 +253,72 @@
     border-color: var(--color-border);
   }
 
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.015em;
   }
 }
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); letter-spacing: -0.015em; }
+
+  .magazine-shell {
+    background:
+      radial-gradient(1200px 600px at 110% -10%, color-mix(in oklab, var(--copper) 22%, transparent), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, color-mix(in oklab, var(--sand) 35%, transparent), transparent 60%),
+      var(--background);
+  }
+
+  .editorial-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ink) 35%, transparent), transparent);
+  }
+
+  .small-caps {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+
+  .drop-cap::first-letter {
+    font-family: var(--font-display);
+    font-size: 3.8em;
+    float: left;
+    line-height: 0.85;
+    padding: 0.4rem 0.6rem 0 0;
+    color: var(--terracotta);
+  }
+
+  .paper-card {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--card) 98%, white), var(--card));
+    box-shadow: var(--shadow-soft);
+    border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  }
+
+  .paper-card-hover { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  .paper-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-editorial);
+    border-color: color-mix(in oklab, var(--terracotta) 35%, transparent);
+  }
+
+  .ornament {
+    background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--ink) 28%, transparent) 1px, transparent 0);
+    background-size: 14px 14px;
+  }
+}
+
