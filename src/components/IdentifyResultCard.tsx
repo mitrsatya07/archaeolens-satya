@@ -474,8 +474,9 @@ function ArchaeologyResultCard({
             </p>
           </Panel>
 
+          <ConfidenceScoreBar score={result.confidenceScore} confidence={result.confidence} />
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
-          <SourceLinks sources={result.sources} />
+          <MatchedReferences ids={result.referenceIds} />
           <SourceLinks sources={result.sources} />
 
           <Button
