@@ -364,7 +364,10 @@ function NatureResultCard({
             </div>
           )}
 
+          <ConfidenceScoreBar score={result.confidenceScore} confidence={result.confidence} />
+          {result.mineralDetails && <MineralPropertiesPanel details={result.mineralDetails} />}
           <Alternatives alternatives={result.alternatives} title="Alternate signatures" />
+          <MatchedReferences ids={result.referenceIds} />
           <SourceLinks sources={result.sources} />
           <Caution confidence={result.confidence} notes={result.notes} archaeology={false} />
         </div>
