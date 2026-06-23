@@ -15,10 +15,12 @@ import {
   Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ref as lookupRef } from "@/data/references";
 import type {
   ArchaeologyResult,
   Confidence,
   IdentifyResult,
+  MineralDetails,
   NatureResult,
 } from "@/lib/identify.functions";
 
