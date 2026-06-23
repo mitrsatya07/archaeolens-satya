@@ -33,6 +33,20 @@ export interface LocalNames {
   gu?: string;
 }
 
+export interface MineralDetails {
+  chemicalFormula?: string;
+  crystalSystem?: string;
+  mohsHardness?: string;
+  specificGravity?: string;
+  luster?: string;
+  color?: string;
+  streak?: string;
+  cleavage?: string;
+  fracture?: string;
+  commonLocalities?: string[];
+  archaeologicalUse?: string;
+}
+
 export interface NatureResult {
   mode: "nature";
   category: Category;
@@ -42,8 +56,11 @@ export interface NatureResult {
   localNames: LocalNames;
   summary: string;
   confidence: Confidence;
+  confidenceScore?: number;
   alternatives: string[];
   sources: { label: string; url: string }[];
+  referenceIds?: string[];
+  mineralDetails?: MineralDetails;
   notes?: string;
 }
 
@@ -61,8 +78,10 @@ export interface ArchaeologyResult {
   documentationAdvice: string[];
   fieldNote: string;
   confidence: Confidence;
+  confidenceScore?: number;
   alternatives: string[];
   sources: { label: string; url: string }[];
+  referenceIds?: string[];
   notes?: string;
 }
 
