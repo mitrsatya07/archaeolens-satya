@@ -60,7 +60,32 @@ export const REFERENCES: Reference[] = [
 
   // Numismatics
   { id: "gupta1969", author: "Gupta, P. L. & Hardaker, T. R.", year: "1985", title: "Indian Silver Punchmarked Coins: Magadha-Maurya Karshapana Series", publisher: "IIRNS, Nashik", type: "book" },
+
+  // Mineralogy & gemology
+  { id: "klein2007", author: "Klein, C. & Dutrow, B.", year: "2007", title: "Manual of Mineral Science (23rd ed.)", publisher: "John Wiley & Sons", type: "book" },
+  { id: "deer1992", author: "Deer, W. A., Howie, R. A. & Zussman, J.", year: "1992", title: "An Introduction to the Rock-Forming Minerals (2nd ed.)", publisher: "Longman Scientific & Technical", type: "book" },
+  { id: "schumann2009", author: "Schumann, W.", year: "2009", title: "Gemstones of the World (4th ed.)", publisher: "Sterling Publishing", type: "book" },
+  { id: "anthony2003", author: "Anthony, J. W., Bideaux, R. A., Bladh, K. W. & Nichols, M. C.", year: "2003", title: "Handbook of Mineralogy", publisher: "Mineralogical Society of America", url: "https://www.handbookofmineralogy.org/", type: "book" },
+  { id: "mindat", author: "Hudson Institute of Mineralogy", year: "n.d.", title: "Mindat.org — Mineral & Locality Database", url: "https://www.mindat.org/", type: "web" },
+  { id: "ima-cnmnc", author: "International Mineralogical Association", year: "n.d.", title: "IMA List of Mineral Names (CNMNC)", url: "https://cnmnc.main.jp/", type: "official" },
+  { id: "gsi", author: "Geological Survey of India", year: "n.d.", title: "GSI Mineral Resources Portal", url: "https://gsi.gov.in/", type: "official" },
+  { id: "rruff", author: "Lafuente, B., Downs, R. T., Yang, H. & Stone, N.", year: "2015", title: "The power of databases: the RRUFF project", publication: "Highlights in Mineralogical Crystallography (De Gruyter), 1–30", url: "https://rruff.info/", type: "article" },
 ];
+
+export const MINERAL_REFERENCE_IDS = [
+  "klein2007",
+  "deer1992",
+  "schumann2009",
+  "anthony2003",
+  "mindat",
+  "ima-cnmnc",
+  "gsi",
+  "rruff",
+] as const;
+
+export const ARCHAEOLOGY_REFERENCE_IDS = REFERENCES
+  .filter((r) => !(MINERAL_REFERENCE_IDS as readonly string[]).includes(r.id))
+  .map((r) => r.id);
 
 export function ref(id: string): Reference | undefined {
   return REFERENCES.find((r) => r.id === id);
