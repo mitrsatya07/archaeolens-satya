@@ -1,4 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import {
+  MINERAL_REFERENCE_IDS,
+  ARCHAEOLOGY_REFERENCE_IDS,
+  REFERENCES,
+} from "@/data/references";
 
 export type ScanMode = "nature" | "archaeology";
 export type Category = "plant" | "animal" | "mineral" | "unknown";
@@ -28,6 +33,20 @@ export interface LocalNames {
   gu?: string;
 }
 
+export interface MineralDetails {
+  chemicalFormula?: string;
+  crystalSystem?: string;
+  mohsHardness?: string;
+  specificGravity?: string;
+  luster?: string;
+  color?: string;
+  streak?: string;
+  cleavage?: string;
+  fracture?: string;
+  commonLocalities?: string[];
+  archaeologicalUse?: string;
+}
+
 export interface NatureResult {
   mode: "nature";
   category: Category;
@@ -37,8 +56,11 @@ export interface NatureResult {
   localNames: LocalNames;
   summary: string;
   confidence: Confidence;
+  confidenceScore?: number;
   alternatives: string[];
   sources: { label: string; url: string }[];
+  referenceIds?: string[];
+  mineralDetails?: MineralDetails;
   notes?: string;
 }
 
@@ -56,8 +78,10 @@ export interface ArchaeologyResult {
   documentationAdvice: string[];
   fieldNote: string;
   confidence: Confidence;
+  confidenceScore?: number;
   alternatives: string[];
   sources: { label: string; url: string }[];
+  referenceIds?: string[];
   notes?: string;
 }
 
@@ -84,6 +108,27 @@ function asStringArray(value: unknown, limit: number): string[] {
     ? value.filter((item): item is string => typeof item === "string").slice(0, limit)
     : [];
 }
+
+function asNumber(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(0, Math.min(100, Math.round(value)));
+  }
+  if (typeof value === "string") {
+    const n = Number(value);
+    if (Number.isFinite(n)) return Math.max(0, Math.min(100, Math.round(n)));
+  }
+  return undefined;
+}
+
+function filterReferenceIds(value: unknown, allowed: readonly string[]): string[] {
+  const set = new Set(allowed);
+  return Array.isArray(value)
+    ? value
+        .filter((item): item is string => typeof item === "string" && set.has(item))
+        .slice(0, 6)
+    : [];
+}
+
 
 function buildNatureSources(
   category: Category,
@@ -172,60 +217,65 @@ export const identifyImage = createServerFn({ method: "POST" })
     );
 
     const isArchaeology = data.mode === "archaeology";
+    const allowedRefIds = isArchaeology ? ARCHAEOLOGY_REFERENCE_IDS : (MINERAL_REFERENCE_IDS as readonly string[]);
+    const refCatalog = allowedRefIds
+      .map((id) => {
+        const r = REFERENCES.find((x) => x.id === id);
+        if (!r) return null;
+        return `- ${id} :: ${r.author} (${r.year}). ${r.title}`;
+      })
+      .filter(Boolean)
+      .join("\n");
+
     const systemPrompt = isArchaeology
-      ? `You are an archaeological field documentation assistant for professional photo observation. Analyze only visible evidence in photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculpture, bone, or metal objects. Always call the report_identification tool. Be decisive about visible object class, material, condition, and manufacturing traces when the photo supports it, but never claim final authentication, exact dating, legality, market value, provenance, or ownership from an image. Use professional calibrated wording: "consistent with", "probable", "possible", "not determinable from photograph", and "requires stratigraphic/site context". Prioritize diagnostic details: fabric, inclusions, rim/base/profile, flake scars, retouch, casting/striking marks, tool marks, inscriptions, iconography, patina/weathering, breakage, wear, scale needs, and photo limitations. Confidence must be evidence-based: use high when several clear diagnostic features support the same interpretation, medium when object class/material are clear but chronology/culture need context, and low only for unclear, partial, modern-looking, or non-archaeological images. If it is not clearly an archaeological object, report unknown with low confidence.`
-      : `You are an expert naturalist and mineralogist. You identify a single subject in a photo: a plant, an animal, or a mineral/rock. You always respond by calling the report_identification tool. Be honest about uncertainty. Never give medicinal, edibility, or toxicity advice. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: family/group, where it's typically found, and 1-2 distinguishing features. 3-5 sentences max.`;
+      ? `You are an archaeological field documentation assistant for professional photo observation. Analyze only visible evidence in photos of artifacts, pottery, lithics, coins, inscriptions, rock art, terracotta, bricks, sculpture, bone, or metal objects. Always call the report_identification tool. Be decisive about visible object class, material, condition, and manufacturing traces when the photo supports it, but never claim final authentication, exact dating, legality, market value, provenance, or ownership from an image. Use professional calibrated wording: "consistent with", "probable", "possible", "not determinable from photograph", and "requires stratigraphic/site context". Prioritize diagnostic details: fabric, inclusions, rim/base/profile, flake scars, retouch, casting/striking marks, tool marks, inscriptions, iconography, patina/weathering, breakage, wear, scale needs, and photo limitations. Confidence must be evidence-based: use high when several clear diagnostic features support the same interpretation, medium when object class/material are clear but chronology/culture need context, and low only for unclear, partial, modern-looking, or non-archaeological images. Also return confidenceScore as an integer 0–100 calibrated to the qualitative confidence (high≈75–95, medium≈45–74, low≈10–44). Pick up to 5 reference IDs from the catalog below that are genuinely relevant to your interpretation (return them in referenceIds; only use IDs that appear verbatim in the catalog).\n\nReference catalog (id :: citation):\n${refCatalog}`
+      : `You are an expert mineralogist and gemologist focused on stones, minerals, gems, ores, and rocks. The subject in the photo is almost always a mineral or rock specimen — identify it precisely. You always respond by calling the report_identification tool. Set category to "mineral" unless the photo clearly shows a living plant or animal. When category is "mineral", you MUST fill mineralDetails with the standard diagnostic properties of that species (chemical formula, crystal system, Mohs hardness range, specific gravity, luster, color, streak, cleavage, fracture, common world localities including India where known, and archaeological/cultural use if any). Use textbook values from established mineralogy literature; never invent values you don't know — leave a field empty instead. Local names should be the most widely used common name in that language; only include languages where you are confident a real local name exists. Keep the summary factual: mineral group, where it's typically found, and 1-2 distinguishing field tests. 3-5 sentences. Also return confidenceScore as an integer 0–100 calibrated to the qualitative confidence (high≈75–95, medium≈45–74, low≈10–44). Pick up to 5 reference IDs from the catalog below that genuinely document this species (return them in referenceIds; only use IDs that appear verbatim in the catalog). Never give medicinal, edibility, healing, or metaphysical claims.\n\nReference catalog (id :: citation):\n${refCatalog}`;
 
     const natureProperties = {
       category: {
         type: "string",
         enum: ["plant", "animal", "mineral", "unknown"],
-        description: "What kind of subject is in the image.",
+        description: "What kind of subject is in the image. Default to 'mineral' for stones, gems, rocks, ores.",
       },
       scientificName: {
         type: "string",
-        description: "Binomial scientific name (Latin) or mineral species name. Empty if unknown.",
+        description: "Mineral species name (e.g. 'Quartz', 'Corundum (var. Ruby)') or Latin binomial. Empty if unknown.",
       },
-      englishName: {
-        type: "string",
-        description: "Common English name. Empty if unknown.",
-      },
-      family: {
-        type: "string",
-        description: "Taxonomic family or mineral group, if relevant.",
-      },
+      englishName: { type: "string", description: "Common English name. Empty if unknown." },
+      family: { type: "string", description: "Mineral group / family (e.g. silicates, carbonates) or taxonomic family." },
       localNames: {
         type: "object",
         description: "Common name in major Indian languages, by ISO code.",
         properties: {
-          hi: { type: "string", description: "Hindi" },
-          ta: { type: "string", description: "Tamil" },
-          te: { type: "string", description: "Telugu" },
-          bn: { type: "string", description: "Bengali" },
-          mr: { type: "string", description: "Marathi" },
-          kn: { type: "string", description: "Kannada" },
-          ml: { type: "string", description: "Malayalam" },
-          gu: { type: "string", description: "Gujarati" },
+          hi: { type: "string" }, ta: { type: "string" }, te: { type: "string" }, bn: { type: "string" },
+          mr: { type: "string" }, kn: { type: "string" }, ml: { type: "string" }, gu: { type: "string" },
         },
         additionalProperties: false,
       },
-      summary: {
-        type: "string",
-        description: "3-5 sentence factual description.",
+      summary: { type: "string", description: "3-5 sentence factual description." },
+      mineralDetails: {
+        type: "object",
+        description: "Standard mineralogical properties when the subject is a mineral / rock / gem.",
+        properties: {
+          chemicalFormula: { type: "string", description: "e.g. SiO2, Al2O3, CaCO3." },
+          crystalSystem: { type: "string", description: "Cubic, tetragonal, hexagonal, trigonal, orthorhombic, monoclinic, triclinic, amorphous." },
+          mohsHardness: { type: "string", description: "Mohs scale, e.g. '7' or '6.5–7'." },
+          specificGravity: { type: "string", description: "Range, e.g. '2.65' or '3.95–4.10'." },
+          luster: { type: "string", description: "Vitreous, adamantine, metallic, resinous, pearly, silky, dull, etc." },
+          color: { type: "string", description: "Typical colors + observed color." },
+          streak: { type: "string", description: "Powder color on unglazed porcelain." },
+          cleavage: { type: "string", description: "Perfect / good / poor / none and directions." },
+          fracture: { type: "string", description: "Conchoidal, uneven, hackly, etc." },
+          commonLocalities: { type: "array", items: { type: "string" }, description: "Up to 6 well-known localities; prefer Indian sites where applicable." },
+          archaeologicalUse: { type: "string", description: "Known cultural / archaeological use (e.g. carnelian for Harappan beads, lapis trade routes)." },
+        },
+        additionalProperties: false,
       },
-      confidence: {
-        type: "string",
-        enum: ["high", "medium", "low"],
-      },
-      alternatives: {
-        type: "array",
-        items: { type: "string" },
-        description: "Up to 3 alternative scientific names if uncertain.",
-      },
-      notes: {
-        type: "string",
-        description: "Optional caveat for the user (e.g., poor lighting, partial view).",
-      },
+      confidence: { type: "string", enum: ["high", "medium", "low"] },
+      confidenceScore: { type: "integer", description: "Integer 0–100 reflecting visible-evidence strength." },
+      alternatives: { type: "array", items: { type: "string" }, description: "Up to 3 alternative species names." },
+      referenceIds: { type: "array", items: { type: "string" }, description: "Up to 5 reference IDs from the supplied catalog." },
+      notes: { type: "string", description: "Optional caveat (lighting, partial view, no streak test possible, etc.)." },
     };
 
     const archaeologyProperties = {
@@ -297,11 +347,13 @@ export const identifyImage = createServerFn({ method: "POST" })
           "Professional field observation paragraph, 3-5 sentences. Be realistic and cautious; state what cannot be determined from the photograph.",
       },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
+      confidenceScore: { type: "integer", description: "Integer 0–100 calibrated to the qualitative confidence." },
       alternatives: {
         type: "array",
         items: { type: "string" },
         description: "Up to 3 alternative interpretations.",
       },
+      referenceIds: { type: "array", items: { type: "string" }, description: "Up to 5 reference IDs from the supplied catalog." },
       notes: { type: "string", description: "Caveat about context/uncertainty." },
     };
 
@@ -428,6 +480,24 @@ export const identifyImage = createServerFn({ method: "POST" })
     const material = asString(parsed.material, "Unknown");
     const possiblePeriod = asString(parsed.possiblePeriod, "Unknown / requires context");
 
+    const md = (parsed.mineralDetails ?? {}) as Record<string, unknown>;
+    const mineralDetails: MineralDetails | undefined =
+      parsed.mineralDetails && typeof parsed.mineralDetails === "object"
+        ? {
+            chemicalFormula: asString(md.chemicalFormula) || undefined,
+            crystalSystem: asString(md.crystalSystem) || undefined,
+            mohsHardness: asString(md.mohsHardness) || undefined,
+            specificGravity: asString(md.specificGravity) || undefined,
+            luster: asString(md.luster) || undefined,
+            color: asString(md.color) || undefined,
+            streak: asString(md.streak) || undefined,
+            cleavage: asString(md.cleavage) || undefined,
+            fracture: asString(md.fracture) || undefined,
+            commonLocalities: asStringArray(md.commonLocalities, 6),
+            archaeologicalUse: asString(md.archaeologicalUse) || undefined,
+          }
+        : undefined;
+
     const result: IdentifyResult = isArchaeology
       ? {
           mode: "archaeology",
@@ -445,9 +515,11 @@ export const identifyImage = createServerFn({ method: "POST" })
             asString(parsed.fieldNote) ||
             "Preliminary observation requires clearer photographs and archaeological context.",
           confidence: (parsed.confidence as Confidence) ?? "low",
+          confidenceScore: asNumber(parsed.confidenceScore),
           alternatives: asStringArray(parsed.alternatives, 3),
           notes: asString(parsed.notes) || undefined,
           sources: buildArchaeologySources(`${objectType} ${material} ${possiblePeriod}`),
+          referenceIds: filterReferenceIds(parsed.referenceIds, ARCHAEOLOGY_REFERENCE_IDS),
         }
       : {
           mode: "nature",
@@ -458,12 +530,15 @@ export const identifyImage = createServerFn({ method: "POST" })
           localNames: (parsed.localNames as LocalNames) ?? {},
           summary: asString(parsed.summary),
           confidence: (parsed.confidence as Confidence) ?? "low",
+          confidenceScore: asNumber(parsed.confidenceScore),
           alternatives: asStringArray(parsed.alternatives, 3),
           notes: asString(parsed.notes) || undefined,
           sources: buildNatureSources(
             (parsed.category as Category) ?? "unknown",
             asString(parsed.scientificName) || asString(parsed.englishName),
           ),
+          referenceIds: filterReferenceIds(parsed.referenceIds, MINERAL_REFERENCE_IDS as readonly string[]),
+          mineralDetails,
         };
 
     return { ok: true as const, result };

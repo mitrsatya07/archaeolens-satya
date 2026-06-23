@@ -15,10 +15,12 @@ import {
   Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ref as lookupRef } from "@/data/references";
 import type {
   ArchaeologyResult,
   Confidence,
   IdentifyResult,
+  MineralDetails,
   NatureResult,
 } from "@/lib/identify.functions";
 
@@ -159,6 +161,110 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
   );
 }
 
+function ConfidenceScoreBar({ score, confidence }: { score?: number; confidence: Confidence }) {
+  const value = typeof score === "number" ? score : confidence === "high" ? 85 : confidence === "medium" ? 60 : 30;
+  const tone =
+    value >= 75 ? "bg-leaf" : value >= 45 ? "bg-warn" : "bg-destructive";
+  return (
+    <div className="rounded-lg border border-border bg-background/55 p-3">
+      <div className="flex items-baseline justify-between">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Confidence score
+        </p>
+        <p className="font-mono text-sm font-bold text-foreground">{value}<span className="text-xs text-muted-foreground">/100</span></p>
+      </div>
+      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div className={`h-full ${tone} transition-all`} style={{ width: `${value}%` }} />
+      </div>
+      <p className="mt-1.5 text-[10px] text-muted-foreground">
+        Calibrated to visible diagnostic evidence. Not a probability of authenticity.
+      </p>
+    </div>
+  );
+}
+
+function MineralPropertiesPanel({ details }: { details: MineralDetails }) {
+  const rows: Array<[string, string | undefined]> = [
+    ["Chemical formula", details.chemicalFormula],
+    ["Crystal system", details.crystalSystem],
+    ["Mohs hardness", details.mohsHardness],
+    ["Specific gravity", details.specificGravity],
+    ["Luster", details.luster],
+    ["Color", details.color],
+    ["Streak", details.streak],
+    ["Cleavage", details.cleavage],
+    ["Fracture", details.fracture],
+  ].filter(([, v]) => Boolean(v)) as Array<[string, string]>;
+
+  if (!rows.length && !details.commonLocalities?.length && !details.archaeologicalUse) return null;
+
+  return (
+    <div className="rounded-lg border border-border bg-background/55 p-4">
+      <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Mineralogical properties
+      </h3>
+      <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {rows.map(([label, value]) => (
+          <div key={label} className="rounded-md border border-border/60 bg-card/60 p-2.5">
+            <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</dt>
+            <dd className="mt-0.5 font-mono text-sm text-foreground">{value}</dd>
+          </div>
+        ))}
+      </dl>
+      {details.commonLocalities && details.commonLocalities.length > 0 && (
+        <div className="mt-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Notable localities</p>
+          <div className="mt-1 flex flex-wrap gap-1.5">
+            {details.commonLocalities.map((loc) => (
+              <span key={loc} className="rounded-md border border-border bg-background/70 px-2 py-0.5 text-xs text-foreground/80">
+                {loc}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {details.archaeologicalUse && (
+        <div className="mt-3 rounded-md border border-primary/20 bg-primary/5 p-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-primary">Archaeological / cultural use</p>
+          <p className="mt-1 text-sm text-foreground/90">{details.archaeologicalUse}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MatchedReferences({ ids }: { ids?: string[] }) {
+  if (!ids || ids.length === 0) return null;
+  const refs = ids.map((id) => lookupRef(id)).filter((r): r is NonNullable<ReturnType<typeof lookupRef>> => Boolean(r));
+  if (!refs.length) return null;
+  return (
+    <div>
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Matched references
+      </h3>
+      <ul className="space-y-2">
+        {refs.map((r) => (
+          <li key={r.id} className="rounded-lg border border-border bg-background/55 p-3 text-sm leading-relaxed text-foreground/90">
+            <span className="font-semibold text-foreground">{r.author}</span>{" "}
+            <span className="text-muted-foreground">({r.year}).</span>{" "}
+            <em className="not-italic">{r.title}</em>
+            {r.publication && <span className="text-muted-foreground">. {r.publication}</span>}
+            {r.publisher && <span className="text-muted-foreground">. {r.publisher}</span>}
+            {r.url && (
+              <>
+                {" · "}
+                <a href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                  source <ExternalLink className="h-3 w-3" />
+                </a>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function IdentifyResultCard({
   result,
   imageUrl,
@@ -258,7 +364,10 @@ function NatureResultCard({
             </div>
           )}
 
+          <ConfidenceScoreBar score={result.confidenceScore} confidence={result.confidence} />
+          {result.mineralDetails && <MineralPropertiesPanel details={result.mineralDetails} />}
           <Alternatives alternatives={result.alternatives} title="Alternate signatures" />
+          <MatchedReferences ids={result.referenceIds} />
           <SourceLinks sources={result.sources} />
           <Caution confidence={result.confidence} notes={result.notes} archaeology={false} />
         </div>
@@ -365,8 +474,9 @@ function ArchaeologyResultCard({
             </p>
           </Panel>
 
+          <ConfidenceScoreBar score={result.confidenceScore} confidence={result.confidence} />
           <Alternatives alternatives={result.alternatives} title="Alternate interpretations" />
-          <SourceLinks sources={result.sources} />
+          <MatchedReferences ids={result.referenceIds} />
           <SourceLinks sources={result.sources} />
 
           <Button
