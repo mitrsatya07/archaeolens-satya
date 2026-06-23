@@ -20,7 +20,7 @@ import type {
   Confidence,
   IdentifyResult,
   NatureResult,
-} from "@/server/identify.functions";
+} from "@/lib/identify.functions";
 
 function downloadText(filename: string, content: string) {
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
