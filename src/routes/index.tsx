@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
-import { identifyImage, type IdentifyResult, type ScanMode } from "@/server/identify.functions";
+import { identifyImage, type IdentifyResult, type ScanMode } from "@/lib/identify.functions";
 import { AuthHeader } from "@/components/AuthHeader";
 
 export const Route = createFileRoute("/")({
