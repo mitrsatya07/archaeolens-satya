@@ -480,6 +480,24 @@ export const identifyImage = createServerFn({ method: "POST" })
     const material = asString(parsed.material, "Unknown");
     const possiblePeriod = asString(parsed.possiblePeriod, "Unknown / requires context");
 
+    const md = (parsed.mineralDetails ?? {}) as Record<string, unknown>;
+    const mineralDetails: MineralDetails | undefined =
+      parsed.mineralDetails && typeof parsed.mineralDetails === "object"
+        ? {
+            chemicalFormula: asString(md.chemicalFormula) || undefined,
+            crystalSystem: asString(md.crystalSystem) || undefined,
+            mohsHardness: asString(md.mohsHardness) || undefined,
+            specificGravity: asString(md.specificGravity) || undefined,
+            luster: asString(md.luster) || undefined,
+            color: asString(md.color) || undefined,
+            streak: asString(md.streak) || undefined,
+            cleavage: asString(md.cleavage) || undefined,
+            fracture: asString(md.fracture) || undefined,
+            commonLocalities: asStringArray(md.commonLocalities, 6),
+            archaeologicalUse: asString(md.archaeologicalUse) || undefined,
+          }
+        : undefined;
+
     const result: IdentifyResult = isArchaeology
       ? {
           mode: "archaeology",
@@ -497,9 +515,11 @@ export const identifyImage = createServerFn({ method: "POST" })
             asString(parsed.fieldNote) ||
             "Preliminary observation requires clearer photographs and archaeological context.",
           confidence: (parsed.confidence as Confidence) ?? "low",
+          confidenceScore: asNumber(parsed.confidenceScore),
           alternatives: asStringArray(parsed.alternatives, 3),
           notes: asString(parsed.notes) || undefined,
           sources: buildArchaeologySources(`${objectType} ${material} ${possiblePeriod}`),
+          referenceIds: filterReferenceIds(parsed.referenceIds, ARCHAEOLOGY_REFERENCE_IDS),
         }
       : {
           mode: "nature",
@@ -510,12 +530,15 @@ export const identifyImage = createServerFn({ method: "POST" })
           localNames: (parsed.localNames as LocalNames) ?? {},
           summary: asString(parsed.summary),
           confidence: (parsed.confidence as Confidence) ?? "low",
+          confidenceScore: asNumber(parsed.confidenceScore),
           alternatives: asStringArray(parsed.alternatives, 3),
           notes: asString(parsed.notes) || undefined,
           sources: buildNatureSources(
             (parsed.category as Category) ?? "unknown",
             asString(parsed.scientificName) || asString(parsed.englishName),
           ),
+          referenceIds: filterReferenceIds(parsed.referenceIds, MINERAL_REFERENCE_IDS as readonly string[]),
+          mineralDetails,
         };
 
     return { ok: true as const, result };
