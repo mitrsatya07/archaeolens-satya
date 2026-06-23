@@ -127,6 +127,8 @@ function filterReferenceIds(value: unknown, allowed: readonly string[]): string[
         .filter((item): item is string => typeof item === "string" && set.has(item))
         .slice(0, 6)
     : [];
+}
+
 
 function buildNatureSources(
   category: Category,
