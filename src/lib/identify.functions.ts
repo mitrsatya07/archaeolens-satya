@@ -109,6 +109,25 @@ function asStringArray(value: unknown, limit: number): string[] {
     : [];
 }
 
+function asNumber(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(0, Math.min(100, Math.round(value)));
+  }
+  if (typeof value === "string") {
+    const n = Number(value);
+    if (Number.isFinite(n)) return Math.max(0, Math.min(100, Math.round(n)));
+  }
+  return undefined;
+}
+
+function filterReferenceIds(value: unknown, allowed: readonly string[]): string[] {
+  const set = new Set(allowed);
+  return Array.isArray(value)
+    ? value
+        .filter((item): item is string => typeof item === "string" && set.has(item))
+        .slice(0, 6)
+    : [];
+
 function buildNatureSources(
   category: Category,
   scientific: string,
