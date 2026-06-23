@@ -1,4 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import {
+  MINERAL_REFERENCE_IDS,
+  ARCHAEOLOGY_REFERENCE_IDS,
+  REFERENCES,
+} from "@/data/references";
 
 export type ScanMode = "nature" | "archaeology";
 export type Category = "plant" | "animal" | "mineral" | "unknown";
