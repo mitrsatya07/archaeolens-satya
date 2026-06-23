@@ -347,11 +347,13 @@ export const identifyImage = createServerFn({ method: "POST" })
           "Professional field observation paragraph, 3-5 sentences. Be realistic and cautious; state what cannot be determined from the photograph.",
       },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
+      confidenceScore: { type: "integer", description: "Integer 0–100 calibrated to the qualitative confidence." },
       alternatives: {
         type: "array",
         items: { type: "string" },
         description: "Up to 3 alternative interpretations.",
       },
+      referenceIds: { type: "array", items: { type: "string" }, description: "Up to 5 reference IDs from the supplied catalog." },
       notes: { type: "string", description: "Caveat about context/uncertainty." },
     };
 
