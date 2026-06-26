@@ -183,7 +183,7 @@ function IndexPage() {
           <figure className="relative overflow-hidden rounded-2xl border border-foreground/15 bg-card/60 px-6 py-10 sm:px-12 sm:py-14">
             <span aria-hidden className="pointer-events-none absolute -top-6 left-4 font-display text-[9rem] leading-none text-primary/20 sm:text-[12rem]">“</span>
             <span aria-hidden className="pointer-events-none absolute -bottom-20 right-4 font-display text-[9rem] leading-none text-primary/20 sm:text-[12rem]">”</span>
-            <blockquote className="relative mx-auto max-w-3xl text-center font-serif text-2xl italic leading-relaxed text-foreground sm:text-3xl">
+            <blockquote className="relative mx-auto max-w-3xl text-center font-serif text-lg italic leading-relaxed text-foreground sm:text-xl">
               यहाँ भी खुदा है, वहाँ भी खुदा है… जहाँ नहीं खुदा, हमें बताओ… हम खोद देंगे।
             </blockquote>
             <figcaption className="relative mt-6 text-center">
