@@ -11,11 +11,8 @@ export function TopProgressBar() {
       <div
         className={
           "h-full bg-gradient-to-r from-[hsl(var(--copper,28_60%_45%))] via-[hsl(var(--terracotta,18_55%_35%))] to-[hsl(var(--copper,28_60%_45%))] transition-all duration-300 ease-out " +
-          (isLoading ? "w-4/5 opacity-100" : "w-full opacity-0")
+          (isLoading ? "w-4/5 opacity-100 animate-[route-progress_1.2s_ease-in-out_infinite]" : "w-full opacity-0")
         }
-        style={{
-          animation: isLoading ? "route-progress 1.2s ease-in-out infinite" : undefined,
-        }}
       />
     </div>
   );
