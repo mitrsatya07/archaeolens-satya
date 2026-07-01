@@ -31,7 +31,7 @@ type StoneTool = {
   material: string;
   description: string;
   imageUrl: string;
-  pedestal3dUrl: string;
+  pedestal3dUrl?: string;
   modelAuthor: string;
   mostId: string;
   /** Museum(s) where this tool or similar examples are displayed */
