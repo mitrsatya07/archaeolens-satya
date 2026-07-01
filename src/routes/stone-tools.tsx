@@ -1211,10 +1211,12 @@ function StoneToolCard({ tool, onView3D }: { tool: StoneTool; onView3D: () => vo
         </div>
         <button
           onClick={onView3D}
-          className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-lg transition-transform hover:scale-105"
+          disabled={!tool.pedestal3dUrl}
+          className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          title={tool.pedestal3dUrl ? "Open interactive 3D model" : "3D model not yet available for this artefact"}
         >
           <Box className="h-3.5 w-3.5" />
-          View 3D
+          {tool.pedestal3dUrl ? "View 3D" : "3D N/A"}
         </button>
       </div>
 
