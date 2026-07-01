@@ -1319,37 +1319,67 @@ function StoneToolCard({ tool, onView3D }: { tool: StoneTool; onView3D: () => vo
 }
 
 function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-2 sm:p-4" onClick={onClose}>
+      <div
+        className="relative flex max-h-[95dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <div>
-            <h3 className="text-sm font-bold text-foreground">{tool.name}</h3>
-            <p className="text-[11px] text-muted-foreground">{tool.location} · {tool.material} · {tool.age}</p>
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-bold text-foreground">{tool.name}</h3>
+            <p className="truncate text-[11px] text-muted-foreground">{tool.location} · {tool.material} · {tool.age}</p>
           </div>
-          <button onClick={onClose} className="rounded-full p-1.5 hover:bg-accent">
+          <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 hover:bg-accent">
             <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
         {/* 3D Iframe */}
-        <div className="relative aspect-square w-full bg-muted sm:aspect-[4/3]">
-          <iframe
-            src={tool.pedestal3dUrl}
-            title={`3D model: ${tool.name}`}
-            className="h-full w-full border-0"
-            allow="autoplay; fullscreen; xr-spatial-tracking"
-            allowFullScreen
-          />
-          <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-card/90 px-2.5 py-1 text-[10px] text-muted-foreground backdrop-blur-sm">
-            <RotateCcw className="h-3 w-3" />
-            Drag to rotate · Scroll to zoom
-          </div>
+        <div className="relative aspect-square w-full bg-black sm:aspect-[4/3]">
+          {!loaded && !errored && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black text-primary-foreground">
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+              <p className="text-xs opacity-80">Loading 3D model… (may take 20–40s)</p>
+              <p className="text-[10px] opacity-60">First load streams the mesh &amp; textures</p>
+            </div>
+          )}
+          {errored ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black p-6 text-center text-primary-foreground">
+              <p className="text-sm">3D viewer failed to load in this environment.</p>
+              <a
+                href={tool.pedestal3dUrl}
+                target="_blank" rel="noopener noreferrer"
+                className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Open model in new tab
+              </a>
+            </div>
+          ) : (
+            <iframe
+              key={tool.pedestal3dUrl}
+              src={tool.pedestal3dUrl}
+              title={`3D model: ${tool.name}`}
+              className="h-full w-full border-0"
+              allow="autoplay; fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
+              allowFullScreen
+              onLoad={() => setLoaded(true)}
+              onError={() => setErrored(true)}
+            />
+          )}
+          {loaded && !errored && (
+            <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-card/90 px-2.5 py-1 text-[10px] text-muted-foreground backdrop-blur-sm">
+              <RotateCcw className="h-3 w-3" />
+              Drag to rotate · Pinch/scroll to zoom
+            </div>
+          )}
         </div>
 
         {/* Description + Museum */}
-        <div className="border-t border-border px-4 py-3 space-y-2">
+        <div className="space-y-2 overflow-y-auto border-t border-border px-4 py-3">
           <p className="text-xs leading-relaxed text-foreground/90">{tool.description}</p>
           {tool.museumDisplay && (
             <div className="flex items-start gap-1.5 rounded-md bg-secondary/50 px-2.5 py-2">
@@ -1359,9 +1389,18 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
               </p>
             </div>
           )}
-          <p className="text-[10px] text-muted-foreground">
-            3D Model by {tool.modelAuthor} · MoST ID: {tool.mostId} · Source: Museum of Stone Tools
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[10px] text-muted-foreground">
+              3D Model by {tool.modelAuthor} · MoST ID: {tool.mostId} · Source: Museum of Stone Tools
+            </p>
+            <a
+              href={tool.pedestal3dUrl}
+              target="_blank" rel="noopener noreferrer"
+              className="text-[10px] font-semibold text-primary hover:underline"
+            >
+              Open in new tab ↗
+            </a>
+          </div>
         </div>
       </div>
     </div>
