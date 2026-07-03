@@ -38,8 +38,37 @@ type StoneTool = {
   museumDisplay?: string;
 };
 
+/* ─── Representative 3D models per tool type (used when a tool lacks its own MoST 3D scan) ─── */
+const REPRESENTATIVE_3D_BY_TYPE: Record<string, string> = {
+  "Handaxes": "https://une.pedestal3d.com/r/AJLVax234-",
+  "Cores & Flakes": "https://une.pedestal3d.com/r/BEKYcdqsw1",
+  "Blades & Blade Cores": "https://une.pedestal3d.com/r/DJTfqrsxy6",
+  "Retouched Flakes": "https://une.pedestal3d.com/r/EKNQYcekuv",
+  "Knives & Daggers": "https://une.pedestal3d.com/r/KMOUcgtu27",
+  "Spear & Dart Points": "https://une.pedestal3d.com/r/jsiAWmjDl9",
+  "Arrowheads": "https://une.pedestal3d.com/r/jsiAWmjDl9",
+  "Axes & Adzes": "https://une.pedestal3d.com/r/JMVajqyz29",
+  "Grinding Stones": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Hammerstones & Anvils": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Microliths": "https://une.pedestal3d.com/r/EKNQYcekuv",
+  "Symbolic Stones": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Eoliths": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Bead & Drill Tools": "https://une.pedestal3d.com/r/jsiAWmjDl9",
+  "Ring Stones & Mace Heads": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Megalithic Tools": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Stone Weights": "https://une.pedestal3d.com/r/R029i8FLPm",
+};
+
+const FALLBACK_3D_URL = "https://une.pedestal3d.com/r/AJLVax234-";
+
+function resolve3D(tool: StoneTool): { url: string; isRepresentative: boolean } {
+  if (tool.pedestal3dUrl) return { url: tool.pedestal3dUrl, isRepresentative: false };
+  return { url: REPRESENTATIVE_3D_BY_TYPE[tool.type] ?? FALLBACK_3D_URL, isRepresentative: true };
+}
+
 /* ─── Stone Tool Data (Source: stonetoolsmuseum.com + museum cross-references) ─── */
 const stoneTools: StoneTool[] = [
+
   // ══════════════════════════ HANDAXES ══════════════════════════
   {
     id: "1133",
