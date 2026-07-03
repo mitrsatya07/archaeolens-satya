@@ -125,23 +125,23 @@ function IndexPage() {
         {/* Editorial hero */}
         <section className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
-            <p className="small-caps text-primary">The Field Edition · Issue 01</p>
-            <h2 className="mt-5 font-display text-5xl leading-[0.95] text-foreground sm:text-7xl lg:text-[5.5rem]">
+            <p className="small-caps text-primary reveal-up">The Field Edition · Issue 01</p>
+            <h2 className="mt-5 font-display text-5xl leading-[0.95] text-foreground sm:text-7xl lg:text-[5.5rem] reveal-up reveal-d1">
               Record the <em className="not-italic text-primary">visible</em>,<br/>
               before the <em className="italic">interpretation.</em>
             </h2>
-            <div className="editorial-rule my-7 max-w-md" />
-            <p className="drop-cap max-w-xl font-serif text-lg leading-relaxed text-foreground/85 sm:text-xl">
+            <div className="editorial-rule my-7 max-w-md reveal-up reveal-d2" />
+            <p className="drop-cap max-w-xl font-serif text-lg leading-relaxed text-foreground/85 sm:text-xl reveal-up reveal-d2">
               ArchaeoLens is a careful, citation-backed companion for fieldwork. Photograph an
               artefact, sherd, lithic, coin, inscription, mineral, or gem and receive a measured
               record — diagnostic features, confidence, and references separated from speculation.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3 reveal-up reveal-d3">
               <button
                 type="button"
                 onClick={() => setCameraOpen(true)}
-                className="group inline-flex items-center gap-3 rounded-full bg-foreground px-6 py-3.5 text-sm font-semibold text-background shadow-[var(--shadow-editorial)] transition hover:bg-primary"
+                className="group inline-flex items-center gap-3 rounded-full bg-foreground px-6 py-3.5 text-sm font-semibold text-background shadow-[var(--shadow-editorial)] transition hover:bg-primary hover:-translate-y-0.5"
               >
                 <Camera className="h-4 w-4" />
                 {scanMode === "archaeology" ? "Scan an artefact" : "Identify a mineral"}
@@ -153,20 +153,22 @@ function IndexPage() {
             </div>
 
             {/* Mode selector — editorial pills */}
-            <div className="mt-8 inline-flex rounded-full border border-foreground/20 bg-card/60 p-1 backdrop-blur">
+            <div className="mt-8 inline-flex rounded-full border border-foreground/20 bg-card/60 p-1 backdrop-blur reveal-up reveal-d4">
               <ModePill active={scanMode === "archaeology"} onClick={() => setScanMode("archaeology")} icon={<Landmark className="h-3.5 w-3.5" />} label="Archaeology" />
               <ModePill active={scanMode === "nature"} onClick={() => setScanMode("nature")} icon={<Gem className="h-3.5 w-3.5" />} label="Mineral / Gem" />
             </div>
           </div>
 
           {/* Sidebar — masthead stats / pull-quote */}
-          <aside className="lg:col-span-4 lg:border-l lg:border-foreground/15 lg:pl-10">
-            <p className="small-caps text-muted-foreground">In this volume</p>
-            <dl className="mt-5 space-y-5">
-              <Stat n="42+" label="ASI & UNESCO sites catalogued" />
-              <Stat n="40+" label="Authoritative citations" />
-              <Stat n="08" label="Reference directories" />
-            </dl>
+          <aside className="lg:col-span-4 lg:border-l lg:border-foreground/15 lg:pl-10 reveal-up reveal-d3">
+            <div className="plate-frame">
+              <p className="small-caps text-muted-foreground">In this volume</p>
+              <dl className="mt-5 space-y-5">
+                <Stat n="42+" label="ASI & UNESCO sites catalogued" />
+                <Stat n="40+" label="Authoritative citations" />
+                <Stat n="08" label="Reference directories" />
+              </dl>
+            </div>
             <div className="editorial-rule my-7" />
             <figure className="relative">
               <span className="font-display text-6xl leading-none text-primary/40">“</span>
@@ -177,6 +179,7 @@ function IndexPage() {
             </figure>
           </aside>
         </section>
+
 
         {/* Signature quote — ASI lore */}
         <section className="mt-16">
