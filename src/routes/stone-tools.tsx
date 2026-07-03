@@ -1333,8 +1333,9 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
             </div>
           ) : (
             <iframe
-              key={tool.pedestal3dUrl}
-              src={tool.pedestal3dUrl}
+              key={modelUrl}
+              src={modelUrl}
+
               title={`3D model: ${tool.name}`}
               className="h-full w-full border-0"
               allow="autoplay; fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
