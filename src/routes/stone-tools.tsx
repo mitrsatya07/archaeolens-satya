@@ -1323,7 +1323,8 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black p-6 text-center text-primary-foreground">
               <p className="text-sm">3D viewer failed to load in this environment.</p>
               <a
-                href={tool.pedestal3dUrl}
+                href={modelUrl}
+
                 target="_blank" rel="noopener noreferrer"
                 className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
               >
