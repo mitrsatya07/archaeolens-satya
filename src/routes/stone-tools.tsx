@@ -1354,7 +1354,13 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
 
         {/* Description + Museum */}
         <div className="space-y-2 overflow-y-auto border-t border-border px-4 py-3">
+          {isRepresentative && (
+            <div className="rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-[10px] leading-snug text-foreground">
+              <span className="font-semibold">Representative model:</span> a 3D scan of a similar {tool.type.toLowerCase()} artefact — an exact scan of this specimen is not yet available.
+            </div>
+          )}
           <p className="text-xs leading-relaxed text-foreground/90">{tool.description}</p>
+
           {tool.museumDisplay && (
             <div className="flex items-start gap-1.5 rounded-md bg-secondary/50 px-2.5 py-2">
               <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
