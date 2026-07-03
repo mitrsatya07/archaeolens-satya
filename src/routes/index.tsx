@@ -210,27 +210,30 @@ function IndexPage() {
           </div>
 
           <div className="grid gap-px bg-foreground/10 sm:grid-cols-2 lg:grid-cols-4 mt-px">
-            {sections.map(({ to, n, kicker, title, desc, Icon }) => (
+            {sections.map(({ to, n, kicker, title, desc, Icon }, i) => (
               <Link
                 key={to}
                 to={to}
-                className="group relative flex flex-col justify-between gap-6 bg-background p-6 transition hover:bg-card"
+                className={`index-card group relative flex flex-col justify-between gap-6 bg-background p-6 hover:bg-card reveal-up ${["reveal-d1","reveal-d2","reveal-d3","reveal-d4","reveal-d5","reveal-d6","reveal-d6","reveal-d6"][i]}`}
               >
                 <div className="flex items-start justify-between">
-                  <span className="font-display text-3xl text-primary/70">{n}</span>
+                  <span className="index-number font-display text-3xl text-primary/70">{n}</span>
                   <Icon className="h-5 w-5 text-foreground/50 transition group-hover:text-primary" />
                 </div>
                 <div>
                   <p className="small-caps text-muted-foreground">{kicker}</p>
-                  <h4 className="mt-1 font-display text-xl leading-tight text-foreground">{title}</h4>
+                  <h4 className="mt-1 font-display text-xl leading-tight text-foreground">
+                    <span className="index-title">{title}</span>
+                  </h4>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary opacity-0 transition group-hover:opacity-100">
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary opacity-0 -translate-x-1 transition group-hover:opacity-100 group-hover:translate-x-0">
                     Read <ArrowUpRight className="h-3 w-3" />
                   </span>
                 </div>
               </Link>
             ))}
           </div>
+
         </section>
 
         {/* Careers — editorial feature */}
