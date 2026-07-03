@@ -1291,7 +1291,9 @@ function StoneToolCard({ tool, onView3D }: { tool: StoneTool; onView3D: () => vo
 function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
+  const { url: modelUrl, isRepresentative } = resolve3D(tool);
   return (
+
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-2 sm:p-4" onClick={onClose}>
       <div
         className="relative flex max-h-[95dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
