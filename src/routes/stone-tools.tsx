@@ -1374,7 +1374,7 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
               3D Model by {tool.modelAuthor} · MoST ID: {tool.mostId} · Source: Museum of Stone Tools
             </p>
             <a
-              href={tool.pedestal3dUrl}
+              href={modelUrl}
               target="_blank" rel="noopener noreferrer"
               className="text-[10px] font-semibold text-primary hover:underline"
             >
