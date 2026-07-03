@@ -38,8 +38,37 @@ type StoneTool = {
   museumDisplay?: string;
 };
 
+/* ─── Representative 3D models per tool type (used when a tool lacks its own MoST 3D scan) ─── */
+const REPRESENTATIVE_3D_BY_TYPE: Record<string, string> = {
+  "Handaxes": "https://une.pedestal3d.com/r/AJLVax234-",
+  "Cores & Flakes": "https://une.pedestal3d.com/r/BEKYcdqsw1",
+  "Blades & Blade Cores": "https://une.pedestal3d.com/r/DJTfqrsxy6",
+  "Retouched Flakes": "https://une.pedestal3d.com/r/EKNQYcekuv",
+  "Knives & Daggers": "https://une.pedestal3d.com/r/KMOUcgtu27",
+  "Spear & Dart Points": "https://une.pedestal3d.com/r/jsiAWmjDl9",
+  "Arrowheads": "https://une.pedestal3d.com/r/jsiAWmjDl9",
+  "Axes & Adzes": "https://une.pedestal3d.com/r/JMVajqyz29",
+  "Grinding Stones": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Hammerstones & Anvils": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Microliths": "https://une.pedestal3d.com/r/EKNQYcekuv",
+  "Symbolic Stones": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Eoliths": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Bead & Drill Tools": "https://une.pedestal3d.com/r/jsiAWmjDl9",
+  "Ring Stones & Mace Heads": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Megalithic Tools": "https://une.pedestal3d.com/r/R029i8FLPm",
+  "Stone Weights": "https://une.pedestal3d.com/r/R029i8FLPm",
+};
+
+const FALLBACK_3D_URL = "https://une.pedestal3d.com/r/AJLVax234-";
+
+function resolve3D(tool: StoneTool): { url: string; isRepresentative: boolean } {
+  if (tool.pedestal3dUrl) return { url: tool.pedestal3dUrl, isRepresentative: false };
+  return { url: REPRESENTATIVE_3D_BY_TYPE[tool.type] ?? FALLBACK_3D_URL, isRepresentative: true };
+}
+
 /* ─── Stone Tool Data (Source: stonetoolsmuseum.com + museum cross-references) ─── */
 const stoneTools: StoneTool[] = [
+
   // ══════════════════════════ HANDAXES ══════════════════════════
   {
     id: "1133",
@@ -1211,13 +1240,13 @@ function StoneToolCard({ tool, onView3D }: { tool: StoneTool; onView3D: () => vo
         </div>
         <button
           onClick={onView3D}
-          disabled={!tool.pedestal3dUrl}
-          className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-          title={tool.pedestal3dUrl ? "Open interactive 3D model" : "3D model not yet available for this artefact"}
+          className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-lg transition-transform hover:scale-105"
+          title="Open interactive 3D model"
         >
           <Box className="h-3.5 w-3.5" />
-          {tool.pedestal3dUrl ? "View 3D" : "3D N/A"}
+          View 3D
         </button>
+
       </div>
 
       {/* Info */}
@@ -1262,7 +1291,9 @@ function StoneToolCard({ tool, onView3D }: { tool: StoneTool; onView3D: () => vo
 function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
+  const { url: modelUrl, isRepresentative } = resolve3D(tool);
   return (
+
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-2 sm:p-4" onClick={onClose}>
       <div
         className="relative flex max-h-[95dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
@@ -1292,7 +1323,8 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black p-6 text-center text-primary-foreground">
               <p className="text-sm">3D viewer failed to load in this environment.</p>
               <a
-                href={tool.pedestal3dUrl}
+                href={modelUrl}
+
                 target="_blank" rel="noopener noreferrer"
                 className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
               >
@@ -1301,8 +1333,9 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
             </div>
           ) : (
             <iframe
-              key={tool.pedestal3dUrl}
-              src={tool.pedestal3dUrl}
+              key={modelUrl}
+              src={modelUrl}
+
               title={`3D model: ${tool.name}`}
               className="h-full w-full border-0"
               allow="autoplay; fullscreen; xr-spatial-tracking; accelerometer; gyroscope"
@@ -1321,7 +1354,13 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
 
         {/* Description + Museum */}
         <div className="space-y-2 overflow-y-auto border-t border-border px-4 py-3">
+          {isRepresentative && (
+            <div className="rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-[10px] leading-snug text-foreground">
+              <span className="font-semibold">Representative model:</span> a 3D scan of a similar {tool.type.toLowerCase()} artefact — an exact scan of this specimen is not yet available.
+            </div>
+          )}
           <p className="text-xs leading-relaxed text-foreground/90">{tool.description}</p>
+
           {tool.museumDisplay && (
             <div className="flex items-start gap-1.5 rounded-md bg-secondary/50 px-2.5 py-2">
               <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
@@ -1335,7 +1374,7 @@ function Viewer3D({ tool, onClose }: { tool: StoneTool; onClose: () => void }) {
               3D Model by {tool.modelAuthor} · MoST ID: {tool.mostId} · Source: Museum of Stone Tools
             </p>
             <a
-              href={tool.pedestal3dUrl}
+              href={modelUrl}
               target="_blank" rel="noopener noreferrer"
               className="text-[10px] font-semibold text-primary hover:underline"
             >
