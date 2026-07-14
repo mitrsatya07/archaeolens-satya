@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTransition, TopProgressBar } from "@/components/RouteTransition";
+import { registerServiceWorker } from "@/lib/registerSW";
 
 import appCss from "../styles.css?url";
 
@@ -95,6 +96,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const router = useRouter();
   useEffect(() => {
+    registerServiceWorker();
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
         router.invalidate();

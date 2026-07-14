@@ -46,6 +46,7 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [scaleVisible, setScaleVisible] = useState(false);
+  const [scaleRef, setScaleRef] = useState<"ruler" | "coin1" | "coin5" | "coin10">("ruler");
   const [angles, setAngles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -206,13 +207,39 @@ export function CameraCapture({ busy, onCapture, onClose }: Props) {
       </div>
 
       {scaleVisible && (
-        <div className="pointer-events-none absolute bottom-36 left-1/2 z-20 w-48 -translate-x-1/2 text-primary-foreground">
-          <div className="h-3 border-x-2 border-b-2 border-primary-foreground" />
-          <div className="mt-1 flex justify-between text-[10px] font-bold uppercase tracking-wide drop-shadow">
-            <span>0</span>
-            <span>Scale reference</span>
-            <span>10 cm</span>
+        <div className="pointer-events-auto absolute bottom-36 left-1/2 z-20 -translate-x-1/2 text-primary-foreground">
+          <div className="mb-2 flex justify-center gap-1 text-[10px] font-bold uppercase tracking-wide">
+            {(["ruler","coin1","coin5","coin10"] as const).map((k) => (
+              <button key={k} type="button" onClick={() => setScaleRef(k)} className={`rounded-full border px-2 py-0.5 backdrop-blur-sm ${scaleRef===k?"border-primary-foreground bg-primary-foreground/25":"border-primary-foreground/30 bg-foreground/25"}`}>
+                {k === "ruler" ? "10 cm" : k === "coin1" ? "₹1 · 22mm" : k === "coin5" ? "₹5 · 23mm" : "₹10 · 27mm"}
+              </button>
+            ))}
           </div>
+          {scaleRef === "ruler" ? (
+            <div className="w-56">
+              <div className="flex h-3 items-end">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div key={i} className={`flex-1 border-l-2 border-primary-foreground ${i === 9 ? "border-r-2" : ""}`} style={{ height: i % 5 === 0 ? "100%" : "60%" }} />
+                ))}
+              </div>
+              <div className="mt-1 flex justify-between text-[10px] font-bold uppercase tracking-wide drop-shadow">
+                <span>0</span><span>5 cm</span><span>10 cm</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <div
+                className="rounded-full border-2 border-dashed border-primary-foreground"
+                style={{
+                  width: scaleRef === "coin1" ? 88 : scaleRef === "coin5" ? 92 : 108,
+                  height: scaleRef === "coin1" ? 88 : scaleRef === "coin5" ? 92 : 108,
+                }}
+              />
+              <div className="mt-1 text-[10px] font-bold uppercase tracking-wide drop-shadow">
+                Place coin in circle · then capture
+              </div>
+            </div>
+          )}
         </div>
       )}
 
