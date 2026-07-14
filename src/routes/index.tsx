@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink,
-  Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale, ArrowUpRight,
+  Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale, ArrowUpRight, MessageSquare,
 } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
@@ -39,6 +39,7 @@ const sections = [
   { to: "/heritage-laws", n: "06", kicker: "Statute", title: "Heritage Laws & Reporting", desc: "AMASR Act, Antiquities Act, and chance-find protocol with ASI.", Icon: Scale },
   { to: "/field-notes", n: "07", kicker: "Notebook", title: "My Field Notes", desc: "Save observations with photo, GPS, and notes — synced to your account.", Icon: NotebookPen },
   { to: "/references", n: "08", kicker: "Bibliography", title: "References & Citations", desc: "40+ authoritative sources — ASI reports, monographs, statutes.", Icon: Library },
+  { to: "/community", n: "09", kicker: "Forum", title: "Community & Peer Review", desc: "Ask for identification help, share finds, and discuss ethics with peers.", Icon: MessageSquare },
 ] as const;
 
 const careerOpportunities = [

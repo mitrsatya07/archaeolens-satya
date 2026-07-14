@@ -21,6 +21,7 @@ import { Route as HeritageLawsRouteImport } from './routes/heritage-laws'
 import { Route as FieldNotesRouteImport } from './routes/field-notes'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AttributionsRouteImport } from './routes/attributions'
 import { Route as AboutRouteImport } from './routes/about'
@@ -86,6 +87,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/attributions': typeof AttributionsRoute
   '/auth': typeof AuthRoute
+  '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/attributions'
     | '/auth'
+    | '/community'
     | '/contact'
     | '/feedback'
     | '/field-notes'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/attributions'
     | '/auth'
+    | '/community'
     | '/contact'
     | '/feedback'
     | '/field-notes'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/attributions'
     | '/auth'
+    | '/community'
     | '/contact'
     | '/feedback'
     | '/field-notes'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AttributionsRoute: typeof AttributionsRoute
   AuthRoute: typeof AuthRoute
+  CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
   FeedbackRoute: typeof FeedbackRoute
   FieldNotesRoute: typeof FieldNotesRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AttributionsRoute: AttributionsRoute,
   AuthRoute: AuthRoute,
+  CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,
   FeedbackRoute: FeedbackRoute,
   FieldNotesRoute: FieldNotesRoute,
