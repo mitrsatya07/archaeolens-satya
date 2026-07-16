@@ -153,7 +153,7 @@ function IndexPage() {
             <div className="mt-8 flex flex-wrap items-center gap-3 reveal-up reveal-d3">
               <button
                 type="button"
-                onClick={() => setCameraOpen(true)}
+                onClick={openCamera}
                 className="group inline-flex items-center gap-3 rounded-full bg-foreground px-6 py-3.5 text-sm font-semibold text-background shadow-[var(--shadow-editorial)] transition hover:bg-primary hover:-translate-y-0.5"
               >
                 <Camera className="h-4 w-4" />
