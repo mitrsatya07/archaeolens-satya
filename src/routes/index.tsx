@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -9,6 +9,7 @@ import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/lib/identify.functions";
 import { AuthHeader } from "@/components/AuthHeader";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
