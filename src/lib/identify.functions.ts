@@ -183,6 +183,7 @@ function buildArchaeologySources(query: string): { label: string; url: string }[
 }
 
 export const identifyImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { imageBase64?: string; imagesBase64?: string[]; mode?: ScanMode }) => {
     const images = Array.isArray(data?.imagesBase64)
       ? data.imagesBase64.filter(
