@@ -85,22 +85,20 @@ function ContactPage() {
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-8 space-y-6">
-        {/* Email banner */}
+        {/* Private inbox banner */}
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-center space-y-2">
           <div className="flex items-center justify-center gap-2 text-primary">
-            <Mail className="h-5 w-5" />
-            <span className="font-semibold text-sm">Direct Email</span>
+            <ShieldCheck className="h-5 w-5" />
+            <span className="font-semibold text-sm">Private & Secure</span>
           </div>
-          <a
-            href="mailto:satyaprakashkumawat07@gmail.com"
-            className="text-base font-bold text-primary underline break-all"
-          >
-            satyaprakashkumawat07@gmail.com
-          </a>
+          <p className="text-sm text-foreground">
+            Send us a message directly through this form.
+          </p>
           <p className="text-xs text-muted-foreground">
-            For feedback, queries, bug reports, collaborations, or takedown requests.
+            Your message is delivered privately to the ArchaeoLens team. Share your email only if you'd like a reply.
           </p>
         </div>
+
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Category */}
