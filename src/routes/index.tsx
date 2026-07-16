@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -9,6 +9,7 @@ import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/lib/identify.functions";
 import { AuthHeader } from "@/components/AuthHeader";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -57,6 +58,17 @@ function IndexPage() {
   const [scanMode, setScanMode] = useState<ScanMode>("archaeology");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const openCamera = () => {
+    if (!user) {
+      toast.info("Please sign in to use the scanner.");
+      navigate({ to: "/auth" });
+      return;
+    }
+    setCameraOpen(true);
+  };
 
   const handleCapture = async (dataUrl: string | string[]) => {
     const images = Array.isArray(dataUrl) ? dataUrl : [dataUrl];
@@ -141,7 +153,7 @@ function IndexPage() {
             <div className="mt-8 flex flex-wrap items-center gap-3 reveal-up reveal-d3">
               <button
                 type="button"
-                onClick={() => setCameraOpen(true)}
+                onClick={openCamera}
                 className="group inline-flex items-center gap-3 rounded-full bg-foreground px-6 py-3.5 text-sm font-semibold text-background shadow-[var(--shadow-editorial)] transition hover:bg-primary hover:-translate-y-0.5"
               >
                 <Camera className="h-4 w-4" />
