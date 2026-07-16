@@ -129,14 +129,15 @@ function FeedbackPage() {
 
           <div className="rounded-lg border border-border bg-card p-4 text-center space-y-2">
             <p className="text-sm font-medium text-foreground">Have a query or need help?</p>
-            <a
-              href="mailto:satyaprakashkumawat07@gmail.com"
+            <Link
+              to="/contact"
               className="inline-flex items-center gap-2 text-sm font-semibold text-primary underline"
             >
               <Mail className="h-4 w-4" />
-              satyaprakashkumawat07@gmail.com
-            </a>
+              Contact us privately
+            </Link>
           </div>
+
         </form>
       </main>
     </div>

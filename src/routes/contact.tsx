@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Mail, MessageSquare, Send, HelpCircle } from "lucide-react";
+import { ArrowLeft, MessageSquare, Send, HelpCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { contactSchema } from "@/lib/validation";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,21 +22,29 @@ function ContactPage() {
   const [category, setCategory] = useState<"general" | "feedback" | "bug" | "collab">("general");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = contactSchema.safeParse({ name, email, category, message });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
+    setSending(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: parsed.data.name || null,
+      email: parsed.data.email || null,
+      category: parsed.data.category,
+      message: parsed.data.message,
+    });
+    setSending(false);
+    if (error) {
+      toast.error("Could not send message. Please try again.");
+      return;
+    }
     setSubmitted(true);
-    toast.success("Message prepared! Opening your email app…");
-    const subject = encodeURIComponent(`ArchaeoLens — ${category.charAt(0).toUpperCase() + category.slice(1)}`);
-    const body = encodeURIComponent(
-      `Name: ${parsed.data.name || "Not provided"}\nEmail: ${parsed.data.email || "Not provided"}\nCategory: ${parsed.data.category}\n\nMessage:\n${parsed.data.message}`
-    );
-    window.location.href = `mailto:satyaprakashkumawat07@gmail.com?subject=${subject}&body=${body}`;
+    toast.success("Message sent! We'll get back to you soon.");
   };
 
   if (submitted) {
@@ -43,20 +52,14 @@ function ContactPage() {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
         <div className="max-w-sm text-center space-y-4">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <Mail className="h-8 w-8 text-primary" />
+            <ShieldCheck className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Message Ready!</h1>
+          <h1 className="text-2xl font-bold">Message Received!</h1>
           <p className="text-muted-foreground">
-            Your email draft has been prepared. If it didn’t open automatically, you can manually email us at:
+            Thanks for reaching out. Your message has been delivered privately to the ArchaeoLens team.
           </p>
-          <a
-            href="mailto:satyaprakashkumawat07@gmail.com"
-            className="inline-block text-primary font-semibold underline break-all"
-          >
-            satyaprakashkumawat07@gmail.com
-          </a>
           <p className="text-xs text-muted-foreground">
-            We usually respond within 24–48 hours.
+            If you shared your email, we usually respond within 24–48 hours.
           </p>
           <Link
             to="/"
@@ -68,6 +71,7 @@ function ContactPage() {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -81,22 +85,20 @@ function ContactPage() {
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-8 space-y-6">
-        {/* Email banner */}
+        {/* Private inbox banner */}
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-center space-y-2">
           <div className="flex items-center justify-center gap-2 text-primary">
-            <Mail className="h-5 w-5" />
-            <span className="font-semibold text-sm">Direct Email</span>
+            <ShieldCheck className="h-5 w-5" />
+            <span className="font-semibold text-sm">Private & Secure</span>
           </div>
-          <a
-            href="mailto:satyaprakashkumawat07@gmail.com"
-            className="text-base font-bold text-primary underline break-all"
-          >
-            satyaprakashkumawat07@gmail.com
-          </a>
+          <p className="text-sm text-foreground">
+            Send us a message directly through this form.
+          </p>
           <p className="text-xs text-muted-foreground">
-            For feedback, queries, bug reports, collaborations, or takedown requests.
+            Your message is delivered privately to the ArchaeoLens team. Share your email only if you'd like a reply.
           </p>
         </div>
+
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Category */}
@@ -168,14 +170,14 @@ function ContactPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full gap-2">
-            <Send className="h-4 w-4" /> Send via Email
+          <Button type="submit" disabled={sending} className="w-full gap-2">
+            <Send className="h-4 w-4" /> {sending ? "Sending…" : "Send Message"}
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
-            This opens your default email app with a pre-filled message to{" "}
-            <span className="text-foreground font-medium">satyaprakashkumawat07@gmail.com</span>.
+            Your message is sent privately to the ArchaeoLens team. We don't share your details.
           </p>
+
         </form>
       </main>
     </div>
