@@ -156,12 +156,13 @@ function AttributionsPage() {
           </h2>
           <p className="text-sm leading-relaxed text-muted-foreground">
             If you are a rights holder and believe any content in ArchaeoLens infringes your copyright, misrepresents
-            your institution, or should be corrected/removed, please email us with: (1) a description of the work,
+            your institution, or should be corrected/removed, please reach out to us with: (1) a description of the work,
             (2) the specific location in the app, (3) proof of ownership, and (4) your contact details.
           </p>
           <p className="mt-2 text-sm">
-            Contact: <a href="mailto:satyaprakashkumawat07@gmail.com" className="text-primary underline">satyaprakashkumawat07@gmail.com</a>
+            Send a takedown request via our <Link to="/contact" className="text-primary underline">private contact form</Link>.
           </p>
+
           <p className="mt-2 text-xs text-muted-foreground">
             We commit to reviewing every request within <strong>7 business days</strong> and removing or correcting
             content promptly where the claim is valid.
