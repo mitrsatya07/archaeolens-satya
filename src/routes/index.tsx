@@ -58,6 +58,17 @@ function IndexPage() {
   const [scanMode, setScanMode] = useState<ScanMode>("archaeology");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const openCamera = () => {
+    if (!user) {
+      toast.info("Please sign in to use the scanner.");
+      navigate({ to: "/auth" });
+      return;
+    }
+    setCameraOpen(true);
+  };
 
   const handleCapture = async (dataUrl: string | string[]) => {
     const images = Array.isArray(dataUrl) ? dataUrl : [dataUrl];
