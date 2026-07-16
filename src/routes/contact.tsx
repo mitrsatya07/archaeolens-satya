@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Mail, MessageSquare, Send, HelpCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, MessageSquare, Send, HelpCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { contactSchema } from "@/lib/validation";
