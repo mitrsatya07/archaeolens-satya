@@ -170,14 +170,14 @@ function ContactPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full gap-2">
-            <Send className="h-4 w-4" /> Send via Email
+          <Button type="submit" disabled={sending} className="w-full gap-2">
+            <Send className="h-4 w-4" /> {sending ? "Sending…" : "Send Message"}
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
-            This opens your default email app with a pre-filled message to{" "}
-            <span className="text-foreground font-medium">satyaprakashkumawat07@gmail.com</span>.
+            Your message is sent privately to the ArchaeoLens team. We don't share your details.
           </p>
+
         </form>
       </main>
     </div>
