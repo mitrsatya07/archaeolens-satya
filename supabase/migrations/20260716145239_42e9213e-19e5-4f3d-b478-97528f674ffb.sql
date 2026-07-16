@@ -1,0 +1,1 @@
+CREATE POLICY "Public profile info viewable by authenticated users" ON public.profiles FOR SELECT TO authenticated USING (true);
