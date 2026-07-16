@@ -1,8 +1,12 @@
+import { useEffect, useState } from "react";
 import { Outlet, useRouterState } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function TopProgressBar() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
   const isLoading = useRouterState({ select: (s) => s.isLoading || s.status === "pending" });
+  const active = hydrated && isLoading;
   return (
     <div
       aria-hidden
@@ -11,7 +15,7 @@ export function TopProgressBar() {
       <div
         className={
           "h-full bg-gradient-to-r from-[hsl(var(--copper,28_60%_45%))] via-[hsl(var(--terracotta,18_55%_35%))] to-[hsl(var(--copper,28_60%_45%))] transition-all duration-300 ease-out " +
-          (isLoading ? "w-4/5 opacity-100 animate-[route-progress_1.2s_ease-in-out_infinite]" : "w-full opacity-0")
+          (active ? "w-4/5 opacity-100 animate-[route-progress_1.2s_ease-in-out_infinite]" : "w-full opacity-0")
         }
       />
     </div>
