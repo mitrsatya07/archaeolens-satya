@@ -23,9 +23,28 @@ function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [website, setWebsite] = useState(""); // honeypot — real users leave empty
+  const mountedAt = useRef<number>(Date.now());
+  useEffect(() => { mountedAt.current = Date.now(); }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot: bots fill hidden fields
+    if (website.trim() !== "") {
+      setSubmitted(true); // silently accept
+      return;
+    }
+    // Min-time: bots submit in <2s
+    if (Date.now() - mountedAt.current < 2500) {
+      toast.error("Please take a moment to review your message.");
+      return;
+    }
+    // Simple client throttle: 1 submission / 30s per browser
+    const last = Number(localStorage.getItem("contact:lastSubmit") || 0);
+    if (Date.now() - last < 30_000) {
+      toast.error("Please wait a moment before sending another message.");
+      return;
+    }
     const parsed = contactSchema.safeParse({ name, email, category, message });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
