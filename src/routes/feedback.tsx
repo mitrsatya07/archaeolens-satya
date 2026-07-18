@@ -106,6 +106,12 @@ function FeedbackPage() {
             )}
           </div>
 
+          {/* Honeypot */}
+          <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="fb-website">Website</label>
+            <input id="fb-website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+          </div>
+
           {/* Name */}
           <div className="space-y-1.5">
             <label htmlFor="name" className="text-sm font-medium text-foreground">Name (optional)</label>
