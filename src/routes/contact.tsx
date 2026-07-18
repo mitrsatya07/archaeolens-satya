@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, MessageSquare, Send, HelpCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -23,9 +23,28 @@ function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [website, setWebsite] = useState(""); // honeypot — real users leave empty
+  const mountedAt = useRef<number>(Date.now());
+  useEffect(() => { mountedAt.current = Date.now(); }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot: bots fill hidden fields
+    if (website.trim() !== "") {
+      setSubmitted(true); // silently accept
+      return;
+    }
+    // Min-time: bots submit in <2s
+    if (Date.now() - mountedAt.current < 2500) {
+      toast.error("Please take a moment to review your message.");
+      return;
+    }
+    // Simple client throttle: 1 submission / 30s per browser
+    const last = Number(localStorage.getItem("contact:lastSubmit") || 0);
+    if (Date.now() - last < 30_000) {
+      toast.error("Please wait a moment before sending another message.");
+      return;
+    }
     const parsed = contactSchema.safeParse({ name, email, category, message });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -43,6 +62,7 @@ function ContactPage() {
       toast.error("Could not send message. Please try again.");
       return;
     }
+    localStorage.setItem("contact:lastSubmit", String(Date.now()));
     setSubmitted(true);
     toast.success("Message sent! We'll get back to you soon.");
   };
@@ -126,6 +146,19 @@ function ContactPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Honeypot — hidden from real users, bots fill it */}
+          <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="c-website">Website</label>
+            <input
+              id="c-website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
           </div>
 
           {/* Name */}
