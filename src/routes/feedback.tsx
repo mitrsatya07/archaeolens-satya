@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Star, Send, ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -20,14 +20,27 @@ function FeedbackPage() {
   const [name, setName] = useState("");
   const [review, setReview] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [website, setWebsite] = useState(""); // honeypot
+  const mountedAt = useRef<number>(Date.now());
+  useEffect(() => { mountedAt.current = Date.now(); }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (website.trim() !== "") { setSubmitted(true); return; }
+    if (Date.now() - mountedAt.current < 2000) {
+      toast.error("Please take a moment before submitting.");
+      return;
+    }
+    const last = Number(localStorage.getItem("feedback:lastSubmit") || 0);
+    if (Date.now() - last < 30_000) {
+      toast.error("Please wait a moment before submitting again.");
+      return;
+    }
     if (rating === 0) {
       toast.error("Please select a star rating.");
       return;
     }
-    // In a real app this would save to the database
+    localStorage.setItem("feedback:lastSubmit", String(Date.now()));
     setSubmitted(true);
     toast.success("Thank you for your feedback!");
   };
