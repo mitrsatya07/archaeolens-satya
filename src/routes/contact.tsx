@@ -62,6 +62,7 @@ function ContactPage() {
       toast.error("Could not send message. Please try again.");
       return;
     }
+    localStorage.setItem("contact:lastSubmit", String(Date.now()));
     setSubmitted(true);
     toast.success("Message sent! We'll get back to you soon.");
   };
