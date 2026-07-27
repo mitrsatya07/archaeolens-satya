@@ -44,12 +44,12 @@ const sections = [
 ] as const;
 
 const careerOpportunities = [
-  { title: "PhD Scholarships in Archaeology", url: "https://higherjobz.com/category/scholarships/phd-scholarships/?s=archaeology", description: "Fully funded PhD positions worldwide." },
-  { title: "Postdoc Fellowships", url: "https://higherjobz.com/category/postdoc-fellowships/?s=archaeology", description: "Postdoctoral research fellowships in archaeological sciences." },
-  { title: "Faculty & Professor Positions", url: "https://higherjobz.com/category/faculty-positions/?s=archaeology", description: "Lecturer to Associate Professor roles in archaeology departments." },
-  { title: "Research Careers", url: "https://higherjobz.com/category/research-jobs/?s=archaeology", description: "Research assistant, associate, and senior researcher positions." },
-  { title: "Research Grants & Funding", url: "https://higherjobz.com/category/grants-funding/research-grants/?s=archaeology", description: "Grants for archaeological research projects." },
-  { title: "Master's Scholarships", url: "https://higherjobz.com/category/scholarships/masters-scholarships/?s=archaeology", description: "Funded Master's programs in archaeology and heritage." },
+  { title: "PhD Scholarships in Archaeology", url: "https://www.higherjobz.com/?s=archaeology+phd", description: "Fully funded PhD positions worldwide." },
+  { title: "Postdoc Fellowships", url: "https://www.higherjobz.com/?s=archaeology+postdoc", description: "Postdoctoral research fellowships in archaeological sciences." },
+  { title: "Faculty & Professor Positions", url: "https://www.higherjobz.com/?s=archaeology+faculty", description: "Lecturer to Associate Professor roles in archaeology departments." },
+  { title: "Research Careers", url: "https://www.higherjobz.com/?s=archaeology+research", description: "Research assistant, associate, and senior researcher positions." },
+  { title: "Research Grants & Funding", url: "https://www.higherjobz.com/?s=archaeology+grant", description: "Grants for archaeological research projects." },
+  { title: "Master's Scholarships", url: "https://www.higherjobz.com/?s=archaeology+masters+scholarship", description: "Funded Master's programs in archaeology and heritage." },
 ];
 
 function IndexPage() {
