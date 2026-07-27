@@ -389,3 +389,14 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-route-fade { animation: none; }
 }
+
+/* App-like mobile: safe-area + room for bottom tab bar */
+@supports (padding: env(safe-area-inset-top)) {
+  body { padding-top: env(safe-area-inset-top); }
+}
+@media (max-width: 639px) {
+  main { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom)); }
+  /* Larger tap targets on mobile */
+  button, a[role="button"], .tap { min-height: 44px; }
+}
+
