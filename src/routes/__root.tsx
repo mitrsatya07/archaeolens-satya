@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTransition, TopProgressBar } from "@/components/RouteTransition";
+import { MobileTabBar } from "@/components/MobileTabBar";
 import { registerServiceWorker } from "@/lib/registerSW";
 
 import appCss from "../styles.css?url";
@@ -108,6 +109,7 @@ function RootComponent() {
     <>
       <TopProgressBar />
       <PageTransition />
+      <MobileTabBar />
       <Toaster position="top-center" richColors />
     </>
   );
