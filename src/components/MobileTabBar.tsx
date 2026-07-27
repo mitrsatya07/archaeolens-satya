@@ -1,13 +1,14 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Camera, Building2, Pickaxe, Menu } from "lucide-react";
 
-const tabs = [
+type Tab = { to: "/" | "/sites" | "/stone-tools" | "/about"; label: string; Icon: typeof Home; primary?: boolean };
+const tabs: Tab[] = [
   { to: "/", label: "Home", Icon: Home },
   { to: "/sites", label: "Sites", Icon: Building2 },
-  { to: "/", label: "Scan", Icon: Camera, primary: true, hash: "scan" },
+  { to: "/", label: "Scan", Icon: Camera, primary: true },
   { to: "/stone-tools", label: "Tools", Icon: Pickaxe },
   { to: "/about", label: "More", Icon: Menu },
-] as const;
+];
 
 export function MobileTabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

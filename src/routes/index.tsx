@@ -139,7 +139,7 @@ function IndexPage() {
         <section className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
             <p className="small-caps text-primary reveal-up">The Field Edition · Issue 01</p>
-            <h2 className="mt-5 font-display text-5xl leading-[0.95] text-foreground sm:text-7xl lg:text-[5.5rem] reveal-up reveal-d1">
+            <h2 className="mt-5 font-display text-4xl leading-[1.02] text-foreground sm:text-6xl lg:text-[5.5rem] reveal-up reveal-d1">
               Record the <em className="not-italic text-primary">visible</em>,<br/>
               before the <em className="italic">interpretation.</em>
             </h2>
