@@ -121,7 +121,7 @@ function IndexPage() {
               <Landmark className="h-5 w-5" />
             </div>
             <div className="min-w-0 leading-none">
-              <p className="small-caps text-muted-foreground">Est. MMXXVI · Vol. I</p>
+              <p className="small-caps text-muted-foreground">Est. XXIV·IV·MMXXVI · Vol. I</p>
               <h1 className="font-display text-2xl text-foreground sm:text-3xl">ArchaeoLens</h1>
             </div>
           </div>
