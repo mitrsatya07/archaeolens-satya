@@ -16,11 +16,11 @@ export const getAccountOverview = createServerFn({ method: "GET" })
       context.supabase
         .from("forum_threads")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", context.userId),
+        .eq("author_id", context.userId),
       context.supabase
         .from("forum_replies")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", context.userId),
+        .eq("author_id", context.userId),
     ]);
 
     return {
