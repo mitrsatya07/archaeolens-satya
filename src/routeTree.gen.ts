@@ -9,97 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TypologyRouteImport } from './routes/typology'
-import { Route as TimelineRouteImport } from './routes/timeline'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as StoneToolsRouteImport } from './routes/stone-tools'
-import { Route as SitesRouteImport } from './routes/sites'
-import { Route as ReferencesRouteImport } from './routes/references'
-import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as MuseumsRouteImport } from './routes/museums'
-import { Route as HeritageLawsRouteImport } from './routes/heritage-laws'
-import { Route as FieldNotesRouteImport } from './routes/field-notes'
-import { Route as FeedbackRouteImport } from './routes/feedback'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CommunityRouteImport } from './routes/community'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AttributionsRouteImport } from './routes/attributions'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AttributionsRouteImport } from './routes/attributions'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as FieldNotesRouteImport } from './routes/field-notes'
+import { Route as HeritageLawsRouteImport } from './routes/heritage-laws'
+import { Route as MuseumsRouteImport } from './routes/museums'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as ReferencesRouteImport } from './routes/references'
+import { Route as SitesRouteImport } from './routes/sites'
+import { Route as StoneToolsRouteImport } from './routes/stone-tools'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as TimelineRouteImport } from './routes/timeline'
+import { Route as TypologyRouteImport } from './routes/typology'
 
-const TypologyRoute = TypologyRouteImport.update({
-  id: '/typology',
-  path: '/typology',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TimelineRoute = TimelineRouteImport.update({
-  id: '/timeline',
-  path: '/timeline',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StoneToolsRoute = StoneToolsRouteImport.update({
-  id: '/stone-tools',
-  path: '/stone-tools',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitesRoute = SitesRouteImport.update({
-  id: '/sites',
-  path: '/sites',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReferencesRoute = ReferencesRouteImport.update({
-  id: '/references',
-  path: '/references',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MuseumsRoute = MuseumsRouteImport.update({
-  id: '/museums',
-  path: '/museums',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HeritageLawsRoute = HeritageLawsRouteImport.update({
-  id: '/heritage-laws',
-  path: '/heritage-laws',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FieldNotesRoute = FieldNotesRouteImport.update({
-  id: '/field-notes',
-  path: '/field-notes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeedbackRoute = FeedbackRouteImport.update({
-  id: '/feedback',
-  path: '/feedback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunityRoute = CommunityRouteImport.update({
-  id: '/community',
-  path: '/community',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AttributionsRoute = AttributionsRouteImport.update({
-  id: '/attributions',
-  path: '/attributions',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -107,9 +37,79 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AttributionsRoute = AttributionsRouteImport.update({
+  id: '/attributions',
+  path: '/attributions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedbackRoute = FeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FieldNotesRoute = FieldNotesRouteImport.update({
+  id: '/field-notes',
+  path: '/field-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HeritageLawsRoute = HeritageLawsRouteImport.update({
+  id: '/heritage-laws',
+  path: '/heritage-laws',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MuseumsRoute = MuseumsRouteImport.update({
+  id: '/museums',
+  path: '/museums',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferencesRoute = ReferencesRouteImport.update({
+  id: '/references',
+  path: '/references',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitesRoute = SitesRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoneToolsRoute = StoneToolsRouteImport.update({
+  id: '/stone-tools',
+  path: '/stone-tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TypologyRoute = TypologyRouteImport.update({
+  id: '/typology',
+  path: '/typology',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -253,109 +253,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/typology': {
-      id: '/typology'
-      path: '/typology'
-      fullPath: '/typology'
-      preLoaderRoute: typeof TypologyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/timeline': {
-      id: '/timeline'
-      path: '/timeline'
-      fullPath: '/timeline'
-      preLoaderRoute: typeof TimelineRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stone-tools': {
-      id: '/stone-tools'
-      path: '/stone-tools'
-      fullPath: '/stone-tools'
-      preLoaderRoute: typeof StoneToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sites': {
-      id: '/sites'
-      path: '/sites'
-      fullPath: '/sites'
-      preLoaderRoute: typeof SitesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/references': {
-      id: '/references'
-      path: '/references'
-      fullPath: '/references'
-      preLoaderRoute: typeof ReferencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/museums': {
-      id: '/museums'
-      path: '/museums'
-      fullPath: '/museums'
-      preLoaderRoute: typeof MuseumsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/heritage-laws': {
-      id: '/heritage-laws'
-      path: '/heritage-laws'
-      fullPath: '/heritage-laws'
-      preLoaderRoute: typeof HeritageLawsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/field-notes': {
-      id: '/field-notes'
-      path: '/field-notes'
-      fullPath: '/field-notes'
-      preLoaderRoute: typeof FieldNotesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/feedback': {
-      id: '/feedback'
-      path: '/feedback'
-      fullPath: '/feedback'
-      preLoaderRoute: typeof FeedbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/community': {
-      id: '/community'
-      path: '/community'
-      fullPath: '/community'
-      preLoaderRoute: typeof CommunityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/attributions': {
-      id: '/attributions'
-      path: '/attributions'
-      fullPath: '/attributions'
-      preLoaderRoute: typeof AttributionsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -365,11 +267,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/attributions': {
+      id: '/attributions'
+      path: '/attributions'
+      fullPath: '/attributions'
+      preLoaderRoute: typeof AttributionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/field-notes': {
+      id: '/field-notes'
+      path: '/field-notes'
+      fullPath: '/field-notes'
+      preLoaderRoute: typeof FieldNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/heritage-laws': {
+      id: '/heritage-laws'
+      path: '/heritage-laws'
+      fullPath: '/heritage-laws'
+      preLoaderRoute: typeof HeritageLawsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/museums': {
+      id: '/museums'
+      path: '/museums'
+      fullPath: '/museums'
+      preLoaderRoute: typeof MuseumsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/references': {
+      id: '/references'
+      path: '/references'
+      fullPath: '/references'
+      preLoaderRoute: typeof ReferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sites': {
+      id: '/sites'
+      path: '/sites'
+      fullPath: '/sites'
+      preLoaderRoute: typeof SitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stone-tools': {
+      id: '/stone-tools'
+      path: '/stone-tools'
+      fullPath: '/stone-tools'
+      preLoaderRoute: typeof StoneToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/typology': {
+      id: '/typology'
+      path: '/typology'
+      fullPath: '/typology'
+      preLoaderRoute: typeof TypologyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
