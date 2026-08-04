@@ -29,20 +29,16 @@ export function AuthHeader() {
 
   return (
     <div className="flex items-center gap-2">
-      <Link
-        to="/account"
-        className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-accent"
-      >
-        <UserIcon className="h-3 w-3" /> <span className="max-w-[9rem] truncate">{name}</span>
-      </Link>
+      <span className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
+        <UserIcon className="h-3 w-3" /> {name}
+      </span>
       <button
         onClick={handleSignOut}
         className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-accent"
         aria-label="Sign out"
       >
-        <LogOut className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign out</span>
+        <LogOut className="h-3.5 w-3.5" /> Sign out
       </button>
     </div>
   );
 }
-
