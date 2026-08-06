@@ -25,9 +25,18 @@ export const fieldNoteSchema = z.object({
   observed_at: z.string().datetime().optional(),
 });
 
+export const profileSchema = z.object({
+  display_name: z.string().trim().min(1, "Name required").max(80, "Name too long").optional(),
+  avatar_url: z.string()
+    .max(2_000_000, "Image too large (max ~1.5 MB)")
+    .refine((v) => !v || v.startsWith("data:image/") || v.startsWith("https://"), "Invalid image")
+    .optional(),
+});
+
 export const authSchema = z.object({
   email: z.string().trim().email("Invalid email").max(255),
   password: z.string().min(8, "At least 8 characters").max(128),
 });
+
 
 export type FieldNoteInput = z.infer<typeof fieldNoteSchema>;
