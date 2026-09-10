@@ -149,7 +149,7 @@ function Scene({ progress }: { progress: React.MutableRefObject<number> }) {
     // Smooth camera dolly along the scroll path
     const targetZ = 4 - progress.current * 190;
     cameraZ.current += (targetZ - cameraZ.current) * Math.min(1, dt * 4.5);
-    state.camera.position.z = cameraZ.current answered;
+    state.camera.position.z = cameraZ.current;
   });
 
   return null;
