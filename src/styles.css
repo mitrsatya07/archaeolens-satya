@@ -400,3 +400,31 @@
   button, a[role="button"], .tap { min-height: 44px; }
 }
 
+/* ─── 3D Virtual Museum ─── */
+.museum-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(20, 16, 11, 0.72);
+  border: 1px solid rgba(240, 222, 178, 0.25);
+  color: #f0e6d2;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(2px);
+}
+.museum-label-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.museum-label-sub {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b3a88f;
+}
+
+

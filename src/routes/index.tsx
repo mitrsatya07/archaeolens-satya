@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink,
-  Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale, ArrowUpRight, MessageSquare,
+  Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale, ArrowUpRight, MessageSquare, Box,
 } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
@@ -34,13 +34,14 @@ export const Route = createFileRoute("/")({
 const sections = [
   { to: "/sites", n: "01", kicker: "Directory", title: "Archaeological Sites", desc: "42+ ASI & UNESCO sites across India — search by state, period, culture.", Icon: MapPin },
   { to: "/timeline", n: "02", kicker: "Chronology", title: "Cultural Periods Timeline", desc: "Paleolithic to Modern — characteristic artifacts and key sites.", Icon: Clock },
-  { to: "/typology", n: "03", kicker: "Reference", title: "Pottery & Script Typology", desc: "NBPW, PGW, BRW, Brahmi, Kharosthi, Indus script & more.", Icon: BookOpen },
-  { to: "/stone-tools", n: "04", kicker: "Collection", title: "Stone Tools — 3D", desc: "Interactive prehistoric stone-tool models across regions.", Icon: Pickaxe },
-  { to: "/museums", n: "05", kicker: "Index", title: "Museum Directory", desc: "ASI site museums, state museums, and international Indian collections.", Icon: Building2 },
-  { to: "/heritage-laws", n: "06", kicker: "Statute", title: "Heritage Laws & Reporting", desc: "AMASR Act, Antiquities Act, and chance-find protocol with ASI.", Icon: Scale },
-  { to: "/field-notes", n: "07", kicker: "Notebook", title: "My Field Notes", desc: "Save observations with photo, GPS, and notes — synced to your account.", Icon: NotebookPen },
-  { to: "/references", n: "08", kicker: "Bibliography", title: "References & Citations", desc: "40+ authoritative sources — ASI reports, monographs, statutes.", Icon: Library },
-  { to: "/community", n: "09", kicker: "Forum", title: "Community & Peer Review", desc: "Ask for identification help, share finds, and discuss ethics with peers.", Icon: MessageSquare },
+  { to: "/museum", n: "03", kicker: "Experience", title: "The Virtual Museum — 3D", desc: "Walk an immersive WebGL gallery of prehistoric artefacts on lit pedestals.", Icon: Box },
+  { to: "/typology", n: "04", kicker: "Reference", title: "Pottery & Script Typology", desc: "NBPW, PGW, BRW, Brahmi, Kharosthi, Indus script & more.", Icon: BookOpen },
+  { to: "/stone-tools", n: "05", kicker: "Collection", title: "Stone Tools — 3D", desc: "Interactive prehistoric stone-tool models across regions.", Icon: Pickaxe },
+  { to: "/museums", n: "06", kicker: "Index", title: "Museum Directory", desc: "ASI site museums, state museums, and international Indian collections.", Icon: Building2 },
+  { to: "/heritage-laws", n: "07", kicker: "Statute", title: "Heritage Laws & Reporting", desc: "AMASR Act, Antiquities Act, and chance-find protocol with ASI.", Icon: Scale },
+  { to: "/field-notes", n: "08", kicker: "Notebook", title: "My Field Notes", desc: "Save observations with photo, GPS, and notes — synced to your account.", Icon: NotebookPen },
+  { to: "/references", n: "09", kicker: "Bibliography", title: "References & Citations", desc: "40+ authoritative sources — ASI reports, monographs, statutes.", Icon: Library },
+  { to: "/community", n: "10", kicker: "Forum", title: "Community & Peer Review", desc: "Ask for identification help, share finds, and discuss ethics with peers.", Icon: MessageSquare },
 ] as const;
 
 const careerOpportunities = [
@@ -193,6 +194,32 @@ function IndexPage() {
           </aside>
         </section>
 
+        {/* Virtual Museum — 3D feature banner */}
+        <section className="mt-16">
+          <Link
+            to="/museum"
+            className="group relative block overflow-hidden rounded-2xl border border-primary/30 bg-[#0b0906] px-6 py-10 text-background sm:px-12 sm:py-14"
+          >
+            <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_20%,rgba(240,220,170,0.16),transparent_55%)]" />
+            <div className="relative grid gap-6 sm:grid-cols-12 sm:items-end">
+              <div className="sm:col-span-8">
+                <p className="small-caps text-primary/90">New · WebGL Experience</p>
+                <h3 className="mt-3 font-display text-3xl leading-tight text-[#f0e6d2] sm:text-5xl">
+                  Enter the <em className="italic text-primary">Virtual Museum</em>
+                </h3>
+                <p className="mt-4 max-w-lg text-sm leading-relaxed text-[#b3a88f]">
+                  Walk a lit gallery of ten prehistoric artefacts — Olduvai handaxes, microliths,
+                  querns and Harappan blades. Click any piece to step closer and read its record.
+                </p>
+              </div>
+              <div className="sm:col-span-4 sm:text-right">
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition group-hover:-translate-y-0.5">
+                  <Box className="h-4 w-4" /> Take the 3D tour
+                </span>
+              </div>
+            </div>
+          </Link>
+        </section>
 
         {/* Signature quote — ASI lore */}
         <section className="mt-16">
@@ -219,7 +246,7 @@ function IndexPage() {
         <section className="mt-20">
           <div className="flex items-end justify-between gap-6 border-b border-foreground/20 pb-4">
             <h3 className="font-display text-3xl text-foreground sm:text-4xl">The Index</h3>
-            <p className="small-caps hidden text-muted-foreground sm:block">Eight departments</p>
+            <p className="small-caps hidden text-muted-foreground sm:block">Ten departments</p>
           </div>
 
           <div className="grid gap-px bg-foreground/10 sm:grid-cols-2 lg:grid-cols-4 mt-px">
@@ -227,7 +254,7 @@ function IndexPage() {
               <Link
                 key={to}
                 to={to}
-                className={`index-card group relative flex flex-col justify-between gap-6 bg-background p-6 hover:bg-card reveal-up ${["reveal-d1","reveal-d2","reveal-d3","reveal-d4","reveal-d5","reveal-d6","reveal-d6","reveal-d6"][i]}`}
+                className={`index-card group relative flex flex-col justify-between gap-6 bg-background p-6 hover:bg-card reveal-up ${["reveal-d1","reveal-d2","reveal-d3","reveal-d4","reveal-d5","reveal-d6","reveal-d6","reveal-d6","reveal-d6","reveal-d6"][i]}`}
               >
                 <div className="flex items-start justify-between">
                   <span className="index-number font-display text-3xl text-primary/70">{n}</span>
