@@ -18,7 +18,8 @@ export type MuseumSceneProps = {
 };
 
 export const MuseumScene: React.FC<MuseumSceneProps> = ({ paused, focus, onFocus, inputRef, onReady }) => {
-  const focusArtifact = focus ? MUSEUM_ARTIFACTS.find((a) => a.id === focus.id) ?? null : null;
+  const found = focus ? MUSEUM_ARTIFACTS.find((a) => a.id === focus.id) ?? null : null;
+  const focusArtifact = found ? { x: found.side * 6, z: found.z, side: found.side } : null;
 
   return (
     <Canvas
