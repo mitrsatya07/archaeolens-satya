@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import {
   Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink,
@@ -10,6 +10,8 @@ import { IdentifyResultCard } from "@/components/IdentifyResultCard";
 import { identifyImage, type IdentifyResult, type ScanMode } from "@/lib/identify.functions";
 import { AuthHeader } from "@/components/AuthHeader";
 import { useAuth } from "@/hooks/useAuth";
+
+const ScrollBackdrop = lazy(() => import("@/components/Scroll3D/ScrollScene"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -113,7 +115,12 @@ function IndexPage() {
   }
 
   return (
-    <main className="min-h-[100dvh] magazine-shell text-foreground">
+    <main className="magazine-shell scroll-3d-active min-h-[100dvh] text-foreground">
+      {/* Scroll-driven 3D backdrop — camera dollies through floating artefacts */}
+      <Suspense fallback={null}>
+        <ScrollBackdrop />
+      </Suspense>
+
       {/* Masthead */}
       <header className="border-b border-foreground/15">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
@@ -137,7 +144,7 @@ function IndexPage() {
 
       <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-16">
         {/* Editorial hero */}
-        <section className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+        <section className="hero-glass grid gap-10 rounded-2xl border border-foreground/10 p-6 sm:p-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-8">
             <p className="small-caps text-primary reveal-up">The Field Edition · Issue 01</p>
             <h2 className="mt-5 font-display text-4xl leading-[1.02] text-foreground sm:text-6xl lg:text-[5.5rem] reveal-up reveal-d1">
