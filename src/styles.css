@@ -420,16 +420,6 @@
   position: relative;
   z-index: 1;
 }
-.scroll-3d-active::before {
-  /* soft vignette so edge text stays readable over the 3D scene */
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(16, 12, 19, 0) 0%, rgba(16, 12, 19, 0.55) 100%);
-}
 .hero-glass {
   background: color-mix(in oklab, var(--background) 88%, transparent);
   backdrop-filter: blur(10px);
