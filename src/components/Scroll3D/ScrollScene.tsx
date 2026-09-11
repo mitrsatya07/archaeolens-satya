@@ -150,6 +150,56 @@ const Trench: React.FC = () => {
   );
 };
 
+/* ── Floating artefact field: meshes the camera passes on its journey ─ */
+
+const FloatingArtifacts: React.FC = () => {
+  const group = useRef<THREE.Group>(null);
+  const items = useMemo(() => {
+    // deterministic pseudo-random scatter along the trench corridor
+    let s = 7;
+    const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    const kinds: Array<"sherd" | "blade" | "stone"> = ["sherd", "blade", "stone"];
+    return Array.from({ length: 14 }, (_, i) => ({
+      kind: kinds[i % 3],
+      pos: [(rnd() - 0.5) * 16, 0.6 + rnd() * 5, -14 - rnd() * 30] as [number, number, number],
+      rot: [rnd() * Math.PI, rnd() * Math.PI, rnd() * Math.PI] as [number, number, number],
+      scale: 0.35 + rnd() * 0.5,
+      speed: 0.1 + rnd() * 0.25,
+    }));
+  }, []);
+
+  useFrame((state, dt) => {
+    const g = group.current;
+    if (!g) return;
+    g.children.forEach((c, i) => {
+      c.rotation.x += dt * items[i].speed;
+      c.rotation.y += dt * items[i].speed * 0.7;
+      c.position.y += Math.sin(state.clock.elapsedTime * 0.6 + i) * dt * 0.12;
+    });
+  });
+
+  return (
+    <group ref={group}>
+      {items.map((it, i) => (
+        <mesh key={i} position={it.pos} rotation={it.rot} scale={it.scale}>
+          {it.kind === "sherd" ? (
+            <cylinderGeometry args={[0.5, 0.38, 0.16, 9, 1]} />
+          ) : it.kind === "blade" ? (
+            <coneGeometry args={[0.22, 0.9, 5]} />
+          ) : (
+            <dodecahedronGeometry args={[0.42, 0]} />
+          )}
+          <meshStandardMaterial
+            color={it.kind === "sherd" ? "#9a5b3c" : it.kind === "blade" ? "#7d7469" : "#5f5341"}
+            roughness={0.9}
+            flatShading
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
 /* ── Scene rig: scroll → camera + subtle mouse parallax ────────────── */
 
 const DUST_COUNT = 260;
@@ -159,15 +209,15 @@ const SceneRig: React.FC<{ progress: React.MutableRefObject<number> }> = ({ prog
   const dustRef = useRef<THREE.Points>(null);
 
   const dust = useMemo(() => {
-    const g = new THREE.BufferGeometry();
+    const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(DUST_COUNT * 3);
     for (let i = 0; i < DUST_COUNT; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 50;
       pos[i * 3 + 1] = Math.random() * 14;
       pos[i * 3 + 2] = -Math.random() * 80 + 8;
     }
-    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    return g;
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    return geo;
   }, []);
 
   useFrame((state, dt) => {
@@ -199,6 +249,7 @@ const SceneRig: React.FC<{ progress: React.MutableRefObject<number> }> = ({ prog
       <Terrain />
       <SurveyGrid />
       <Trench />
+      <FloatingArtifacts />
     </>
   );
 };
