@@ -426,6 +426,108 @@
   box-shadow: var(--shadow-editorial);
 }
 
+/* ─── Cylinder page-roll mode (body.roll-3d) ─── */
+#scroll-space { display: none; }
+body.roll-3d #scroll-space { display: block; height: 640vh; }
+body.roll-3d .page-shell > header,
+body.roll-3d .page-shell > div:not(.roll-canvas):not(#scroll-space):not(.roll-hud) {
+  /* page content off-screen but kept for a11y/SEO */
+  position: absolute !important;
+  left: -9999px !important;
+  top: 0;
+  width: 100vw;
+}
+.roll-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.roll-canvas canvas { display: block; }
+body.roll-3d .magazine-shell { background: transparent !important; }
+body.roll-3d {
+  background: radial-gradient(120% 100% at 70% -10%, #f2ead7 0%, #efe7d5 55%, #e4d9bf 100%);
+}
+
+/* HUD */
+.roll-hud { display: none; }
+body.roll-3d .roll-hud { display: block; }
+.roll-rail {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 220px;
+  background: rgba(43, 36, 24, 0.18);
+  border-radius: 2px;
+  z-index: 5;
+  pointer-events: none;
+}
+.roll-rail span {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  box-shadow: 0 0 10px rgba(168, 91, 60, 0.6);
+  transition: top 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.roll-label {
+  position: fixed;
+  left: 32px;
+  bottom: 34px;
+  z-index: 5;
+  pointer-events: none;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 15px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(43, 36, 24, 0.55);
+}
+.roll-label .k { display: block; font-family: var(--font-sans, system-ui, sans-serif); font-size: 11px; }
+.roll-label b {
+  display: block;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin-top: 6px;
+  font-weight: 400;
+}
+.roll-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  color: rgba(43, 36, 24, 0.55);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.roll-hint i {
+  width: 13px;
+  height: 13px;
+  border-right: 1.5px solid var(--terracotta);
+  border-bottom: 1.5px solid var(--terracotta);
+  transform: rotate(45deg);
+  animation: roll-chev 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@keyframes roll-chev {
+  0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.4; }
+  50% { transform: rotate(45deg) translate(5px, 5px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .roll-hint i { animation: none; }
+}
+
 /* ─── 3D Virtual Museum ─── */
 .museum-label {
   display: flex;

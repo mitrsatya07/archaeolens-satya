@@ -11,7 +11,7 @@ import { identifyImage, type IdentifyResult, type ScanMode } from "@/lib/identif
 import { AuthHeader } from "@/components/AuthHeader";
 import { useAuth } from "@/hooks/useAuth";
 
-const ScrollBackdrop = lazy(() => import("@/components/Scroll3D/ScrollScene"));
+const CylinderRoll = lazy(() => import("@/components/Scroll3D/CylinderRoll"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -115,11 +115,14 @@ function IndexPage() {
   }
 
   return (
-    <main className="magazine-shell scroll-3d-active min-h-[100dvh] text-foreground">
-      {/* Scroll-driven 3D backdrop — camera dollies through floating artefacts */}
+    <main className="magazine-shell scroll-3d-active page-shell min-h-[100dvh] text-foreground">
+      {/* 3D cylinder page-roll — desktop: full WebGL roll; mobile/fallback: journey backdrop */}
       <Suspense fallback={null}>
-        <ScrollBackdrop />
+        <CylinderRoll />
       </Suspense>
+
+      {/* scroll length for the cylinder roll (one chapter per 100vh) */}
+      <div id="scroll-space" aria-hidden />
 
       {/* Masthead */}
       <header className="border-b border-foreground/15">
