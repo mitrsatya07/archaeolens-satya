@@ -124,17 +124,34 @@ function RollRig({
   const dustRef = useRef<THREE.Points>(null);
 
   /* planes: chapter i at angle θi = -i·STEP; rotation.y = i·STEP so each
-     plane's face points at the cylinder centre (the camera) */
+     plane's face points at the cylinder centre (the camera).
+     Cards START SCATTERED in 3D space and assemble onto the cylinder
+     between 100vh–200vh of scroll (stagger 0.2s, duration 1.2s each). */
   const planes = useMemo(
     () =>
       CHAPTERS.map((_, i) => {
         const theta = -i * STEP;
-        const pos: [number, number, number] = [
+        const home: [number, number, number] = [
           Math.sin(theta) * RADIUS,
           0,
           -Math.cos(theta) * RADIUS,
         ];
-        return { pos, tex: makeChapterTexture(i), rotY: i * STEP };
+        /* deterministic scatter so every load is identical */
+        const s = (n: number) => {
+          const x = Math.sin(i * 91.7 + n * 47.3) * 43758.5453;
+          return x - Math.floor(x);
+        };
+        const pos: [number, number, number] = [
+          (s(1) - 0.5) * 26,
+          (s(2) - 0.5) * 10,
+          -4 - s(3) * 22,
+        ];
+        const rot: [number, number, number] = [
+          (s(4) - 0.5) * Math.PI,
+          (s(5) - 0.5) * Math.PI * 1.6,
+          (s(6) - 0.5) * Math.PI,
+        ];
+        return { pos, rot, tex: makeChapterTexture(i), home, homeRotY: i * STEP, proxy: { a: 0 } };
       }),
     [],
   );
@@ -162,20 +179,28 @@ function RollRig({
     if (dustRef.current) dustRef.current.rotation.y += dt * 0.02;
 
     /* per-plane reveal: angular distance from "facing the camera" drives
-       opacity (depth layering), scale and a slight y-settle */
+       opacity (depth layering), scale and a slight y-settle.
+       Gated by the assembly factor so GSAP owns position/rotation while
+       the cards are still flying in. */
     const camDir = new THREE.Vector3(0, 0, -1);
     let best = 0;
     let bestDot = -2;
     const v = new THREE.Vector3();
     planeRefs.current.forEach((mesh, i) => {
       if (!mesh) return;
+      const assembled = planes[i].proxy.a;
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      if (assembled < 1) {
+        /* mid-flight: fade the card in as it travels to its slot */
+        mat.opacity = assembled;
+        return;
+      }
       v.copy(mesh.position).applyEuler(w.rotation).normalize();
       const d = v.dot(camDir);
       if (d > bestDot) { bestDot = d; best = i; }
       const delta = Math.acos(THREE.MathUtils.clamp(d, -1, 1));
       const t = THREE.MathUtils.clamp(delta / STEP, 0, 1);
-      const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = 1 - t * 0.75;
+      mat.opacity = (1 - t * 0.75) * assembled;
       const s = 1 - t * 0.14 + Math.sin(state.clock.elapsedTime * 0.8 + i) * 0.004;
       mesh.scale.setScalar(s);
       mesh.position.y = -t * 0.35;
@@ -185,27 +210,53 @@ function RollRig({
       onActiveChange(best);
     }
 
-    /* camera: cylinder centre + gentle sway + mouse parallax */
+    /* camera: cylinder centre (z:-10) + gentle sway + mouse parallax */
     const sway = Math.sin(p * Math.PI * 2) * 0.7;
     state.camera.position.set(sway + state.pointer.x * 0.5, state.pointer.y * 0.35, 0);
-    state.camera.lookAt(0, 0, 0);
+    state.camera.lookAt(0, 0, -10);
   });
+
+  /* ── Assembly timeline: scattered → cylinder slots ─────────────────
+     Scroll window: 100vh → 200vh · stagger 0.2s · duration 1.2s each */
+  useEffect(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#scroll-space",
+        start: () => window.innerHeight, // 100vh scrolled
+        end: () => window.innerHeight * 2, // 200vh scrolled
+        scrub: 1.2,
+      },
+      defaults: { duration: 1.2, ease: "power3.out" },
+    });
+    planes.forEach((pl, i) => {
+      const at = i * 0.2; // stagger
+      tl.to(pl.proxy, { a: 1 }, at);
+      const mesh = planeRefs.current[i];
+      if (!mesh) return;
+      tl.to(mesh.position, { x: pl.home[0], y: pl.home[1], z: pl.home[2] }, at);
+      tl.to(mesh.rotation, { x: 0, y: pl.homeRotY, z: 0 }, at);
+    });
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, [planes]);
 
   return (
     <>
-      <fog attach="fog" args={[PAPER, 18, 60]} />
+      <fog attach="fog" args={[PAPER, 24, 80]} />
       <ambientLight intensity={0.9} color="#fff6e6" />
       <directionalLight position={[8, 10, 5]} intensity={1.2} color="#ffe9c4" />
       <points ref={dustRef} geometry={dust}>
         <pointsMaterial size={0.05} color="#a85b3c" transparent opacity={0.35} sizeAttenuation depthWrite={false} />
       </points>
-      <group ref={world}>
+      <group ref={world} position={[0, 0, -10]}>
         {planes.map((pl, i) => (
           <mesh
             key={i}
             ref={(m) => { if (m) planeRefs.current[i] = m; }}
             position={pl.pos}
-            rotation={[0, pl.rotY, 0]}
+            rotation={pl.rot}
           >
             <planeGeometry args={[PLANE_W, PLANE_H]} />
             <meshBasicMaterial map={pl.tex} transparent toneMapped={false} side={THREE.DoubleSide} />
