@@ -12,6 +12,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { useScrollProgress } from "./useScrollProgress";
 import ScrollBackdrop from "./ScrollScene";
+import { PostFX } from "./PostFX";
+import { EnvWall, GLTFArtifact, HDREnv } from "./SceneAddons";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -210,6 +212,10 @@ function RollRig({
           </mesh>
         ))}
       </group>
+      <EnvWall />
+      <GLTFArtifact />
+      <HDREnv />
+      <PostFX />
     </>
   );
 }
