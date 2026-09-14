@@ -19,7 +19,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as FieldNotesRouteImport } from './routes/field-notes'
 import { Route as HeritageLawsRouteImport } from './routes/heritage-laws'
-import { Route as MuseumRouteImport } from './routes/museum'
 import { Route as MuseumsRouteImport } from './routes/museums'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ReferencesRouteImport } from './routes/references'
@@ -79,11 +78,6 @@ const HeritageLawsRoute = HeritageLawsRouteImport.update({
   path: '/heritage-laws',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MuseumRoute = MuseumRouteImport.update({
-  id: '/museum',
-  path: '/museum',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MuseumsRoute = MuseumsRouteImport.update({
   id: '/museums',
   path: '/museums',
@@ -136,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
   '/heritage-laws': typeof HeritageLawsRoute
-  '/museum': typeof MuseumRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/references': typeof ReferencesRoute
@@ -157,7 +150,6 @@ export interface FileRoutesByTo {
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
   '/heritage-laws': typeof HeritageLawsRoute
-  '/museum': typeof MuseumRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/references': typeof ReferencesRoute
@@ -179,7 +171,6 @@ export interface FileRoutesById {
   '/feedback': typeof FeedbackRoute
   '/field-notes': typeof FieldNotesRoute
   '/heritage-laws': typeof HeritageLawsRoute
-  '/museum': typeof MuseumRoute
   '/museums': typeof MuseumsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/references': typeof ReferencesRoute
@@ -202,7 +193,6 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/field-notes'
     | '/heritage-laws'
-    | '/museum'
     | '/museums'
     | '/privacy-policy'
     | '/references'
@@ -223,7 +213,6 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/field-notes'
     | '/heritage-laws'
-    | '/museum'
     | '/museums'
     | '/privacy-policy'
     | '/references'
@@ -244,7 +233,6 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/field-notes'
     | '/heritage-laws'
-    | '/museum'
     | '/museums'
     | '/privacy-policy'
     | '/references'
@@ -266,7 +254,6 @@ export interface RootRouteChildren {
   FeedbackRoute: typeof FeedbackRoute
   FieldNotesRoute: typeof FieldNotesRoute
   HeritageLawsRoute: typeof HeritageLawsRoute
-  MuseumRoute: typeof MuseumRoute
   MuseumsRoute: typeof MuseumsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ReferencesRoute: typeof ReferencesRoute
@@ -349,13 +336,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HeritageLawsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/museum': {
-      id: '/museum'
-      path: '/museum'
-      fullPath: '/museum'
-      preLoaderRoute: typeof MuseumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/museums': {
       id: '/museums'
       path: '/museums'
@@ -426,7 +406,6 @@ const rootRouteChildren: RootRouteChildren = {
   FeedbackRoute: FeedbackRoute,
   FieldNotesRoute: FieldNotesRoute,
   HeritageLawsRoute: HeritageLawsRoute,
-  MuseumRoute: MuseumRoute,
   MuseumsRoute: MuseumsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ReferencesRoute: ReferencesRoute,
