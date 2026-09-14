@@ -1,8 +1,14 @@
-/* CylinderRoll — ArchaeoLens as a cylindrical 3D page-roll.
-   Six chapters sit on a cylinder around the camera; scrolling rotates the
-   cylinder (100vh per chapter), Lenis smooths the wheel, GSAP ScrollTrigger
-   stays in sync. Paper-editorial palette, mobile/reduced-motion fallback
-   falls back to the existing ScrollScene backdrop. */
+/* CylinderRoll — ArchaeoLens cylindrical 3D page-roll journey.
+   Five 100vh phases over 500vh of scroll:
+     0–100vh   cards drift scattered in 3D space
+     100–200vh cards assemble onto a cylinder at z:-10 (stagger 0.2s, 1.2s each)
+     200–300vh carousel recedes (panels staggered z -5…-15), rotates to 270°,
+               camera pans laterally 3 units
+     300–400vh carousel reaches z:-40, rotation → 315° (45° per increment)
+     400–500vh rotation completes 360° back to start; contact-form fields rise
+               (Y -5 → 0); camera settles at (0, 2, 10) looking at the center
+   Lenis smooth scroll + GSAP ScrollTrigger. Paper-editorial palette.
+   Mobile / reduced motion → flat ScrollScene fallback. */
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -14,11 +20,14 @@ import { useScrollProgress } from "./useScrollProgress";
 import ScrollBackdrop from "./ScrollScene";
 import { PostFX } from "./PostFX";
 import { EnvWall, GLTFArtifact, HDREnv } from "./SceneAddons";
+import { Html } from "@react-three/drei";
+import { toast } from "sonner";
+import { contactSchema } from "@/lib/validation";
+import { supabase } from "@/integrations/supabase/client";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ── Mode decision: roll on capable desktops, flat elsewhere ──────── */
-
+/* mode decision: roll on capable desktops, flat elsewhere */
 const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isSmall = typeof window !== "undefined" && window.matchMedia("(max-width: 900px)").matches;
 const hasWebGL = (() => {
@@ -31,41 +40,75 @@ const hasWebGL = (() => {
 })();
 const MODE_ROLL = hasWebGL && !isSmall && !prefersReduced;
 
-/* ── Chapters (content mirrors the existing homepage sections) ────── */
-
-const CHAPTERS = [
-  { label: "Hero", draw: drawHero },
-  { label: "The Index", draw: drawIndex },
-  { label: "Museum", draw: drawMuseum },
-  { label: "Field Method", draw: drawMethod },
-  { label: "Careers", draw: drawCareers },
-  { label: "Colophon", draw: drawColophon },
-];
-const N = CHAPTERS.length;
-const STEP = (Math.PI * 2) / N;
-const RADIUS = 9.4;
-const PLANE_W = 12.8;
-const PLANE_H = 7.5;
+/* palette (mirrors ArchaeoLens tokens) */
 const PAPER = "#f6f0e3";
 const INK = "#2b2418";
 const TERRA = "#a85b3c";
-const COPPER = "#c87a52";
 const MUTED = "#6f6350";
+const SERIF = "Georgia, 'Times New Roman', serif";
+const SANS = "'Segoe UI', system-ui, sans-serif";
+
+/* carousel constants */
+const N = 8;                        // planes (spec: 8–12)
+const STEP = (Math.PI * 2) / N;     // 45° apart
+const RADIUS = 8;                   // carousel radius (spec: 8)
+const PLANE_W = 12.8;
+const PLANE_H = 7.5;
+
+/* journey keyframes sampled by scroll progress T (1 = 500vh scrolled) */
+const CAROUSEL_Z: Array<[number, number]> = [
+  [0.2, -10], [0.4, -20], [0.6, -30], [0.8, -40], [1.0, -40],
+];
+const CAROUSEL_ROT: Array<[number, number]> = [
+  [0.2, 90], [0.4, 180], [0.6, 270], [0.8, 315], [1.0, 360],
+];
+const CAM_KEYS: Array<{ t: number; pos: [number, number, number]; look: [number, number, number] }> = [
+  { t: 0.0, pos: [0, 0, 10], look: [0, 0, -10] },
+  { t: 0.2, pos: [0, 0, 8], look: [0, 0, -10] },
+  { t: 0.4, pos: [3, 0.5, 2], look: [0, 0, -20] },   // lateral pan +3 units
+  { t: 0.5, pos: [-3, 0.5, 0], look: [0, 0, -26] },  // lateral pan −3 units
+  { t: 0.6, pos: [0, 1, -2], look: [0, 0, -30] },
+  { t: 0.8, pos: [0, 1.5, 2], look: [0, 0, -40] },
+  { t: 1.0, pos: [0, 2, 10], look: [0, 0, -20] },    // final (0, 2, 10) → center
+];
+
+const smooth = (t: number) => t * t * (3 - 2 * t);
+
+function sampleNum(keys: Array<[number, number]>, t: number): number {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [t0, v0] = keys[i];
+    const [t1, v1] = keys[i + 1];
+    if (t <= t1) return v0 + (v1 - v0) * smooth((t - t0) / (t1 - t0 || 1));
+  }
+  return keys[keys.length - 1][1];
+}
+
+function sampleCam(t: number): { pos: THREE.Vector3; look: THREE.Vector3 } {
+  const c = Math.min(0.999, Math.max(0, t));
+  let i = 0;
+  while (i < CAM_KEYS.length - 2 && CAM_KEYS[i + 1].t < c) i++;
+  const a = CAM_KEYS[i];
+  const b = CAM_KEYS[i + 1];
+  const k = smooth((c - a.t) / (b.t - a.t || 1));
+  return {
+    pos: new THREE.Vector3().lerpVectors(new THREE.Vector3(...a.pos), new THREE.Vector3(...b.pos), k),
+    look: new THREE.Vector3().lerpVectors(new THREE.Vector3(...a.look), new THREE.Vector3(...b.look), k),
+  };
+}
+/* ── Root: Lenis + body class + HUD ───────────────────────────────── */
 
 export default function CylinderRoll() {
   const progress = useScrollProgress();
   const [active, setActive] = useState(0);
 
-  /* body class switches the page into roll layout (content off-screen,
-     scroll space on) */
   useEffect(() => {
     if (!MODE_ROLL) return;
     document.body.classList.add("roll-3d");
     return () => document.body.classList.remove("roll-3d");
   }, []);
 
-  /* Lenis smooth scroll, driven by GSAP's ticker, kept in sync with
-     ScrollTrigger (which the journey samples through useScrollProgress) */
+  /* Lenis smooth scroll, GSAP ticker driven, ScrollTrigger synced */
   useEffect(() => {
     if (!MODE_ROLL) return;
     const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
@@ -79,14 +122,14 @@ export default function CylinderRoll() {
     };
   }, []);
 
-  if (!MODE_ROLL) return <ScrollBackdrop />; // flat fallback = existing behaviour
+  if (!MODE_ROLL) return <ScrollBackdrop />; // flat fallback
 
   return (
     <>
       <div className="roll-canvas" aria-hidden>
         <Canvas
           dpr={[1, 1.6]}
-          camera={{ position: [0, 0, 0], fov: 50, near: 0.1, far: 120 }}
+          camera={{ position: [0, 0, 10], fov: 50, near: 0.1, far: 160 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         >
           <RollRig progress={progress} onActiveChange={setActive} />
@@ -109,7 +152,7 @@ export default function CylinderRoll() {
   );
 }
 
-/* ── RollRig: the cylinder of chapter planes + camera choreography ── */
+/* ── RollRig: planes + journey choreography ───────────────────────── */
 
 function RollRig({
   progress,
@@ -120,110 +163,49 @@ function RollRig({
 }) {
   const world = useRef<THREE.Group>(null);
   const planeRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const fieldRefs = useRef<(THREE.Group | null)[]>([]);
   const activeRef = useRef(-1);
   const dustRef = useRef<THREE.Points>(null);
 
-  /* planes: chapter i at angle θi = -i·STEP; rotation.y = i·STEP so each
-     plane's face points at the cylinder centre (the camera).
-     Cards START SCATTERED in 3D space and assemble onto the cylinder
-     between 100vh–200vh of scroll (stagger 0.2s, duration 1.2s each). */
+  /* 8 chapter planes: home slot on the radius-8 cylinder + scattered start.
+     Staggered personal z-offset (-5…-15) is applied from the 200–300vh phase. */
   const planes = useMemo(
     () =>
       CHAPTERS.map((_, i) => {
-        const theta = -i * STEP;
-        const home: [number, number, number] = [
-          Math.sin(theta) * RADIUS,
-          0,
-          -Math.cos(theta) * RADIUS,
-        ];
-        /* deterministic scatter so every load is identical */
+        const a = i * STEP;
+        const home: [number, number, number] = [Math.sin(a) * RADIUS, 0, -Math.cos(a) * RADIUS];
+        const homeRotY = Math.PI - a; // outward-facing on the cylinder
         const s = (n: number) => {
           const x = Math.sin(i * 91.7 + n * 47.3) * 43758.5453;
           return x - Math.floor(x);
         };
-        const pos: [number, number, number] = [
-          (s(1) - 0.5) * 26,
-          (s(2) - 0.5) * 10,
-          -4 - s(3) * 22,
-        ];
-        const rot: [number, number, number] = [
-          (s(4) - 0.5) * Math.PI,
-          (s(5) - 0.5) * Math.PI * 1.6,
-          (s(6) - 0.5) * Math.PI,
-        ];
-        return { pos, rot, tex: makeChapterTexture(i), home, homeRotY: i * STEP, proxy: { a: 0 } };
+        const pos: [number, number, number] = [(s(1) - 0.5) * 30, (s(2) - 0.5) * 12, -2 - s(3) * 26];
+        const rot: [number, number, number] = [(s(4) - 0.5) * Math.PI, (s(5) - 0.5) * Math.PI * 1.6, (s(6) - 0.5) * Math.PI];
+        const zOff = -(5 + s(7) * 10);
+        return { pos, rot, tex: makeChapterTexture(i), home, homeRotY, zOff, proxy: { a: 0 } };
       }),
     [],
   );
-
   const dust = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(320 * 3);
     for (let i = 0; i < 320; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 40;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 18;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 60;
+      pos[i * 3] = (Math.random() - 0.5) * 44;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 70;
     }
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     return geo;
   }, []);
 
-  useFrame((state, dt) => {
-    const w = world.current;
-    if (!w) return;
-    const p = progress.current;
-
-    /* the roll: 100vh of scroll = one chapter = STEP radians */
-    w.rotation.y = -p * (N - 1) * STEP;
-    w.position.y = Math.sin(state.clock.elapsedTime * 0.4) * 0.1;
-    if (dustRef.current) dustRef.current.rotation.y += dt * 0.02;
-
-    /* per-plane reveal: angular distance from "facing the camera" drives
-       opacity (depth layering), scale and a slight y-settle.
-       Gated by the assembly factor so GSAP owns position/rotation while
-       the cards are still flying in. */
-    const camDir = new THREE.Vector3(0, 0, -1);
-    let best = 0;
-    let bestDot = -2;
-    const v = new THREE.Vector3();
-    planeRefs.current.forEach((mesh, i) => {
-      if (!mesh) return;
-      const assembled = planes[i].proxy.a;
-      const mat = mesh.material as THREE.MeshBasicMaterial;
-      if (assembled < 1) {
-        /* mid-flight: fade the card in as it travels to its slot */
-        mat.opacity = assembled;
-        return;
-      }
-      v.copy(mesh.position).applyEuler(w.rotation).normalize();
-      const d = v.dot(camDir);
-      if (d > bestDot) { bestDot = d; best = i; }
-      const delta = Math.acos(THREE.MathUtils.clamp(d, -1, 1));
-      const t = THREE.MathUtils.clamp(delta / STEP, 0, 1);
-      mat.opacity = (1 - t * 0.75) * assembled;
-      const s = 1 - t * 0.14 + Math.sin(state.clock.elapsedTime * 0.8 + i) * 0.004;
-      mesh.scale.setScalar(s);
-      mesh.position.y = -t * 0.35;
-    });
-    if (best !== activeRef.current) {
-      activeRef.current = best;
-      onActiveChange(best);
-    }
-
-    /* camera: cylinder centre (z:-10) + gentle sway + mouse parallax */
-    const sway = Math.sin(p * Math.PI * 2) * 0.7;
-    state.camera.position.set(sway + state.pointer.x * 0.5, state.pointer.y * 0.35, 0);
-    state.camera.lookAt(0, 0, -10);
-  });
-
-  /* ── Assembly timeline: scattered → cylinder slots ─────────────────
-     Scroll window: 100vh → 200vh · stagger 0.2s · duration 1.2s each */
+  /* GSAP assembly: scattered → cylinder slots (100–200vh),
+     stagger 0.2s, duration 1.2s each */
   useEffect(() => {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: "#scroll-space",
-        start: () => window.innerHeight, // 100vh scrolled
-        end: () => window.innerHeight * 2, // 200vh scrolled
+        start: () => window.innerHeight, // 100vh
+        end: () => window.innerHeight * 2, // 200vh
         scrub: 1.2,
       },
       defaults: { duration: 1.2, ease: "power3.out" },
@@ -242,15 +224,74 @@ function RollRig({
     };
   }, [planes]);
 
+  useFrame((state, dt) => {
+    const w = world.current;
+    if (!w) return;
+    const T = progress.current;
+
+    /* carousel journey: recede (z −10 → −40) + rotate (90° → 360°) */
+    w.position.z = sampleNum(CAROUSEL_Z, T);
+    w.rotation.y = THREE.MathUtils.degToRad(sampleNum(CAROUSEL_ROT, T));
+    w.position.y = Math.sin(state.clock.elapsedTime * 0.4) * 0.1;
+    if (dustRef.current) dustRef.current.rotation.y += dt * 0.02;
+
+    /* staggered panel z-depth (200–300vh): panels spread −5…−15 */
+    const spread = THREE.MathUtils.clamp((T - 0.4) / 0.2, 0, 1);
+
+    /* per-plane reveal — only once GSAP has assembled them */
+    const camDir = new THREE.Vector3(0, 0, -1);
+    let best = 0;
+    let bestDot = -2;
+    const v = new THREE.Vector3();
+    planeRefs.current.forEach((mesh, i) => {
+      if (!mesh) return;
+      const pl = planes[i];
+      const assembled = pl.proxy.a;
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      if (assembled < 1) {
+        mat.opacity = assembled;
+        return;
+      }
+      mesh.position.z = pl.home[2] + pl.zOff * spread;
+      v.copy(mesh.position).applyEuler(w.rotation).normalize();
+      const d = v.dot(camDir);
+      if (d > bestDot) { bestDot = d; best = i; }
+      const delta = Math.acos(THREE.MathUtils.clamp(d, -1, 1));
+      const t = THREE.MathUtils.clamp(delta / STEP, 0, 1);
+      mat.opacity = (1 - t * 0.7) * assembled;
+      const s = 1 - t * 0.12 + Math.sin(state.clock.elapsedTime * 0.8 + i) * 0.004;
+      mesh.scale.setScalar(s);
+      mesh.position.y = Math.sin(state.clock.elapsedTime * 0.5 + i) * 0.08;
+    });
+    if (best !== activeRef.current) {
+      activeRef.current = best;
+      onActiveChange(best);
+    }
+
+    /* camera keyframe journey, eased follow + mouse parallax.
+       Final key settles at (0, 2, 10) looking at the center. */
+    const cam = sampleCam(T);
+    state.camera.position.lerp(
+      new THREE.Vector3(
+        cam.pos.x + state.pointer.x * 0.4,
+        cam.pos.y + state.pointer.y * 0.25,
+        cam.pos.z,
+      ),
+      Math.min(1, dt * 3),
+    );
+    state.camera.lookAt(cam.look);
+  });
+
   return (
     <>
-      <fog attach="fog" args={[PAPER, 24, 80]} />
+      <fog attach="fog" args={[PAPER, 30, 110]} />
       <ambientLight intensity={0.9} color="#fff6e6" />
       <directionalLight position={[8, 10, 5]} intensity={1.2} color="#ffe9c4" />
       <points ref={dustRef} geometry={dust}>
         <pointsMaterial size={0.05} color="#a85b3c" transparent opacity={0.35} sizeAttenuation depthWrite={false} />
       </points>
-      <group ref={world} position={[0, 0, -10]}>
+
+      <group ref={world}>
         {planes.map((pl, i) => (
           <mesh
             key={i}
@@ -259,10 +300,14 @@ function RollRig({
             rotation={pl.rot}
           >
             <planeGeometry args={[PLANE_W, PLANE_H]} />
-            <meshBasicMaterial map={pl.tex} transparent toneMapped={false} side={THREE.DoubleSide} />
+            <meshBasicMaterial map={pl.tex} transparent opacity={0} toneMapped={false} side={THREE.DoubleSide} />
           </mesh>
         ))}
       </group>
+
+      {/* final chapter — real contact form rising Y −5 → 0 (400–500vh) */}
+      <ContactFormRise progress={progress} />
+
       <EnvWall />
       <GLTFArtifact />
       <HDREnv />
@@ -270,11 +315,109 @@ function RollRig({
     </>
   );
 }
+/* ── Final chapter: real contact form, rises Y −5 → 0 (400–500vh) ──
+   Rendered through drei <Html> so the inputs are real, keyboard
+   accessible, and submissions go straight to Supabase. */
 
+function ContactFormRise({ progress }: { progress: React.MutableRefObject<number> }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
+  useFrame(() => {
+    const el = box.current;
+    if (!el) return;
+    const T = progress.current;
+    const r = smooth(THREE.MathUtils.clamp((T - 0.8) / 0.18, 0, 1));
+    el.style.opacity = String(r);
+    el.style.visibility = r > 0.02 ? "visible" : "hidden";
+    /* spec: Y animation from −5 → 0 */
+    el.style.transform = `translate3d(-50%, ${((r - 1) * 70).toFixed(1)}px, 0)`;
+  });
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = contactSchema.safeParse({
+      name: name || undefined,
+      email: email || undefined,
+      category: "general",
+      message,
+    });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    setSending(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: parsed.data.name || null,
+      email: parsed.data.email || null,
+      category: "general",
+      message: parsed.data.message,
+    });
+    setSending(false);
+    if (error) {
+      toast.error("Could not send message. Please try again.");
+      return;
+    }
+    setSent(true);
+    toast.success("Message sent! We'll get back to you soon.");
+  };
+
+  return (
+    <Html position={[0, 0.4, -20]} center wrapperClass="roll-form-wrap" style={{ pointerEvents: "auto" }}>
+      <div ref={box} className="roll-form" style={{ opacity: 0, visibility: "hidden" }}>
+        {sent ? (
+          <div className="roll-form-inner" style={{ textAlign: "center" }}>
+            <p className="rf-k">Message received</p>
+            <h3 className="rf-title">धन्यवाद · Thank you</h3>
+            <p className="rf-lead">Your record has been delivered privately to the ArchaeoLens team.</p>
+          </div>
+        ) : (
+          <form className="roll-form-inner" onSubmit={submit}>
+            <p className="rf-k">Final chapter · Contact</p>
+            <h3 className="rf-title">Send a field record.</h3>
+            <input
+              className="rf-input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={100}
+              placeholder="Name (optional)"
+              aria-label="Name (optional)"
+            />
+            <input
+              className="rf-input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              maxLength={255}
+              placeholder="Email (optional)"
+              aria-label="Email (optional)"
+            />
+            <textarea
+              className="rf-input rf-area"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              maxLength={2000}
+              required
+              placeholder="Your message"
+              aria-label="Your message"
+            />
+            <button className="rf-btn" type="submit" disabled={sending}>
+              {sending ? "Sending…" : "Send message"}
+            </button>
+          </form>
+        )}
+      </div>
+    </Html>
+  );
+}
 /* ═══════════════════════════════════════════════════════════════════
    CHAPTER TEXTURES — painted to canvas, used as plane textures.
-   Palette mirrors ArchaeoLens tokens: paper, ink, terracotta, copper.
+   Palette mirrors ArchaeoLens tokens: paper, ink, terracotta.
    ═══════════════════════════════════════════════════════════════════ */
 
 const TEX_W = 1600;
@@ -358,9 +501,18 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, x: number, y: number,
   }
   if (line) ctx.fillText(line, x, yy);
 }
-const SERIF = "Georgia, 'Times New Roman', serif";
-const SANS = "'Segoe UI', system-ui, sans-serif";
 
+/* 8 chapters (spec: image count 8–12) — labels drive the HUD */
+const CHAPTERS = [
+  { label: "Hero", draw: drawHero },
+  { label: "The Index", draw: drawIndex },
+  { label: "Virtual Museum", draw: drawMuseum },
+  { label: "Field Method", draw: drawMethod },
+  { label: "Timeline", draw: drawTimeline },
+  { label: "Field Gallery", draw: drawGallery },
+  { label: "Careers", draw: drawCareers },
+  { label: "Colophon", draw: drawColophon },
+];
 /* ── 0 · Hero ──────────────────────────────────────────────────────── */
 function drawHero(ctx: CanvasRenderingContext2D) {
   const cx = 110;
@@ -401,7 +553,7 @@ function drawIndex(ctx: CanvasRenderingContext2D) {
   ctx.font = `400 84px ${SERIF}`;
   ctx.fillText("Every directory,", cx, 300);
   ctx.fillText("one volume.", cx, 410);
-  const depts = [
+  const depts: Array<[string, string]> = [
     ["01", "Archaeological Sites"], ["06", "Museum Directory"],
     ["02", "Cultural Periods"], ["07", "Heritage Laws"],
     ["03", "Pottery & Script Typology"], ["08", "My Field Notes"],
@@ -420,7 +572,7 @@ function drawIndex(ctx: CanvasRenderingContext2D) {
   });
 }
 
-/* ── 2 · Museum ────────────────────────────────────────────────────── */
+/* ── 2 · Virtual Museum ────────────────────────────────────────────── */
 function drawMuseum(ctx: CanvasRenderingContext2D) {
   const cx = 110;
   kick(ctx, "New · WebGL Experience", cx, 180);
@@ -446,7 +598,6 @@ function drawMuseum(ctx: CanvasRenderingContext2D) {
   ctx.fillText("TAKE THE 3D TOUR", cx + 66, 812);
   ctx.letterSpacing = "0px";
 }
-
 /* ── 3 · Field method ──────────────────────────────────────────────── */
 function drawMethod(ctx: CanvasRenderingContext2D) {
   const cx = 110;
@@ -477,7 +628,69 @@ function drawMethod(ctx: CanvasRenderingContext2D) {
   });
 }
 
-/* ── 4 · Careers ───────────────────────────────────────────────────── */
+/* ── 4 · Timeline ──────────────────────────────────────────────────── */
+function drawTimeline(ctx: CanvasRenderingContext2D) {
+  const cx = 110;
+  kick(ctx, "05 · Chronology", cx, 180);
+  ctx.fillStyle = INK;
+  ctx.font = `400 84px ${SERIF}`;
+  ctx.fillText("Two million years,", cx, 310);
+  ctx.fillText("one line.", cx, 420);
+  rule(ctx, cx, 500, 1380);
+  const eras = ["Paleolithic", "Mesolithic", "Neolithic", "Harappan", "Historic", "Modern"];
+  eras.forEach((e, i) => {
+    const x = cx + 40 + i * 230;
+    ctx.fillStyle = TERRA;
+    ctx.beginPath();
+    ctx.arc(x, 500, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = MUTED;
+    ctx.font = "600 24px 'Segoe UI', sans-serif";
+    ctx.fillText(e, x - 40, 560);
+  });
+  ctx.fillStyle = MUTED;
+  ctx.font = `400 30px ${SANS}`;
+  wrap(ctx, "Scroll the cultural periods timeline — characteristic artefacts and key sites for every era, Paleolithic to Modern.", cx, 660, 1200, 46);
+}
+
+/* ── 5 · Field gallery ─────────────────────────────────────────────── */
+function drawGallery(ctx: CanvasRenderingContext2D) {
+  const cx = 110;
+  kick(ctx, "06 · Field Gallery", cx, 160);
+  ctx.fillStyle = INK;
+  ctx.font = `400 84px ${SERIF}`;
+  ctx.fillText("Plates from the field.", cx, 290);
+  const tiles: Array<[string, string, string]> = [
+    ["Acheulean Handaxe", "OLDUVAI · QUARTZITE", "#c9a86a"],
+    ["NBPW Bowl", "GANGETIC · SLIPWARE", "#2b2b30"],
+    ["Microlithic Triangle", "LANGHNAJ · AGATE", "#a9748c"],
+    ["Harappan Blade", "DHOLAVIRA · CHALCEDONY", "#cfc3ad"],
+  ];
+  const tw = 640, th = 380, gap = 40;
+  tiles.forEach(([name, tag, from], i) => {
+    const x = cx + (i % 2) * (tw + gap);
+    const y = 340 + Math.floor(i / 2) * (th + gap);
+    const g = ctx.createLinearGradient(x, y, x + tw, y + th);
+    g.addColorStop(0, from);
+    g.addColorStop(1, "#efe7d5");
+    rr(ctx, x, y, tw, th, 24);
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(43,36,24,0.25)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = INK;
+    ctx.font = `400 42px ${SERIF}`;
+    ctx.fillText(name, x + 40, y + th - 66);
+    ctx.fillStyle = TERRA;
+    ctx.font = "600 20px 'Segoe UI', sans-serif";
+    ctx.letterSpacing = "4px";
+    ctx.fillText(tag, x + 40, y + th - 30);
+    ctx.letterSpacing = "0px";
+  });
+}
+
+/* ── 6 · Careers ───────────────────────────────────────────────────── */
 function drawCareers(ctx: CanvasRenderingContext2D) {
   const cx = 110;
   kick(ctx, "Department · Careers", cx, 170);
@@ -502,7 +715,7 @@ function drawCareers(ctx: CanvasRenderingContext2D) {
   });
 }
 
-/* ── 5 · Colophon ──────────────────────────────────────────────────── */
+/* ── 7 · Colophon ──────────────────────────────────────────────────── */
 function drawColophon(ctx: CanvasRenderingContext2D) {
   const cx = 110;
   kick(ctx, "Colophon · Est. XXIV·IV·MMXXVI", cx, 180);
@@ -527,7 +740,4 @@ function drawColophon(ctx: CanvasRenderingContext2D) {
   ctx.fillText("© 2026 ARCHAEOLENS · THE FIELD EDITION", cx, 860);
   ctx.letterSpacing = "0px";
 }
-
-
-
 
