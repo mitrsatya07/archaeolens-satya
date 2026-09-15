@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   Camera, Landmark, Library, ShieldCheck, Gem, Briefcase, ExternalLink,
-  Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale, ArrowUpRight, MessageSquare, Box,
+  Building2, Pickaxe, MapPin, Clock, BookOpen, NotebookPen, Scale, ArrowUpRight, MessageSquare,
 } from "lucide-react";
 import { CameraCapture } from "@/components/CameraCapture";
 import { IdentifyResultCard } from "@/components/IdentifyResultCard";
@@ -11,7 +11,6 @@ import { identifyImage, type IdentifyResult, type ScanMode } from "@/lib/identif
 import { AuthHeader } from "@/components/AuthHeader";
 import { useAuth } from "@/hooks/useAuth";
 
-const CylinderRoll = lazy(() => import("@/components/Scroll3D/CylinderRoll"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,15 +35,15 @@ export const Route = createFileRoute("/")({
 const sections = [
   { to: "/sites", n: "01", kicker: "Directory", title: "Archaeological Sites", desc: "42+ ASI & UNESCO sites across India — search by state, period, culture.", Icon: MapPin },
   { to: "/timeline", n: "02", kicker: "Chronology", title: "Cultural Periods Timeline", desc: "Paleolithic to Modern — characteristic artifacts and key sites.", Icon: Clock },
-  { to: "/museum", n: "03", kicker: "Experience", title: "The Virtual Museum — 3D", desc: "Walk an immersive WebGL gallery of prehistoric artefacts on lit pedestals.", Icon: Box },
-  { to: "/typology", n: "04", kicker: "Reference", title: "Pottery & Script Typology", desc: "NBPW, PGW, BRW, Brahmi, Kharosthi, Indus script & more.", Icon: BookOpen },
-  { to: "/stone-tools", n: "05", kicker: "Collection", title: "Stone Tools — 3D", desc: "Interactive prehistoric stone-tool models across regions.", Icon: Pickaxe },
-  { to: "/museums", n: "06", kicker: "Index", title: "Museum Directory", desc: "ASI site museums, state museums, and international Indian collections.", Icon: Building2 },
-  { to: "/heritage-laws", n: "07", kicker: "Statute", title: "Heritage Laws & Reporting", desc: "AMASR Act, Antiquities Act, and chance-find protocol with ASI.", Icon: Scale },
-  { to: "/field-notes", n: "08", kicker: "Notebook", title: "My Field Notes", desc: "Save observations with photo, GPS, and notes — synced to your account.", Icon: NotebookPen },
-  { to: "/references", n: "09", kicker: "Bibliography", title: "References & Citations", desc: "40+ authoritative sources — ASI reports, monographs, statutes.", Icon: Library },
-  { to: "/community", n: "10", kicker: "Forum", title: "Community & Peer Review", desc: "Ask for identification help, share finds, and discuss ethics with peers.", Icon: MessageSquare },
+  { to: "/typology", n: "03", kicker: "Reference", title: "Pottery & Script Typology", desc: "NBPW, PGW, BRW, Brahmi, Kharosthi, Indus script & more.", Icon: BookOpen },
+  { to: "/stone-tools", n: "04", kicker: "Collection", title: "Stone Tools — 3D", desc: "Interactive prehistoric stone-tool models across regions.", Icon: Pickaxe },
+  { to: "/museums", n: "05", kicker: "Index", title: "Museum Directory", desc: "ASI site museums, state museums, and international Indian collections.", Icon: Building2 },
+  { to: "/heritage-laws", n: "06", kicker: "Statute", title: "Heritage Laws & Reporting", desc: "AMASR Act, Antiquities Act, and chance-find protocol with ASI.", Icon: Scale },
+  { to: "/field-notes", n: "07", kicker: "Notebook", title: "My Field Notes", desc: "Save observations with photo, GPS, and notes — synced to your account.", Icon: NotebookPen },
+  { to: "/references", n: "08", kicker: "Bibliography", title: "References & Citations", desc: "40+ authoritative sources — ASI reports, monographs, statutes.", Icon: Library },
+  { to: "/community", n: "09", kicker: "Forum", title: "Community & Peer Review", desc: "Ask for identification help, share finds, and discuss ethics with peers.", Icon: MessageSquare },
 ] as const;
+
 
 const careerOpportunities = [
   { title: "PhD Scholarships in Archaeology", url: "https://www.higherjobz.com/?s=archaeology+phd", description: "Fully funded PhD positions worldwide." },
@@ -116,13 +115,7 @@ function IndexPage() {
 
   return (
     <main className="magazine-shell scroll-3d-active page-shell min-h-[100dvh] text-foreground">
-      {/* 3D cylinder page-roll — desktop: full WebGL roll; mobile/fallback: journey backdrop */}
-      <Suspense fallback={null}>
-        <CylinderRoll />
-      </Suspense>
 
-      {/* scroll length for the cylinder roll (one chapter per 100vh) */}
-      <div id="scroll-space" aria-hidden />
 
       {/* Masthead */}
       <header className="border-b border-foreground/15">
