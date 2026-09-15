@@ -197,32 +197,8 @@ function IndexPage() {
           </aside>
         </section>
 
-        {/* Virtual Museum — 3D feature banner */}
-        <section className="mt-16">
-          <Link
-            to="/museum"
-            className="group relative block overflow-hidden rounded-2xl border border-primary/30 bg-[#0b0906] px-6 py-10 text-background sm:px-12 sm:py-14"
-          >
-            <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_20%,rgba(240,220,170,0.16),transparent_55%)]" />
-            <div className="relative grid gap-6 sm:grid-cols-12 sm:items-end">
-              <div className="sm:col-span-8">
-                <p className="small-caps text-primary/90">New · WebGL Experience</p>
-                <h3 className="mt-3 font-display text-3xl leading-tight text-[#f0e6d2] sm:text-5xl">
-                  Enter the <em className="italic text-primary">Virtual Museum</em>
-                </h3>
-                <p className="mt-4 max-w-lg text-sm leading-relaxed text-[#b3a88f]">
-                  Walk a lit gallery of ten prehistoric artefacts — Olduvai handaxes, microliths,
-                  querns and Harappan blades. Click any piece to step closer and read its record.
-                </p>
-              </div>
-              <div className="sm:col-span-4 sm:text-right">
-                <span className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition group-hover:-translate-y-0.5">
-                  <Box className="h-4 w-4" /> Take the 3D tour
-                </span>
-              </div>
-            </div>
-          </Link>
-        </section>
+
+
 
         {/* Signature quote — ASI lore */}
         <section className="mt-16">
