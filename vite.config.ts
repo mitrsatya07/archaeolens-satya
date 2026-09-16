@@ -17,6 +17,8 @@ export default defineConfig({
           navigateFallback: "/",
           navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
           globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2}"],
+          globIgnores: ["**/textures/**"],
+
           runtimeCaching: [
             {
               urlPattern: ({ request }) => request.mode === "navigate",

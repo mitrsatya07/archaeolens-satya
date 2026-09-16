@@ -225,7 +225,7 @@ function IndexPage() {
         <section className="mt-20">
           <div className="flex items-end justify-between gap-6 border-b border-foreground/20 pb-4">
             <h3 className="font-display text-3xl text-foreground sm:text-4xl">The Index</h3>
-            <p className="small-caps hidden text-muted-foreground sm:block">Ten departments</p>
+            <p className="small-caps hidden text-muted-foreground sm:block">Nine departments</p>
           </div>
 
           <div className="grid gap-px bg-foreground/10 sm:grid-cols-2 lg:grid-cols-4 mt-px">
