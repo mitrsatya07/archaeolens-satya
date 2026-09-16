@@ -22,9 +22,10 @@ import * as THREE from "three";
 export type CamKey = { t: number; pos: [number, number, number]; look: [number, number, number] };
 
 export const CAM_KEYS: CamKey[] = [
-  { t: 0.0,  pos: [0, 22, 12],     look: [0, 0, -30] },
-  { t: 0.06, pos: [1.5, 12, -2],   look: [0, 1, -26] },
+  { t: 0.0,  pos: [0, 15, 14],     look: [0, -1.5, -34] },
+  { t: 0.06, pos: [1.5, 9, 0],     look: [0, 0, -30] },
   { t: 0.12, pos: [2, 4.2, -12],   look: [0, 1, -24] },
+
   { t: 0.2,  pos: [1.2, 1.8, -18], look: [0, 1, -30] },
   { t: 0.28, pos: [0.7, 1.5, -28], look: [0, 0.8, -38] },
   { t: 0.36, pos: [0, 1.1, -34],   look: [0, 0.2, -41] },
