@@ -1,12 +1,15 @@
 import { Link, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTransition, TopProgressBar } from "@/components/RouteTransition";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { registerServiceWorker } from "@/lib/registerSW";
 
+const ArchaeoBackdrop = lazy(() => import("@/components/3d/ArchaeoBackdrop"));
+
 import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
@@ -107,6 +110,9 @@ function RootComponent() {
   }, [router]);
   return (
     <>
+      <Suspense fallback={null}>
+        <ArchaeoBackdrop />
+      </Suspense>
       <TopProgressBar />
       <PageTransition />
       <MobileTabBar />
@@ -114,3 +120,4 @@ function RootComponent() {
     </>
   );
 }
+
