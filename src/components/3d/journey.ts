@@ -47,7 +47,7 @@ export const CAM_KEYS: CamKey[] = [
 /** Each route occupies a band of the master journey; the page's own scroll
     sweeps the camera continuously through that band. */
 export const ROUTE_BANDS: Record<string, [number, number]> = {
-  "/": [0.0, 0.74],
+  "/": [0.0, 1.0],
   "/sites": [0.74, 0.8],
   "/timeline": [0.74, 0.8],
   "/typology": [0.75, 0.81],
