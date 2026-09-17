@@ -256,7 +256,7 @@ function IndexPage() {
         </section>
 
         {/* Careers — editorial feature */}
-        <section className="mt-20 grid gap-10 lg:grid-cols-12">
+        <section className="journey-reading-band mt-20 grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <p className="small-caps text-primary">Department · Careers</p>
             <h3 className="mt-3 font-display text-4xl leading-tight text-foreground sm:text-5xl">
@@ -295,7 +295,7 @@ function IndexPage() {
         </section>
 
         {/* Colophon / Footer */}
-        <footer className="mt-24 border-t border-foreground/20 pt-10 pb-12">
+        <footer className="journey-reading-band journey-reading-band--footer mt-24 border-t border-foreground/20 pt-10 pb-12">
           <div className="grid gap-8 sm:grid-cols-2">
             <div>
               <p className="small-caps text-muted-foreground">Colophon</p>
