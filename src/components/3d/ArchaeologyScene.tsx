@@ -9,6 +9,7 @@ import { Excavation } from "./Excavation";
 import { Artifact, AnalysisOverlay } from "./Artifact";
 import { GISScene } from "./GISScene";
 import { StoneTools, FieldRecording, IndexMarkers, ArchiveFragments } from "./StoneTools";
+import { SpatialArchive } from "./SpatialArchive";
 import { CameraController } from "./CameraController";
 import { PALETTE } from "./util";
 import type { Quality } from "./useJourney";
@@ -75,6 +76,7 @@ export function ArchaeologyScene({
           </>
         )}
         {gis && <GISScene progress={progress} />}
+        {gis && <SpatialArchive progress={progress} />}
         {tools && <StoneTools progress={progress} />}
         {notes && (
           <>

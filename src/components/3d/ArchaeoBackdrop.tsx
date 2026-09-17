@@ -29,7 +29,7 @@ export default function ArchaeoBackdrop() {
     <div
       className="archaeo-canvas"
       aria-hidden
-      style={{ opacity: calm ? 0.3 : quality.mobile ? 0.5 : 0.62 }}
+      style={{ opacity: calm ? 0.3 : quality.mobile ? 0.62 : 0.78 }}
     >
       <Canvas
         dpr={quality.dpr}
