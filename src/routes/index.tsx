@@ -197,6 +197,7 @@ function IndexPage() {
           </aside>
         </section>
 
+        <div className="journey-vista journey-vista--survey" aria-hidden="true" />
 
 
 
@@ -220,6 +221,8 @@ function IndexPage() {
           <Promise icon={<Library className="h-4 w-4" />} title="Reference-backed" text="Links to museum, heritage, IGS, and typology comparison resources." />
           <Promise icon={<NotebookPen className="h-4 w-4" />} title="Your field record" text="Save observations with photo, GPS, and notes — privately, with cloud sync." />
         </section>
+
+        <div className="journey-vista journey-vista--excavation" aria-hidden="true" />
 
         {/* Index / Table of contents */}
         <section className="mt-20">
@@ -254,6 +257,8 @@ function IndexPage() {
           </div>
 
         </section>
+
+        <div className="journey-vista journey-vista--archive" aria-hidden="true" />
 
         {/* Careers — editorial feature */}
         <section className="journey-reading-band mt-20 grid gap-10 lg:grid-cols-12">

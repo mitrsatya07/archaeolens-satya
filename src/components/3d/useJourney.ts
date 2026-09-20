@@ -63,10 +63,16 @@ export function useJourneyProgress() {
     const refresh = () => st.refresh();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", refresh);
+    const observer = new ResizeObserver(() => {
+      compute();
+      st.refresh();
+    });
+    observer.observe(document.documentElement);
     const timer = window.setTimeout(refresh, 700);
 
     return () => {
       st.kill();
+      observer.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", refresh);
       window.clearTimeout(timer);
