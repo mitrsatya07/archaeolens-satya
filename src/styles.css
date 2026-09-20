@@ -407,7 +407,7 @@
   z-index: 0;
   pointer-events: none;
   transition: opacity 600ms ease;
-  filter: contrast(1.08) saturate(0.9);
+  filter: contrast(1.14) saturate(0.94);
 }
 .archaeo-canvas canvas {
   display: block;
@@ -433,10 +433,31 @@ body.archaeo-3d {
   z-index: 1;
 }
 .hero-glass {
-  background: color-mix(in oklab, var(--background) 88%, transparent);
+  background: color-mix(in oklab, var(--background) 82%, transparent);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-editorial);
 }
+
+/* Open sight-lines let each scroll chapter read as a physical camera move. */
+.journey-vista {
+  position: relative;
+  min-height: clamp(15rem, 42vh, 30rem);
+  pointer-events: none;
+}
+.journey-vista::before,
+.journey-vista::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: clamp(2rem, 8vw, 7rem);
+  height: 1px;
+  background: color-mix(in oklab, var(--foreground) 28%, transparent);
+}
+.journey-vista::before { left: 0; }
+.journey-vista::after { right: 0; }
+.journey-vista--survey { min-height: clamp(16rem, 48vh, 34rem); }
+.journey-vista--excavation { min-height: clamp(18rem, 55vh, 38rem); }
+.journey-vista--archive { min-height: clamp(16rem, 46vh, 32rem); }
 
 /* Keep dense reading areas clear while preserving the continuous landscape. */
 .journey-reading-band {
@@ -465,6 +486,12 @@ body.archaeo-3d {
 }
 
 @media (max-width: 639px) {
+  .journey-vista,
+  .journey-vista--survey,
+  .journey-vista--excavation,
+  .journey-vista--archive {
+    min-height: 42vh;
+  }
   .journey-reading-band::before {
     inset-inline: -1.25rem;
     background: color-mix(in oklab, var(--background) 94%, transparent);
