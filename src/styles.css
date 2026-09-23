@@ -500,9 +500,10 @@ body.archaeo-3d {
   }
   .journey-reading-band::before {
     inset-inline: -1.25rem;
-    background: color-mix(in oklab, var(--background) 94%, transparent);
-    backdrop-filter: blur(3px);
+    background: color-mix(in oklab, var(--background) 97%, transparent);
+    backdrop-filter: blur(6px);
   }
+  .hero-glass { background: color-mix(in oklab, var(--background) 96%, transparent); }
 }
 
 
