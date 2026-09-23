@@ -118,7 +118,7 @@ function IndexPage() {
 
 
       {/* Masthead */}
-      <header className="border-b border-foreground/15">
+      <header className="journey-reading-band journey-reading-band--solid border-b border-foreground/15">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-foreground text-background">
@@ -225,7 +225,7 @@ function IndexPage() {
         <div className="journey-vista journey-vista--excavation" aria-hidden="true" />
 
         {/* Index / Table of contents */}
-        <section className="mt-20">
+        <section className="journey-reading-band journey-reading-band--solid mt-20">
           <div className="flex items-end justify-between gap-6 border-b border-foreground/20 pb-4">
             <h3 className="font-display text-3xl text-foreground sm:text-4xl">The Index</h3>
             <p className="small-caps hidden text-muted-foreground sm:block">Nine departments</p>

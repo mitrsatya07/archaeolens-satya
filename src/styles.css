@@ -433,8 +433,8 @@ body.archaeo-3d {
   z-index: 1;
 }
 .hero-glass {
-  background: color-mix(in oklab, var(--background) 82%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in oklab, var(--background) 93%, transparent);
+  backdrop-filter: blur(14px) saturate(115%);
   box-shadow: var(--shadow-editorial);
 }
 
@@ -468,17 +468,23 @@ body.archaeo-3d {
   content: "";
   position: absolute;
   z-index: -1;
-  inset: -1.5rem;
+  inset: -1.75rem;
+  border-radius: 1rem;
   background: linear-gradient(
     90deg,
-    color-mix(in oklab, var(--background) 94%, transparent),
-    color-mix(in oklab, var(--background) 86%, transparent) 50%,
-    color-mix(in oklab, var(--background) 94%, transparent)
+    color-mix(in oklab, var(--background) 97%, transparent),
+    color-mix(in oklab, var(--background) 93%, transparent) 50%,
+    color-mix(in oklab, var(--background) 97%, transparent)
   );
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px) saturate(112%);
 }
 .journey-reading-band--footer::before {
-  inset-block: -1.25rem -2rem;
+  inset-block: -1.25rem -2.5rem;
+}
+/* Masthead and dense index grids need the firmest paper wash. */
+.journey-reading-band--solid::before {
+  background: color-mix(in oklab, var(--background) 96%, transparent);
+  backdrop-filter: blur(12px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -494,9 +500,10 @@ body.archaeo-3d {
   }
   .journey-reading-band::before {
     inset-inline: -1.25rem;
-    background: color-mix(in oklab, var(--background) 94%, transparent);
-    backdrop-filter: blur(3px);
+    background: color-mix(in oklab, var(--background) 97%, transparent);
+    backdrop-filter: blur(6px);
   }
+  .hero-glass { background: color-mix(in oklab, var(--background) 96%, transparent); }
 }
 
 
